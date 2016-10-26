@@ -19,21 +19,6 @@
             "location": "/#project-layout", 
             "text": "mkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
             "title": "Project layout"
-        }, 
-        {
-            "location": "/about/", 
-            "text": "about\n\n\nc4bbage", 
-            "title": "About"
-        }, 
-        {
-            "location": "/about/#about", 
-            "text": "", 
-            "title": "about"
-        }, 
-        {
-            "location": "/about/#c4bbage", 
-            "text": "", 
-            "title": "c4bbage"
         }
     ]
 }
