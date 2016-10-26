@@ -1,0 +1,5 @@
+site_name: c4bbage -- 草泥马之家
+pages:
+- Home: index.md
+- About: about.md
+theme: readthedocs
