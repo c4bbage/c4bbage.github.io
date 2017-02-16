@@ -2,13 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Welcome to MkDocs\n\n\nFor full documentation visit \nmkdocs.org\n.\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
+            "text": "Welcome to c4bbage blog\n\n\n\u4eba\u751f\u6700\u751c\u871c\u7684\u6b22\u4e50,\u90fd\u662f\u5fe7\u4f24\u7684\u679c\u5b9e,\u4eba\u751f\u6700\u7eaf\u7f8e\u7684\u4e1c\u897f,\u90fd\u662f\u4ece\u82e6\u96be\u4e2d\u5f97\u6765\u7684,\u6211\u4eec\u8981\u4eb2\u8eab\u7ecf\u5386\u8270\u96be,\u7136\u540e\u624d\u61c2\u5f97\u600e\u6837\u53bb\u5b89\u6170\u522b\u4eba\u3002\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
             "title": "Home"
         }, 
         {
-            "location": "/#welcome-to-mkdocs", 
-            "text": "For full documentation visit  mkdocs.org .", 
-            "title": "Welcome to MkDocs"
+            "location": "/#welcome-to-c4bbage-blog", 
+            "text": "\u4eba\u751f\u6700\u751c\u871c\u7684\u6b22\u4e50,\u90fd\u662f\u5fe7\u4f24\u7684\u679c\u5b9e,\u4eba\u751f\u6700\u7eaf\u7f8e\u7684\u4e1c\u897f,\u90fd\u662f\u4ece\u82e6\u96be\u4e2d\u5f97\u6765\u7684,\u6211\u4eec\u8981\u4eb2\u8eab\u7ecf\u5386\u8270\u96be,\u7136\u540e\u624d\u61c2\u5f97\u600e\u6837\u53bb\u5b89\u6170\u522b\u4eba\u3002", 
+            "title": "Welcome to c4bbage blog"
         }, 
         {
             "location": "/#commands", 
