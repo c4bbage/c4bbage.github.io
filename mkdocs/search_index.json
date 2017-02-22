@@ -2,13 +2,13 @@
     "docs": [
         {
             "location": "/", 
-            "text": "Welcome to c4bbage blog\n\n\n\u4eba\u751f\u6700\u751c\u871c\u7684\u6b22\u4e50,\u90fd\u662f\u5fe7\u4f24\u7684\u679c\u5b9e,\u4eba\u751f\u6700\u7eaf\u7f8e\u7684\u4e1c\u897f,\u90fd\u662f\u4ece\u82e6\u96be\u4e2d\u5f97\u6765\u7684,\u6211\u4eec\u8981\u4eb2\u8eab\u7ecf\u5386\u8270\u96be,\u7136\u540e\u624d\u61c2\u5f97\u600e\u6837\u53bb\u5b89\u6170\u522b\u4eba\u3002\n\n\n\u517b\u6210\u505a\u7b14\u8bb0\u7684\u597d\u4e60\u60ef!\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs mkdocs gh-deploy -b master\n - Push master.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
+            "text": "Welcome to \u8349\u6ce5\u9a6c\u4e4b\u5bb6\n\n\n\u4eba\u751f\u6700\u751c\u871c\u7684\u6b22\u4e50,\u90fd\u662f\u5fe7\u4f24\u7684\u679c\u5b9e,\u4eba\u751f\u6700\u7eaf\u7f8e\u7684\u4e1c\u897f,\u90fd\u662f\u4ece\u82e6\u96be\u4e2d\u5f97\u6765\u7684,\u6211\u4eec\u8981\u4eb2\u8eab\u7ecf\u5386\u8270\u96be,\u7136\u540e\u624d\u61c2\u5f97\u600e\u6837\u53bb\u5b89\u6170\u522b\u4eba\u3002\n\n\n\u517b\u6210\u505a\u7b14\u8bb0\u7684\u597d\u4e60\u60ef!\n\n\nCommands\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs mkdocs gh-deploy -b master\n - Push master.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nProject layout\n\n\nmkdocs.yml    # The configuration file.\ndocs/\n    index.md  # The documentation homepage.\n    ...       # Other markdown pages, images and other files.", 
             "title": "Home"
         }, 
         {
-            "location": "/#welcome-to-c4bbage-blog", 
+            "location": "/#welcome-to", 
             "text": "\u4eba\u751f\u6700\u751c\u871c\u7684\u6b22\u4e50,\u90fd\u662f\u5fe7\u4f24\u7684\u679c\u5b9e,\u4eba\u751f\u6700\u7eaf\u7f8e\u7684\u4e1c\u897f,\u90fd\u662f\u4ece\u82e6\u96be\u4e2d\u5f97\u6765\u7684,\u6211\u4eec\u8981\u4eb2\u8eab\u7ecf\u5386\u8270\u96be,\u7136\u540e\u624d\u61c2\u5f97\u600e\u6837\u53bb\u5b89\u6170\u522b\u4eba\u3002  \u517b\u6210\u505a\u7b14\u8bb0\u7684\u597d\u4e60\u60ef!", 
-            "title": "Welcome to c4bbage blog"
+            "title": "Welcome to \u8349\u6ce5\u9a6c\u4e4b\u5bb6"
         }, 
         {
             "location": "/#commands", 
@@ -37,12 +37,12 @@
         }, 
         {
             "location": "/about/", 
-            "text": "about me\n\n\nc4bbage\nemail: c4bbage@qq.com", 
+            "text": "about me\n\n\nc4bbage@\u8349\u6ce5\u9a6c\u4e4b\u5bb6\n\n\nemail: c4bbage@qq.com\n\n\n\u66fe\u7528\u57df\u540d:\n\n\n\n\ncunlide.com\n\n\nweisuo.org \n\n\n\u5747\u5df2\u5e9f\u5f03\n\n\n\n\n\n\n\n\n\u8349\u6ce5\u9a6c\u4e00\u6b21\u56e2\n\n\n\n\nzcgonvh", 
             "title": "About"
         }, 
         {
             "location": "/about/#about-me", 
-            "text": "c4bbage\nemail: c4bbage@qq.com", 
+            "text": "c4bbage@\u8349\u6ce5\u9a6c\u4e4b\u5bb6  email: c4bbage@qq.com  \u66fe\u7528\u57df\u540d:   cunlide.com  weisuo.org   \u5747\u5df2\u5e9f\u5f03     \u8349\u6ce5\u9a6c\u4e00\u6b21\u56e2   zcgonvh", 
             "title": "about me"
         }
     ]
