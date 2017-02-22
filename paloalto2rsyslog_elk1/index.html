@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>About - c4bbage blog->草泥马之家</title>
+  <title>paloalto日志转发rsyslog - c4bbage blog->草泥马之家</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "About";
-    var mkdocs_page_input_path = "about.md";
-    var mkdocs_page_url = "/about/";
+    var mkdocs_page_name = "paloalto日志转发rsyslog";
+    var mkdocs_page_input_path = "paloalto2rsyslog_elk1.md";
+    var mkdocs_page_url = "/paloalto2rsyslog_elk1/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -67,8 +67,18 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../paloalto2rsyslog_elk1/">paloalto日志转发rsyslog</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">paloalto日志转发rsyslog</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#paloalto">配置 paloalto</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#rsyslog">配置 rsyslog</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -77,15 +87,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">About</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#about-me">about me</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../about/">About</a>
         
     </li>
 <li>
@@ -111,8 +114,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>工作笔记 &raquo;</li>
+        
+      
     
-    <li>About</li>
+    <li>paloalto日志转发rsyslog</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -122,9 +129,53 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="about-me">about me</h1>
-<p>c4bbage
-email: c4bbage@qq.com</p>
+                <h2 id="paloalto">配置 paloalto</h2>
+<p>进入 paloalto 在 Device 中配置 syslog,如图:</p>
+<p><img alt="" src="../images/20170222165425.png" />
+之后在 Objects 内配置 Log Forwarding Profile,如下：</p>
+<p><img alt="" src="../images/20170222165842.png" />
+注意 Syslog,通信日志和威胁日志为不同端口。
+最后在 Policies Security 上配置上log Forwarding</p>
+<p><img alt="" src="../images/20170222170231.png" /></p>
+<h2 id="rsyslog">配置 rsyslog</h2>
+<p>安装略，主要是配置文件。
+配置文件配置方式分新旧两种方式，旧式(不影响使用)：</p>
+<pre><code>$ModLoad imtcp
+$InputTCPServerRun 515
+$AllowedSender TCP, 192.168.136.0/24
+$template Remote2,&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;
+# The above code is old-fashioned
+</code></pre>
+
+<p>新格式为：</p>
+<pre><code># /etc/rsyslog.d/pa_traffic.conf
+module(load=&quot;imtcp&quot;)
+template (name=&quot;DynFile1&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
+
+input(type=&quot;imtcp&quot; 
+    port=&quot;515&quot;
+    ruleset=&quot;pa_traffic&quot;)
+ruleset(name=&quot;pa_traffic&quot;){
+    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile1&quot;)   
+}
+# end file 
+# /etc/rsyslog.d/pa_threat.conf
+module(load=&quot;imtcp&quot;)
+template (name=&quot;DynFile2&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/threat_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
+
+input(type=&quot;imtcp&quot; 
+    port=&quot;513&quot;
+    ruleset=&quot;pa_threat&quot;)
+ruleset(name=&quot;pa_threat&quot;){
+    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile2&quot;)   
+}
+# end file 
+# cat /etc/rsyslog.conf|grep -i include
+$IncludeConfig /etc/rsyslog.d/*.conf
+</code></pre>
+
+<p>日志生成如下:</p>
+<p><img alt="" src="../images/20170222171042.png" /></p>
               
             </div>
           </div>
@@ -132,8 +183,10 @@ email: c4bbage@qq.com</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
       
-        <a href="../paloalto2rsyslog_elk1/" class="btn btn-neutral" title="paloalto日志转发rsyslog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -159,8 +212,10 @@ email: c4bbage@qq.com</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../paloalto2rsyslog_elk1/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
       
+      
+        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
