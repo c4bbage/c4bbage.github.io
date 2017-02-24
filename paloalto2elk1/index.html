@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>paloalto日志转发rsyslog - c4bbage blog</title>
+  <title>paloalto日志转发elk1 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "paloalto日志转发rsyslog";
-    var mkdocs_page_input_path = "paloalto2rsyslog_elk1.md";
-    var mkdocs_page_url = "/paloalto2rsyslog_elk1/";
+    var mkdocs_page_name = "paloalto日志转发elk1";
+    var mkdocs_page_input_path = "paloalto2elk1.md";
+    var mkdocs_page_url = "/paloalto2elk1/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -68,14 +68,15 @@
         
             
     <li class="toctree-l1 current">
-        <a class="current" href="./">paloalto日志转发rsyslog</a>
+        <a class="current" href="./">paloalto日志转发elk1</a>
         
             <ul>
             
-                <li class="toctree-l3"><a href="#paloalto">配置 paloalto</a></li>
+                <li class="toctree-l3"><a href="#paloaltoelk1">paloalto日志转发到elk1</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#rsyslog">配置 rsyslog</a></li>
+                    <li><a class="toctree-l4" href="#paloalto">配置 paloalto</a></li>
+                
+                    <li><a class="toctree-l4" href="#rsyslog">配置 rsyslog</a></li>
                 
             
             </ul>
@@ -85,7 +86,7 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../paloalto2elk2/">paloalto日志转发elk</a>
+        <a class="" href="../paloalto2elk2/">paloalto日志转发elk2</a>
         
     </li>
 
@@ -141,7 +142,7 @@
         
       
     
-    <li>paloalto日志转发rsyslog</li>
+    <li>paloalto日志转发elk1</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -151,7 +152,10 @@
           <div role="main">
             <div class="section">
               
-                <h2 id="paloalto">配置 paloalto</h2>
+                <h1 id="paloaltoelk1">paloalto日志转发到elk1</h1>
+<p>在内网想构建个日志分析系统，便于分析蜜罐、paloalto、VPN、赛门铁克的告警日志。针对paloalto的日志采集是通过以下架构:
+paloalto -&gt; syslog -&gt; logstash -&gt; elastic search -&gt; kibana</p>
+<h2 id="paloalto">配置 paloalto</h2>
 <p>进入 paloalto 在 Device 中配置 syslog,如图:</p>
 <p><img alt="" src="../images/20170222165425.png" />
 之后在 Objects 内配置 Log Forwarding Profile,如下：</p>
@@ -209,7 +213,7 @@ $IncludeConfig /etc/rsyslog.d/*.conf
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../paloalto2elk2/" class="btn btn-neutral float-right" title="paloalto日志转发elk">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../paloalto2elk2/" class="btn btn-neutral float-right" title="paloalto日志转发elk2">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>

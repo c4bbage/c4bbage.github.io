@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>paloalto日志转发elk - c4bbage blog</title>
+  <title>paloalto日志转发elk2 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,7 +23,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "paloalto日志转发elk";
+    var mkdocs_page_name = "paloalto日志转发elk2";
     var mkdocs_page_input_path = "paloalto2elk2.md";
     var mkdocs_page_url = "/paloalto2elk2/";
   </script>
@@ -68,18 +68,18 @@
         
             
     <li class="toctree-l1 ">
-        <a class="" href="../paloalto2rsyslog_elk1/">paloalto日志转发rsyslog</a>
+        <a class="" href="../paloalto2elk1/">paloalto日志转发elk1</a>
         
     </li>
 
         
             
     <li class="toctree-l1 current">
-        <a class="current" href="./">paloalto日志转发elk</a>
+        <a class="current" href="./">paloalto日志转发elk2</a>
         
             <ul>
             
-                <li class="toctree-l3"><a href="#paloaltoelk">paloalto日志转发到elk</a></li>
+                <li class="toctree-l3"><a href="#paloaltoelk2">paloalto日志转发到elk2</a></li>
                 
             
                 <li class="toctree-l3"><a href="#_1">改进</a></li>
@@ -141,7 +141,7 @@
         
       
     
-    <li>paloalto日志转发elk</li>
+    <li>paloalto日志转发elk2</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -151,9 +151,11 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="paloaltoelk">paloalto日志转发到elk</h1>
+                <h1 id="paloaltoelk2">paloalto日志转发到elk2</h1>
 <h1 id="_1">改进</h1>
-<p>上传用rsyslog对paloalto的日志进行存储(文件),之后通过手机资料发现logstash可以完全代替rsyslog的功能，直接监听端口就可以，配置如下：</p>
+<p>上次用rsyslog对paloalto的日志进行存储(文件),之后通过查看资料发现logstash可以完全代替rsyslog的功能，直接监听端口就可以，架构修改如下:
+paloalto -&gt; logstash -&gt; elastic search -&gt; kibana</p>
+<p>配置如下：</p>
 <pre><code>input {
     tcp {
         port =&gt; 513
@@ -161,6 +163,128 @@
     }
 }
 </code></pre>
+
+<p>之后就是对paloalto的日志进行加工，方便投递elastic search 中,如下 :</p>
+<pre><code>######## 以下规则来自国外友人博客[引用]
+######## PALOALTO FILTER #####################
+filter {
+if [type] == &quot;paloalto&quot; {
+grok {
+patterns_dir =&gt; &quot;/usr/share/logstash/vendor/bundle/jruby/1.9/gems/logstash-patterns-core-4.0.2/patterns&quot;
+match =&gt; [ &quot;message&quot;, &quot;%&lt;%{POSINT}&gt;%{MONTH} %{MONTHDAY} %{TIME} %{GREEDYDATA:palo_message}&quot; ]
+}
+
+mutate {
+rename =&gt; [&quot;palomessage&quot;, &quot;message&quot;]
+}
+
+if [type] == &quot;paloalto&quot; and [message] =~ /TRAFFIC/ {
+csv {
+columns =&gt; [ &quot;Domain&quot;, &quot;ReceiveTime&quot;, &quot;SerialNum #&quot;, &quot;Type&quot;, &quot;Threat-ContentType&quot;, &quot;ConfigVersion&quot;, &quot;GenerateTime&quot;, &quot;SourceAddress&quot;, &quot;DestinationAddress&quot;, &quot;NATSourceIP&quot;, &quot;NATDestinationIP&quot;, &quot;Rule&quot;, &quot;SourceUser&quot;,&quot;DestinationUser&quot;,&quot;Application&quot;,&quot;VirtualSystem&quot;,&quot;SourceZone&quot;,&quot;DestinationZone&quot;,&quot;InboundInterface&quot;,&quot;OutboundInterface&quot;,&quot;LogAction&quot;,&quot;TimeLogged&quot;,&quot;SessionID&quot;,&quot;RepeatCount&quot;,&quot;SourcePort&quot;,&quot;DestinationPort&quot;,&quot;NATSourcePort&quot;,&quot;NATDestinationPort&quot;,&quot;Flags&quot;,&quot;IPprotocol&quot;,&quot;Action&quot;,&quot;Bytes&quot;,&quot;BytesSent&quot;,&quot;BytesReceived&quot;,&quot;Packets&quot;,&quot;StartTime&quot;,&quot;ElapsedTimeInSec)&quot;,&quot;Category&quot;,&quot;Padding&quot;,&quot;seqno&quot;,&quot;actionflags&quot;,&quot;SourceCountry&quot;,&quot;DestinationCountry&quot;,&quot;cpadding&quot;,&quot;pkts_sent&quot;,&quot;pkts_received&quot;, &quot;session_end_reason&quot;
+]
+}
+}
+else if [type] == &quot;paloalto&quot; and [message] !~ /TRAFFIC/ {
+csv {
+columns =&gt; [ &quot;Domain&quot;, &quot;ReceiveTime&quot;, &quot;SerialNum&quot;, &quot;Type&quot;, &quot;Threat-ContentType&quot;, &quot;ConfigVersion&quot;, &quot;GenerateTime&quot;, &quot;SourceAddress&quot;, &quot;DestinationAddress&quot;, &quot;NATSourceIP&quot;, &quot;NATDestinationIP&quot;, &quot;Rule&quot;, &quot;SourceUser&quot;, &quot;DestinationUser&quot;, &quot;Application&quot;, &quot;VirtualSystem&quot;, &quot;SourceZone&quot;, &quot;DestinationZone&quot;, &quot;InboundInterface&quot;, &quot;OutboundInterface&quot;, &quot;LogAction&quot;, &quot;TimeLogged&quot;, &quot;SessionID&quot;, &quot;RepeatCount&quot;, &quot;SourcePort&quot;, &quot;DestinationPort&quot;, &quot;NATSourcePort&quot;, &quot;NATDestinationPort&quot; , &quot;Flags&quot;, &quot;IPprotocol&quot;, &quot;Action&quot;, &quot;URL&quot;, &quot;Threat-ContentName&quot;, &quot;Category&quot;, &quot;reportid&quot;, &quot;Severity&quot;, &quot;Direction&quot;, &quot;seqno&quot;, &quot;actionflags&quot;, SourceCountry, &quot;DestinationCountry&quot;, &quot;cpadding&quot;, &quot;ContentType&quot;, &quot;pcap_id&quot;, &quot;filedigest&quot;, &quot;cloud&quot;, &quot;url_idx&quot;, &quot;user_agent&quot;, &quot;filetype&quot;, &quot;xff&quot;, &quot;referer&quot;, &quot;sender&quot;, &quot;subject&quot;, &quot;recipient&quot;
+]
+}
+}
+
+date {
+timezone =&gt; &quot;Asia/Shanghai&quot;
+match =&gt; [ &quot;GenerateTime&quot;, &quot;YYYY/MM/dd HH:mm:ss&quot; ]
+target =&gt; &quot;@timestamp&quot;
+}
+
+mutate {
+convert =&gt; [ &quot;Bytes&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;BytesReceived&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;BytesSent&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;ElapsedTimeInSec&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;geoip.area_code&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;geoip.dma_code&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;geoip.latitude&quot;, &quot;float&quot; ]
+convert =&gt; [ &quot;geoip.longitude&quot;, &quot;float&quot; ]
+convert =&gt; [ &quot;NATDestinationPort&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;NATSourcePort&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;Packets&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;pkts_received&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;pkts_sent&quot;, &quot;integer&quot; ]
+convert =&gt; [ &quot;seqno&quot;, &quot;integer&quot; ]
+gsub =&gt; [ &quot;Rule&quot;, &quot; &quot;, &quot;_&quot;, &quot;Application&quot;, &quot;( |-)&quot;, &quot;_&quot; ]
+remove_field =&gt; [ &quot;message&quot;, &quot;raw_message&quot; ]
+}
+
+################ GEO LOCATION ######################################
+
+if [SourceAddress] and [SourceAddress] !~ &quot;(^127\.0\.0\.1)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)|(^169\.254\.)&quot; {
+geoip {
+database =&gt; &quot;/opt/seim/GeoLite2-City.mmdb&quot;
+source =&gt; &quot;SourceAddress&quot;
+target =&gt; &quot;SourceGeo&quot;
+}
+#Delete 0,0 in SourceGeo.location if equal to 0,0
+if ([SourceGeo.location] and [SourceGeo.location] =~ &quot;0,0&quot;) {
+mutate {
+replace =&gt; [ &quot;SourceGeo.location&quot;, &quot;&quot; ]
+}
+}
+}
+
+#Geolocate logs that have DestinationAddress and if that DestinationAddress is a non-RFC1918 address
+if [DestinationAddress] and [DestinationAddress] !~ &quot;(^127\.0\.0\.1)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^192\.168\.)|(^169\.254\.)&quot; {
+geoip {
+database =&gt; &quot;/opt/seim/GeoLite2-City.mmdb&quot;
+source =&gt; &quot;DestinationAddress&quot;
+target =&gt; &quot;DestinationGeo&quot;
+}
+#Delete 0,0 in DestinationGeo.location if equal to 0,0
+if ([DestinationGeo.location] and [DestinationGeo.location] =~ &quot;0,0&quot;) {
+mutate {
+replace =&gt; [ &quot;DestinationAddress.location&quot;, &quot;&quot; ]
+}
+}
+}
+
+#Takes the 5-tuple of source address, source port, destination address, destination port, and protocol and does a SHA1 hash to fingerprint the flow. This is a useful
+#way to be able to do top N terms queries on flows, not just on one field.
+if [SourceAddress] and [DestinationAddress] {
+fingerprint {
+concatenate_sources =&gt; true
+method =&gt; &quot;SHA1&quot;
+key =&gt; &quot;logstash&quot;
+source =&gt; [ &quot;SourceAddress&quot;, &quot;SourcePort&quot;, &quot;DestinationAddress&quot;, &quot;DestinationPort&quot;, &quot;IPProtocol&quot; ]
+}
+}
+}
+}
+
+output {
+if [type] == &quot;paloalto&quot; {
+elasticsearch {
+hosts =&gt; [&quot;192.168.2.72:9200&quot;]
+index =&gt; &quot;logstash-palo-firewall-%{+YYYY.MM.dd}&quot;
+#template =&gt; &quot;/opt/seim/elasticsearch-template.json&quot;
+#template_overwrite =&gt; true
+}
+}
+}
+</code></pre>
+
+<p>启动logstash</p>
+<pre><code>/usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/pa2.conf
+</code></pre>
+
+<p>引用：</p>
+<ul>
+<li><a href="http://www.ibm.com/support/knowledgecenter/zh/SSW24F_1.0.0/com.ibm.enforcer.doc/dsm/t_dsm_guide_palo_alto_syslog_dest.htm">在 Palo Alto 设备上创建 Syslog 目标</a></li>
+<li><a href="https://github.com/timconradinc/logstash-palo-alto">Palo Alto Firewalls with Logstash</a></li>
+<li><a href="https://exorcimist.wordpress.com/2015/05/07/kibana-logstash-elasticsearch-for-palalto/">Kibana Logstash ElasticSearch for PalAlto</a></li>
+<li><a href="http://seanfigg.com/blog/windows-elk-stack-palo-alto-firewall/">Windows ELK Stack &amp; Palo Alto Firewal</a></li>
+<li><a href="https://anderikistan.com/2016/03/26/elk-palo-alto-networks/">ELK + PALO ALTO NETWORKS</a></li>
+<li><a href="https://anderikistan.com/2016/04/26/elk-palo-alto-networks-part-2-url-and-custom-logs/">ELK + PALO ALTO NETWORKS PART 2 (URL AND CUSTOM LOGS)</a></li>
+</ul>
               
             </div>
           </div>
@@ -171,7 +295,7 @@
         <a href="../apt/" class="btn btn-neutral float-right" title="APT">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../paloalto2rsyslog_elk1/" class="btn btn-neutral" title="paloalto日志转发rsyslog"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../paloalto2elk1/" class="btn btn-neutral" title="paloalto日志转发elk1"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -197,7 +321,7 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../paloalto2rsyslog_elk1/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../paloalto2elk1/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../apt/" style="color: #fcfcfc">Next &raquo;</a></span>
