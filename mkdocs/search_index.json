@@ -36,6 +36,26 @@
             "title": "\u914d\u7f6e rsyslog"
         }, 
         {
+            "location": "/paloalto2elk2/", 
+            "text": "paloalto\u65e5\u5fd7\u8f6c\u53d1\u5230elk\n\n\n\u6539\u8fdb\n\n\n\u4e0a\u4f20\u7528rsyslog\u5bf9paloalto\u7684\u65e5\u5fd7\u8fdb\u884c\u5b58\u50a8(\u6587\u4ef6),\u4e4b\u540e\u901a\u8fc7\u624b\u673a\u8d44\u6599\u53d1\u73b0logstash\u53ef\u4ee5\u5b8c\u5168\u4ee3\u66ffrsyslog\u7684\u529f\u80fd\uff0c\u76f4\u63a5\u76d1\u542c\u7aef\u53e3\u5c31\u53ef\u4ee5\uff0c\u914d\u7f6e\u5982\u4e0b\uff1a\n\n\ninput {\n    tcp {\n        port =\n 513\n        type =\n paloalto\n    }\n}", 
+            "title": "paloalto\u65e5\u5fd7\u8f6c\u53d1elk"
+        }, 
+        {
+            "location": "/paloalto2elk2/#paloaltoelk", 
+            "text": "", 
+            "title": "paloalto\u65e5\u5fd7\u8f6c\u53d1\u5230elk"
+        }, 
+        {
+            "location": "/paloalto2elk2/#_1", 
+            "text": "\u4e0a\u4f20\u7528rsyslog\u5bf9paloalto\u7684\u65e5\u5fd7\u8fdb\u884c\u5b58\u50a8(\u6587\u4ef6),\u4e4b\u540e\u901a\u8fc7\u624b\u673a\u8d44\u6599\u53d1\u73b0logstash\u53ef\u4ee5\u5b8c\u5168\u4ee3\u66ffrsyslog\u7684\u529f\u80fd\uff0c\u76f4\u63a5\u76d1\u542c\u7aef\u53e3\u5c31\u53ef\u4ee5\uff0c\u914d\u7f6e\u5982\u4e0b\uff1a  input {\n    tcp {\n        port =  513\n        type =  paloalto\n    }\n}", 
+            "title": "\u6539\u8fdb"
+        }, 
+        {
+            "location": "/apt/", 
+            "text": "", 
+            "title": "APT"
+        }, 
+        {
             "location": "/about/", 
             "text": "about me\n\n\nc4bbage@\u8349\u6ce5\u9a6c\u4e4b\u5bb6\n\n\nemail: c4bbage#qq.com\n\n\n\u66fe\u7528\u57df\u540d:\n\n\n\n\ncunlide.com\n\n\nweisuo.org \n\n\n\u5747\u5df2\u5e9f\u5f03\n\n\n\n\n\n\n\n\n\u8349\u6ce5\u9a6c\u4e00\u6b21\u56e2\n\n\n\n\nzcgonvh", 
             "title": "About"
