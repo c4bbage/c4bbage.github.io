@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>APT - c4bbage blog</title>
+  <title>xssproxy - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "APT";
-    var mkdocs_page_input_path = "apt.md";
-    var mkdocs_page_url = "/apt/";
+    var mkdocs_page_name = "xssproxy";
+    var mkdocs_page_input_path = "xssproxy.md";
+    var mkdocs_page_url = "/xssproxy/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -89,12 +89,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">APT</a>
-        
-            <ul>
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../spear%20Phishing%20Techniques%20used%20in%20attacks%20targeting%20the%20MongolianGovernment/">针对蒙古国的apt攻击[翻译]</a>
         
     </li>
 
@@ -110,6 +106,28 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../handle_csrf_token_with_burpsuite_or_sqlmap/">用Burpsuite 来处理csrf token</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>实用工具</span></li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">xssproxy</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#xssproxy">xssproxy</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -146,11 +164,11 @@
     
       
         
-          <li>兴趣关注 &raquo;</li>
+          <li>实用工具 &raquo;</li>
         
       
     
-    <li>APT</li>
+    <li>xssproxy</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -160,7 +178,11 @@
           <div role="main">
             <div class="section">
               
-                
+                <h1 id="xssproxy">xssproxy</h1>
+<p>在web安全测试中，我们一般会遇到后台有IP限制无法等，但是我们xss payload,管理员能正常运行且未被发现。在这种场景下我们可以用xssproxy来访问后台，再次进行安全测试。</p>
+<p>工具采用的是 长短短 写的<a href="https://github.com/jackmasa/XSSProxy">XSSProxy</a></p>
+<p>但我在使用时发现在POST请求时，无法提交数据。随简单更新了下代码，希望 node 大牛们可以在优化下 <a href="https://github.com/c4bbage/XSSProxy">渣代码</a></p>
+<p>图，改天补！</p>
               
             </div>
           </div>
@@ -168,10 +190,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral float-right" title="用Burpsuite 来处理csrf token">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../paloalto2elk2/" class="btn btn-neutral" title="paloalto日志转发elk2"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral" title="用Burpsuite 来处理csrf token"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -197,10 +219,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../paloalto2elk2/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
