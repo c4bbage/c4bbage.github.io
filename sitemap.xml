@@ -48,12 +48,6 @@
     
         
     <url>
-     <loc>None/xssproxy/</loc>
-     <lastmod>2017-02-28</lastmod>
-     <changefreq>daily</changefreq>
-    </url>
-        
-    <url>
      <loc>None/debian8_install_msf/</loc>
      <lastmod>2017-02-28</lastmod>
      <changefreq>daily</changefreq>
