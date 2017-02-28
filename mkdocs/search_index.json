@@ -137,13 +137,73 @@
         }, 
         {
             "location": "/xssproxy/", 
-            "text": "xssproxy\n\n\n\u5728web\u5b89\u5168\u6d4b\u8bd5\u4e2d\uff0c\u6211\u4eec\u4e00\u822c\u4f1a\u9047\u5230\u540e\u53f0\u6709IP\u9650\u5236\u65e0\u6cd5\u7b49\uff0c\u4f46\u662f\u6211\u4eecxss payload,\u7ba1\u7406\u5458\u80fd\u6b63\u5e38\u8fd0\u884c\u4e14\u672a\u88ab\u53d1\u73b0\u3002\u5728\u8fd9\u79cd\u573a\u666f\u4e0b\u6211\u4eec\u53ef\u4ee5\u7528xssproxy\u6765\u8bbf\u95ee\u540e\u53f0\uff0c\u518d\u6b21\u8fdb\u884c\u5b89\u5168\u6d4b\u8bd5\u3002\n\n\n\u5de5\u5177\u91c7\u7528\u7684\u662f \u957f\u77ed\u77ed \u5199\u7684\nXSSProxy\n\n\n\u4f46\u6211\u5728\u4f7f\u7528\u65f6\u53d1\u73b0\u5728POST\u8bf7\u6c42\u65f6\uff0c\u65e0\u6cd5\u63d0\u4ea4\u6570\u636e\u3002\u968f\u7b80\u5355\u66f4\u65b0\u4e86\u4e0b\u4ee3\u7801\uff0c\u5e0c\u671b node \u5927\u725b\u4eec\u53ef\u4ee5\u5728\u4f18\u5316\u4e0b \u6211\u6539\u7684\n\u6e23\u4ee3\u7801\n\n\n\u56fe\uff0c\u6539\u5929\u8865\uff01", 
+            "text": "xssproxy\n\n\n\u5728web\u5b89\u5168\u6d4b\u8bd5\u4e2d\uff0c\u6211\u4eec\u4e00\u822c\u4f1a\u9047\u5230\u540e\u53f0\u6709IP\u9650\u5236\u65e0\u6cd5\u7b49\uff0c\u4f46\u662f\u6211\u4eecxss payload,\u7ba1\u7406\u5458\u80fd\u6b63\u5e38\u8fd0\u884c\u4e14\u672a\u88ab\u53d1\u73b0\u3002\u5728\u8fd9\u79cd\u573a\u666f\u4e0b\u6211\u4eec\u53ef\u4ee5\u7528xssproxy\u6765\u8bbf\u95ee\u540e\u53f0\uff0c\u518d\u6b21\u8fdb\u884c\u5b89\u5168\u6d4b\u8bd5\u3002\n\n\n\u5de5\u5177\u91c7\u7528\u7684\u662f \u957f\u77ed\u77ed \u5199\u7684\nXSSProxy", 
             "title": "xssproxy"
         }, 
         {
             "location": "/xssproxy/#xssproxy", 
-            "text": "\u5728web\u5b89\u5168\u6d4b\u8bd5\u4e2d\uff0c\u6211\u4eec\u4e00\u822c\u4f1a\u9047\u5230\u540e\u53f0\u6709IP\u9650\u5236\u65e0\u6cd5\u7b49\uff0c\u4f46\u662f\u6211\u4eecxss payload,\u7ba1\u7406\u5458\u80fd\u6b63\u5e38\u8fd0\u884c\u4e14\u672a\u88ab\u53d1\u73b0\u3002\u5728\u8fd9\u79cd\u573a\u666f\u4e0b\u6211\u4eec\u53ef\u4ee5\u7528xssproxy\u6765\u8bbf\u95ee\u540e\u53f0\uff0c\u518d\u6b21\u8fdb\u884c\u5b89\u5168\u6d4b\u8bd5\u3002  \u5de5\u5177\u91c7\u7528\u7684\u662f \u957f\u77ed\u77ed \u5199\u7684 XSSProxy  \u4f46\u6211\u5728\u4f7f\u7528\u65f6\u53d1\u73b0\u5728POST\u8bf7\u6c42\u65f6\uff0c\u65e0\u6cd5\u63d0\u4ea4\u6570\u636e\u3002\u968f\u7b80\u5355\u66f4\u65b0\u4e86\u4e0b\u4ee3\u7801\uff0c\u5e0c\u671b node \u5927\u725b\u4eec\u53ef\u4ee5\u5728\u4f18\u5316\u4e0b \u6211\u6539\u7684 \u6e23\u4ee3\u7801  \u56fe\uff0c\u6539\u5929\u8865\uff01", 
+            "text": "\u5728web\u5b89\u5168\u6d4b\u8bd5\u4e2d\uff0c\u6211\u4eec\u4e00\u822c\u4f1a\u9047\u5230\u540e\u53f0\u6709IP\u9650\u5236\u65e0\u6cd5\u7b49\uff0c\u4f46\u662f\u6211\u4eecxss payload,\u7ba1\u7406\u5458\u80fd\u6b63\u5e38\u8fd0\u884c\u4e14\u672a\u88ab\u53d1\u73b0\u3002\u5728\u8fd9\u79cd\u573a\u666f\u4e0b\u6211\u4eec\u53ef\u4ee5\u7528xssproxy\u6765\u8bbf\u95ee\u540e\u53f0\uff0c\u518d\u6b21\u8fdb\u884c\u5b89\u5168\u6d4b\u8bd5\u3002  \u5de5\u5177\u91c7\u7528\u7684\u662f \u957f\u77ed\u77ed \u5199\u7684 XSSProxy", 
             "title": "xssproxy"
+        }, 
+        {
+            "location": "/debian8_install_msf/", 
+            "text": "debian8 \u5b89\u88c5 msf\n\n\n\u4fee\u6539 /etc/apt/sources.list\n\n\n\u6211\u8fd9\u91cc\u662f\u7528\u7684\u7f51\u6613\u548c\u817e\u8baf\u4e91\u7684\u6e90\uff0c\u5185\u5bb9\u5982\u4e0b:\n\n\ndeb http://mirrors.163.com/debian/ jessie main non-free contrib\ndeb http://mirrors.163.com/debian/ jessie-updates main non-free contrib\ndeb http://mirrors.163.com/debian/ jessie-backports main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie-updates main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie-backports main non-free contrib\ndeb http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib\ndeb-src http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib\n# hello\ndeb http://mirrors.tencentyun.com/debian jessie main contrib non-free\ndeb http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free\ndeb http://mirrors.tencentyun.com/debian-security jessie/updates main\n#deb http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free\n#deb http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free\n\ndeb-src http://mirrors.tencentyun.com/debian jessie main contrib non-free\ndeb-src http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free\ndeb-src http://mirrors.tencentyun.com/debian-security jessie/updates main\n#deb-src http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free\n#deb-src http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free\n\n\n\n\n\n\u66f4\u65b0\n\n\napt-get update\n\n\n\n\n\u5b89\u88c5\n\n\ncd /opt\ngit clone https://github.com/rapid7/metasploit-framework.git\ncd metasploit-framework/\ncat .ruby-version\napt-get install build-essential libreadline-dev libssl-dev libpq5 libpq-dev libreadline5 libsqlite3-dev libpcap-dev openjdk-7-jre subversion git-core autoconf postgresql pgadmin3 curl zlib1g-dev libxml2-dev libxslt1-dev vncviewer libyaml-dev ruby`cat .ruby-version` nmap -y\ngem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler\n\n\n\n\n\u5728\u8fd9\u91cc\u6211\u9ed8\u8ba4\u5b89\u88c5\u7684\u662f ruby 2.1.x,\u5b98\u65b9\u63a8\u8350\u4e3a \ncat .ruby-version\n.\n\n\n\u5b89\u88c5 ruby \ncat .ruby-version\n\n\ncurl -L get.rvm.io | bash -s stable\n#\u4ed4\u7ec6\u770b\u8f93\u51fa\u7ed3\u679c\uff0c\u662f\u5426\u9700\u8981\u5bfc\u5165key\nsource /etc/profile.d/rvm.sh \n#\u5982\u679c\u62a5\u9519\uff0c\u8bf7\u5bfc\u5165key\nsource /etc/profile.d/rvm.sh\nrvm install ruby-`cat .ruby-version`\nruby -v\nrvm use `cat .ruby-version` --default \n\n\n\n\n\ngem \u5b89\u88c5\n\n\ngem install rdoc\ngem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler\nbash -c 'for MSF in $(ls msf*); do ln -s /opt/metasploit-framework/$MSF /usr/local/bin/$MSF;done'\nbundle install\n\n\n\n\n\u5b89\u88c5\u6570\u636e\u5e93\n\n\nsu postgres\ncreateuser msf -P -S -R -D\ncreatedb -O msf msf\nexit\n\n\n\n\n\u914d\u7f6e\u6570\u636e\u4fe1\u606f\n\n\n#vi /opt/metasploit-framework/database.yml\nproduction:\n   adapter: postgresql\n   database: msf\n   username: msf\n   password: \n   host: 127.0.0.1\n   port: 5432\n   pool: 75\n   timeout: 5\n\n\n\n\n\u8bbe\u7f6e\u73af\u5883\u53d8\u91cf\n\n\nsh -c \necho export MSF_DATABASE_CONFIG=/opt/metasploit-framework/database.yml \n ~/.bashrc\n\n\n\n\n\n\u5f00\u59cb\n\n\nmsfconsole\nmsf \n db_connect -y ./database.yml\n[*] Rebuilding the module cache in the background...\n\n\n\n\n\u5f15\u7528\n\n\n\n\n\u5728CentOS\uff0cRedHat\u4e2d\u4f7f\u7528RVM\u5b89\u88c5Ruby\uff08\u6216\u591a\u4e2aRuby\u7248\uff09\n\n\nDebian Wheezy Metasploit Setup\n\n\nmetasploit install in debian wheezy", 
+            "title": "debian8\u5b89\u88c5metasploit"
+        }, 
+        {
+            "location": "/debian8_install_msf/#debian8-msf", 
+            "text": "", 
+            "title": "debian8 \u5b89\u88c5 msf"
+        }, 
+        {
+            "location": "/debian8_install_msf/#etcaptsourceslist", 
+            "text": "\u6211\u8fd9\u91cc\u662f\u7528\u7684\u7f51\u6613\u548c\u817e\u8baf\u4e91\u7684\u6e90\uff0c\u5185\u5bb9\u5982\u4e0b:  deb http://mirrors.163.com/debian/ jessie main non-free contrib\ndeb http://mirrors.163.com/debian/ jessie-updates main non-free contrib\ndeb http://mirrors.163.com/debian/ jessie-backports main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie-updates main non-free contrib\ndeb-src http://mirrors.163.com/debian/ jessie-backports main non-free contrib\ndeb http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib\ndeb-src http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib\n# hello\ndeb http://mirrors.tencentyun.com/debian jessie main contrib non-free\ndeb http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free\ndeb http://mirrors.tencentyun.com/debian-security jessie/updates main\n#deb http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free\n#deb http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free\n\ndeb-src http://mirrors.tencentyun.com/debian jessie main contrib non-free\ndeb-src http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free\ndeb-src http://mirrors.tencentyun.com/debian-security jessie/updates main\n#deb-src http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free\n#deb-src http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free", 
+            "title": "\u4fee\u6539 /etc/apt/sources.list"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_1", 
+            "text": "apt-get update", 
+            "title": "\u66f4\u65b0"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_2", 
+            "text": "cd /opt\ngit clone https://github.com/rapid7/metasploit-framework.git\ncd metasploit-framework/\ncat .ruby-version\napt-get install build-essential libreadline-dev libssl-dev libpq5 libpq-dev libreadline5 libsqlite3-dev libpcap-dev openjdk-7-jre subversion git-core autoconf postgresql pgadmin3 curl zlib1g-dev libxml2-dev libxslt1-dev vncviewer libyaml-dev ruby`cat .ruby-version` nmap -y\ngem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler  \u5728\u8fd9\u91cc\u6211\u9ed8\u8ba4\u5b89\u88c5\u7684\u662f ruby 2.1.x,\u5b98\u65b9\u63a8\u8350\u4e3a  cat .ruby-version .", 
+            "title": "\u5b89\u88c5"
+        }, 
+        {
+            "location": "/debian8_install_msf/#ruby-cat-ruby-version", 
+            "text": "curl -L get.rvm.io | bash -s stable\n#\u4ed4\u7ec6\u770b\u8f93\u51fa\u7ed3\u679c\uff0c\u662f\u5426\u9700\u8981\u5bfc\u5165key\nsource /etc/profile.d/rvm.sh \n#\u5982\u679c\u62a5\u9519\uff0c\u8bf7\u5bfc\u5165key\nsource /etc/profile.d/rvm.sh\nrvm install ruby-`cat .ruby-version`\nruby -v\nrvm use `cat .ruby-version` --default", 
+            "title": "\u5b89\u88c5 ruby cat .ruby-version"
+        }, 
+        {
+            "location": "/debian8_install_msf/#gem", 
+            "text": "gem install rdoc\ngem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler\nbash -c 'for MSF in $(ls msf*); do ln -s /opt/metasploit-framework/$MSF /usr/local/bin/$MSF;done'\nbundle install", 
+            "title": "gem \u5b89\u88c5"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_3", 
+            "text": "su postgres\ncreateuser msf -P -S -R -D\ncreatedb -O msf msf\nexit", 
+            "title": "\u5b89\u88c5\u6570\u636e\u5e93"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_4", 
+            "text": "#vi /opt/metasploit-framework/database.yml\nproduction:\n   adapter: postgresql\n   database: msf\n   username: msf\n   password: \n   host: 127.0.0.1\n   port: 5432\n   pool: 75\n   timeout: 5", 
+            "title": "\u914d\u7f6e\u6570\u636e\u4fe1\u606f"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_5", 
+            "text": "sh -c  echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/database.yml   ~/.bashrc", 
+            "title": "\u8bbe\u7f6e\u73af\u5883\u53d8\u91cf"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_6", 
+            "text": "msfconsole\nmsf   db_connect -y ./database.yml\n[*] Rebuilding the module cache in the background...", 
+            "title": "\u5f00\u59cb"
+        }, 
+        {
+            "location": "/debian8_install_msf/#_7", 
+            "text": "\u5728CentOS\uff0cRedHat\u4e2d\u4f7f\u7528RVM\u5b89\u88c5Ruby\uff08\u6216\u591a\u4e2aRuby\u7248\uff09  Debian Wheezy Metasploit Setup  metasploit install in debian wheezy", 
+            "title": "\u5f15\u7528"
         }, 
         {
             "location": "/about/", 

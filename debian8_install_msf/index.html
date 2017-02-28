@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="c4bbage">
+  
+  <title>debian8安装metasploit - c4bbage blog</title>
+  
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "debian8安装metasploit";
+    var mkdocs_page_input_path = "debian8_install_msf.md";
+    var mkdocs_page_url = "/debian8_install_msf/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> c4bbage blog</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>工作笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk1/">paloalto日志转发elk1</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk2/">paloalto日志转发elk2</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>兴趣关注</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../spear%20Phishing%20Techniques%20used%20in%20attacks%20targeting%20the%20MongolianGovernment/">针对蒙古国的apt攻击[翻译]</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>过期老文</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../handle_csrf_token_with_burpsuite_or_sqlmap/">用Burpsuite 来处理csrf token</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>实用工具</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../xssproxy/">xssproxy</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">debian8安装metasploit</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#debian8-msf">debian8 安装 msf</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#etcaptsourceslist">修改 /etc/apt/sources.list</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_1">更新</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_2">安装</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#ruby-cat-ruby-version">安装 ruby cat .ruby-version</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#gem">gem 安装</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_3">安装数据库</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_4">配置数据信息</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_5">设置环境变量</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_6">开始</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_7">引用</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../about/">About</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">c4bbage blog</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>实用工具 &raquo;</li>
+        
+      
+    
+    <li>debian8安装metasploit</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="debian8-msf">debian8 安装 msf</h1>
+<h1 id="etcaptsourceslist">修改 /etc/apt/sources.list</h1>
+<p>我这里是用的网易和腾讯云的源，内容如下:</p>
+<pre><code class="shell">deb http://mirrors.163.com/debian/ jessie main non-free contrib
+deb http://mirrors.163.com/debian/ jessie-updates main non-free contrib
+deb http://mirrors.163.com/debian/ jessie-backports main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie-updates main non-free contrib
+deb-src http://mirrors.163.com/debian/ jessie-backports main non-free contrib
+deb http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib
+deb-src http://mirrors.163.com/debian-security/ jessie/updates main non-free contrib
+# hello
+deb http://mirrors.tencentyun.com/debian jessie main contrib non-free
+deb http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free
+deb http://mirrors.tencentyun.com/debian-security jessie/updates main
+#deb http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free
+#deb http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free
+
+deb-src http://mirrors.tencentyun.com/debian jessie main contrib non-free
+deb-src http://mirrors.tencentyun.com/debian jessie-updates main contrib non-free
+deb-src http://mirrors.tencentyun.com/debian-security jessie/updates main
+#deb-src http://mirrors.tencentyun.com/debian jessie-backports main contrib non-free
+#deb-src http://mirrors.tencentyun.com/debian jessie-proposed-updates main contrib non-free
+
+</code></pre>
+
+<h1 id="_1">更新</h1>
+<pre><code>apt-get update
+</code></pre>
+
+<h1 id="_2">安装</h1>
+<pre><code>cd /opt
+git clone https://github.com/rapid7/metasploit-framework.git
+cd metasploit-framework/
+cat .ruby-version
+apt-get install build-essential libreadline-dev libssl-dev libpq5 libpq-dev libreadline5 libsqlite3-dev libpcap-dev openjdk-7-jre subversion git-core autoconf postgresql pgadmin3 curl zlib1g-dev libxml2-dev libxslt1-dev vncviewer libyaml-dev ruby`cat .ruby-version` nmap -y
+gem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler
+</code></pre>
+
+<p>在这里我默认安装的是 ruby 2.1.x,官方推荐为 <code>cat .ruby-version</code>.</p>
+<h1 id="ruby-cat-ruby-version">安装 ruby <code>cat .ruby-version</code></h1>
+<pre><code>curl -L get.rvm.io | bash -s stable
+#仔细看输出结果，是否需要导入key
+source /etc/profile.d/rvm.sh 
+#如果报错，请导入key
+source /etc/profile.d/rvm.sh
+rvm install ruby-`cat .ruby-version`
+ruby -v
+rvm use `cat .ruby-version` --default 
+
+</code></pre>
+
+<h1 id="gem">gem 安装</h1>
+<pre><code>gem install rdoc
+gem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler
+bash -c 'for MSF in $(ls msf*); do ln -s /opt/metasploit-framework/$MSF /usr/local/bin/$MSF;done'
+bundle install
+</code></pre>
+
+<h1 id="_3">安装数据库</h1>
+<pre><code>su postgres
+createuser msf -P -S -R -D
+createdb -O msf msf
+exit
+</code></pre>
+
+<h1 id="_4">配置数据信息</h1>
+<pre><code>#vi /opt/metasploit-framework/database.yml
+production:
+   adapter: postgresql
+   database: msf
+   username: msf
+   password: 
+   host: 127.0.0.1
+   port: 5432
+   pool: 75
+   timeout: 5
+</code></pre>
+
+<h1 id="_5">设置环境变量</h1>
+<pre><code>sh -c &quot;echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/database.yml &gt;&gt; ~/.bashrc&quot;
+</code></pre>
+
+<h1 id="_6">开始</h1>
+<pre><code>msfconsole
+msf &gt; db_connect -y ./database.yml
+[*] Rebuilding the module cache in the background...
+</code></pre>
+
+<h1 id="_7">引用</h1>
+<ul>
+<li><a href="https://www.howtoing.com/install-ruby-1-9-3-or-multiple-ruby-verson-on-centos-6-3-using-rvm/">在CentOS，RedHat中使用RVM安装Ruby（或多个Ruby版）</a></li>
+<li><a href="https://gist.github.com/holms/7379090">Debian Wheezy Metasploit Setup</a></li>
+<li><a href="https://gist.github.com/holms/7379090">metasploit install in debian wheezy</a></li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../xssproxy/" class="btn btn-neutral" title="xssproxy"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../xssproxy/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>
