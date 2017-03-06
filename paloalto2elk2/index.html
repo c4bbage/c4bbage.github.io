@@ -81,8 +81,9 @@
             
                 <li class="toctree-l3"><a href="#paloaltoelk2">paloalto日志转发到elk2</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_1">改进</a></li>
+                    <li><a class="toctree-l4" href="#_1">改进</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">引用</a></li>
                 
             
             </ul>
@@ -149,6 +150,28 @@
     </li>
 
         
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cobaltstrike_usage/">cobalt strike 杂记</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>技巧笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
+        
+    </li>
+
+        
     </ul>
 <li>
           
@@ -196,7 +219,8 @@
             <div class="section">
               
                 <h1 id="paloaltoelk2">paloalto日志转发到elk2</h1>
-<h1 id="_1">改进</h1>
+<hr />
+<h2 id="_1">改进</h2>
 <p>上次用rsyslog对paloalto的日志进行存储(文件),之后通过查看资料发现logstash可以完全代替rsyslog的功能，直接监听端口就可以，架构修改如下:
 paloalto -&gt; logstash -&gt; elastic search -&gt; kibana</p>
 <p>配置如下：</p>
@@ -320,7 +344,7 @@ index =&gt; &quot;logstash-palo-firewall-%{+YYYY.MM.dd}&quot;
 <pre><code>/usr/share/logstash/bin/logstash -f /etc/logstash/conf.d/pa2.conf
 </code></pre>
 
-<p>引用：</p>
+<h2 id="_2">引用</h2>
 <ul>
 <li><a href="http://www.ibm.com/support/knowledgecenter/zh/SSW24F_1.0.0/com.ibm.enforcer.doc/dsm/t_dsm_guide_palo_alto_syslog_dest.htm">在 Palo Alto 设备上创建 Syslog 目标</a></li>
 <li><a href="https://github.com/timconradinc/logstash-palo-alto">Palo Alto Firewalls with Logstash</a></li>

