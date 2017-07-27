@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>利用burpsuite来进行Fuzz - c4bbage blog</title>
+  <title>逆向工程工具 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "利用burpsuite来进行Fuzz";
-    var mkdocs_page_input_path = "burpsuite-fuzz-chr.md";
-    var mkdocs_page_url = "/burpsuite-fuzz-chr/";
+    var mkdocs_page_name = "逆向工程工具";
+    var mkdocs_page_input_path = "reverse_engineering_tool.md";
+    var mkdocs_page_url = "/reverse_engineering_tool/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -175,8 +175,15 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../reverse_engineering_tool/">逆向工程工具</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">逆向工程工具</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#gdb-peda">gdb peda</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -204,23 +211,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">利用burpsuite来进行Fuzz</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#burpsuitefuzz">使用burpsuite来进行fuzz</a></li>
-                
-                    <li><a class="toctree-l4" href="#_1">简述</a></li>
-                
-                    <li><a class="toctree-l4" href="#burpsuite">burpsuite 方法</a></li>
-                
-                    <li><a class="toctree-l4" href="#_2">图</a></li>
-                
-                    <li><a class="toctree-l4" href="#_3">后续</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../burpsuite-fuzz-chr/">利用burpsuite来进行Fuzz</a>
         
     </li>
 
@@ -257,11 +249,11 @@
     
       
         
-          <li>技巧笔记 &raquo;</li>
+          <li>实用工具 &raquo;</li>
         
       
     
-    <li>利用burpsuite来进行Fuzz</li>
+    <li>逆向工程工具</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -271,69 +263,13 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="burpsuitefuzz">使用burpsuite来进行fuzz</h1>
-<ul>
-<li>作者:c4bbage</li>
-<li>时间:2017.7.25</li>
-<li>链接:http://dobest1.com/burpsuite-fuzz-chr/</li>
-</ul>
-<h2 id="_1">简述</h2>
-<p>我们在进行测试时经常会用fuzz来进行bypass探测，探测哪些特殊字符串可以使用</p>
-<pre><code class="shell">c4bbage@dobest1:/opt/# ascii
-Usage: ascii [-dxohv] [-t] [char-alias...]
-   -t = one-line output  -d = Decimal table  -o = octal table  -x = hex table
-   -h = This help screen -v = version information
-Prints all aliases of an ASCII character. Args may be chars, C \-escapes,
-English names, ^-escapes, ASCII mnemonics, or numerics in decimal/octal/hex.
-
-Dec Hex    Dec Hex    Dec Hex  Dec Hex  Dec Hex  Dec Hex   Dec Hex   Dec Hex  
-  0 00 NUL  16 10 DLE  32 20    48 30 0  64 40 @  80 50 P   96 60 `  112 70 p
-  1 01 SOH  17 11 DC1  33 21 !  49 31 1  65 41 A  81 51 Q   97 61 a  113 71 q
-  2 02 STX  18 12 DC2  34 22 &quot;  50 32 2  66 42 B  82 52 R   98 62 b  114 72 r
-  3 03 ETX  19 13 DC3  35 23 #  51 33 3  67 43 C  83 53 S   99 63 c  115 73 s
-  4 04 EOT  20 14 DC4  36 24 $  52 34 4  68 44 D  84 54 T  100 64 d  116 74 t
-  5 05 ENQ  21 15 NAK  37 25 %  53 35 5  69 45 E  85 55 U  101 65 e  117 75 u
-  6 06 ACK  22 16 SYN  38 26 &amp;  54 36 6  70 46 F  86 56 V  102 66 f  118 76 v
-  7 07 BEL  23 17 ETB  39 27 '  55 37 7  71 47 G  87 57 W  103 67 g  119 77 w
-  8 08 BS   24 18 CAN  40 28 (  56 38 8  72 48 H  88 58 X  104 68 h  120 78 x
-  9 09 HT   25 19 EM   41 29 )  57 39 9  73 49 I  89 59 Y  105 69 i  121 79 y
- 10 0A LF   26 1A SUB  42 2A *  58 3A :  74 4A J  90 5A Z  106 6A j  122 7A z
- 11 0B VT   27 1B ESC  43 2B +  59 3B ;  75 4B K  91 5B [  107 6B k  123 7B {
- 12 0C FF   28 1C FS   44 2C ,  60 3C &lt;  76 4C L  92 5C \  108 6C l  124 7C |
- 13 0D CR   29 1D GS   45 2D -  61 3D =  77 4D M  93 5D ]  109 6D m  125 7D }
- 14 0E SO   30 1E RS   46 2E .  62 3E &gt;  78 4E N  94 5E ^  110 6E n  126 7E ~
- 15 0F SI   31 1F US   47 2F /  63 3F ?  79 4F O  95 5F _  111 6F o  127 7F DEL
-
-</code></pre>
-
-<p>一般的fuzz脚本</p>
-<pre><code class="perl">use LWP 5.64;
-$browser = LWP::UserAgent-&gt;new;
-for($i=0;$i&lt;256;$i++)
-{
-    $j=data10to16($i);
-    print &quot;[+] $i $j &quot;.hex($j).&quot; &quot;.chr($i).&quot;\n&quot;
-    # do GET/POST fuzz
-}
-
-sub data10to16{
-    my($data)=@_;
-    my $data16=sprintf(&quot;%x&quot;,$data);
-    return $data16;
-}
-</code></pre>
-
-<h2 id="burpsuite">burpsuite 方法</h2>
-<ol>
-<li>Payload Sets: type <em>Numbers</em></li>
-<li>Payload Options:  From 1 To 255 Step 1  Number Format <em>Hex</em></li>
-<li>Payload Processing: Add Prefix:<em>%</em>  URL-decode</li>
-</ol>
-<h2 id="_2">图</h2>
-<p><img alt="设置图" src="../images/20170725113557.png" />
-<img alt="请求图" src="../images/20170725113419.png" /></p>
-<h2 id="_3">后续</h2>
-<p>在思考 Illegal Unicode</p>
+                <p>逆向工程工具</p>
+<h2 id="gdb-peda">gdb peda</h2>
+<p>https://github.com/longld/peda</p>
+<blockquote>
+<p>Centos 6.5/python2.6启动会有BUG
+https://github.com/longld/peda/pull/59/files</p>
+</blockquote>
               
             </div>
           </div>
@@ -341,10 +277,10 @@ sub data10to16{
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../.netcallshellcode/" class="btn btn-neutral float-right" title=".net 执行 shellcode">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../linux_persistence_note/" class="btn btn-neutral" title="linux 密码记录(client/server)"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../pentest_tools/" class="btn btn-neutral" title="在渗透中需要用的工具收集"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -370,10 +306,10 @@ sub data10to16{
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../linux_persistence_note/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../pentest_tools/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../.netcallshellcode/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
