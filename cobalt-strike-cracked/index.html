@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>paloalto日志转发elk1 - c4bbage blog</title>
+  <title>cobalt strike 3.7 破解 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "paloalto日志转发elk1";
-    var mkdocs_page_input_path = "paloalto2elk1.md";
-    var mkdocs_page_url = "/paloalto2elk1/";
+    var mkdocs_page_name = "cobalt strike 3.7 破解";
+    var mkdocs_page_input_path = "cobalt-strike-cracked.md";
+    var mkdocs_page_url = "/cobalt-strike-cracked/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -67,19 +67,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">paloalto日志转发elk1</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#paloaltoelk1">paloalto日志转发到elk1</a></li>
-                
-                    <li><a class="toctree-l4" href="#paloalto">配置 paloalto</a></li>
-                
-                    <li><a class="toctree-l4" href="#rsyslog">配置 rsyslog</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk1/">paloalto日志转发elk1</a>
         
     </li>
 
@@ -193,8 +182,21 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../cobalt-strike-cracked/">cobalt strike 3.7 破解</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">cobalt strike 3.7 破解</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#cobalt-strike-37">cobalt strike 3.7 破解</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">简介</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">理论</a></li>
+                
+                    <li><a class="toctree-l4" href="#_3">操作</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -260,11 +262,11 @@
     
       
         
-          <li>工作笔记 &raquo;</li>
+          <li>实用工具 &raquo;</li>
         
       
     
-    <li>paloalto日志转发elk1</li>
+    <li>cobalt strike 3.7 破解</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -274,61 +276,56 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="paloaltoelk1">paloalto日志转发到elk1</h1>
-<hr />
-<p>在内网想构建个日志分析系统，便于分析蜜罐、paloalto、VPN、赛门铁克的告警日志。针对paloalto的日志采集是通过以下架构:
-paloalto -&gt; syslog -&gt; logstash -&gt; elastic search -&gt; kibana</p>
-<h2 id="paloalto">配置 paloalto</h2>
-<p>进入 paloalto 在 Device 中配置 syslog,如图:</p>
-<p><img alt="" src="../images/20170222165425.png" />
-之后在 Objects 内配置 Log Forwarding Profile,如下：</p>
-<p><img alt="" src="../images/20170222165842.png" />
-注意 Syslog,通信日志和威胁日志为不同端口。
-最后在 Policies Security 上配置上log Forwarding</p>
-<p><img alt="" src="../images/20170222170231.png" /></p>
-<h2 id="rsyslog">配置 rsyslog</h2>
-<p>安装略，主要是配置文件。
-配置文件配置方式分新旧两种方式，旧式(不影响使用)：</p>
-<pre><code>$ModLoad imtcp
-$InputTCPServerRun 515
-$AllowedSender TCP, 192.168.136.0/24
-$template Remote2,&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;
-# The above code is old-fashioned
-</code></pre>
-
-<p>新格式为：</p>
-<pre><code># /etc/rsyslog.d/pa_traffic.conf
-module(load=&quot;imtcp&quot;)
-template (name=&quot;DynFile1&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/traffic_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
-
-input(type=&quot;imtcp&quot; 
-    port=&quot;515&quot;
-    ruleset=&quot;pa_traffic&quot;)
-ruleset(name=&quot;pa_traffic&quot;){
-    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile1&quot;)   
-}
-# end file 
-# /etc/rsyslog.d/pa_threat.conf
-module(load=&quot;imtcp&quot;)
-template (name=&quot;DynFile2&quot; type=&quot;string&quot; string=&quot;/var/log/rsyslog/%fromhost-ip%/threat_%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;)
-
-input(type=&quot;imtcp&quot; 
-    port=&quot;513&quot;
-    ruleset=&quot;pa_threat&quot;)
-ruleset(name=&quot;pa_threat&quot;){
-    action(type=&quot;omfile&quot; dynaFile=&quot;DynFile2&quot;)   
-}
-# end file 
-# cat /etc/rsyslog.conf|grep -i include
-$IncludeConfig /etc/rsyslog.d/*.conf
-</code></pre>
-
-<p>日志生成如下:</p>
-<p><img alt="" src="../images/20170222171042.png" /></p>
-<p>参考文档</p>
+                <h1 id="cobalt-strike-37">cobalt strike 3.7 破解</h1>
 <ul>
-<li>http://rsyslog-doc.readthedocs.io</li>
+<li>作者:c4bbage</li>
+<li>时间:2017.7.31</li>
+<li>链接:http://dobest1.com/cobalt-strike-cracked/</li>
 </ul>
+<h2 id="_1">简介</h2>
+<p>cobalt strike 相对于一般开源远控是一个非常好用的red Team 工具，谁用谁知道。相对专业的就不提了。</p>
+<h2 id="_2">理论</h2>
+<p>cobalt strike 校验函数为common.License  类中，其中大部分破解还是用修改日期的傻瓜方式。
+我们直接修改 common.License.isTrial() 函数的返回结果就好，同时也可以使用多正版功能。</p>
+<pre><code class="java">// jd-gui 反编译的源码
+package common;
+
+public class License
+{
+  private static long life = 21L;
+  private static long today = 0L;
+  private static long start = 0L;
+  private static long difference = 0L;
+
+  private static long getTimeSinceStart()
+  {
+    return difference;
+  }
+
+  public static void checkLicenseGUI() {}
+
+  public static boolean isTrial()
+  {
+    return true;
+    // return false; //edit here
+  }
+
+  public static void checkLicenseConsole() {}
+}
+</code></pre>
+
+<h2 id="_3">操作</h2>
+<ul>
+<li>工具: <a href="">JBE</a></li>
+</ul>
+<p>cobaltstrike.jar 解压，使用JBE打开common/License.class
+在isTrial() 方法里，修改Bytecode,并保存</p>
+<pre><code>iconst_1 //修改为iconst_0 false
+ireturn
+</code></pre>
+
+<p>替换掉jar中的 common/License.class</p>
+<p><img alt="" src="../images/20170731124422.png" /></p>
               
             </div>
           </div>
@@ -336,10 +333,10 @@ $IncludeConfig /etc/rsyslog.d/*.conf
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../paloalto2elk2/" class="btn btn-neutral float-right" title="paloalto日志转发elk2">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../.netcallshellcode/" class="btn btn-neutral float-right" title=".net 执行 shellcode">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href=".." class="btn btn-neutral" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../reverse_engineering_tool/" class="btn btn-neutral" title="逆向工程工具"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -365,10 +362,10 @@ $IncludeConfig /etc/rsyslog.d/*.conf
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../reverse_engineering_tool/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../paloalto2elk2/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../.netcallshellcode/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
