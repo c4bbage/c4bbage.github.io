@@ -287,49 +287,55 @@
 <h2 id="_1">简介</h2>
 <p>cobalt strike 相对于一般开源远控是一个非常好用的red Team 工具，谁用谁知道。相对专业的就不提了。</p>
 <h2 id="_2">理论</h2>
-<p>cobalt strike 校验函数为common.License  类中，其中大部分破解还是用修改日期的傻瓜方式。
+<p>cobalt strike 校验函数为common.License  类中，其中大部分破解还是用修改日期的傻瓜方式。我来介绍另一个傻瓜方式 ，
 我们直接修改 common.License.isTrial() 函数的返回结果就好，同时也可以使用多正版功能。</p>
 <pre><code class="java">// jd-gui 反编译的源码
 package common;
 
 public class License
-{
-  private static long life = 21L;
-  private static long today = 0L;
-  private static long start = 0L;
-  private static long difference = 0L;
-
-  private static long getTimeSinceStart()
-  {
-    return difference;
+{  
+  public static void checkLicenseGUI() {
+    // 代码省略
+    // 此函数是GUI Client模式下是否许可检查
+    // 需要清空此函数
   }
-
-  public static void checkLicenseGUI() {}
 
   public static boolean isTrial()
   {
     return true;
+    // 必须修改函数
     // return false; //edit here
   }
 
-  public static void checkLicenseConsole() {}
+  public static void checkLicenseConsole() {
+    // 代码省略
+    // 此函数是Console teamserver模式下是否许可检查
+    // 需要清空此函数
+  }
 }
 </code></pre>
 
 <h2 id="_3">操作</h2>
 <ul>
-<li>工具: <a href="">JBE</a></li>
+<li>工具: <a href="https://varaneckas.com/jad/">jad</a></li>
 </ul>
-<p>cobaltstrike.jar 解压，使用JBE打开common/License.class
-在isTrial() 方法里，修改Bytecode,并保存</p>
-<pre><code>iconst_1 //修改为iconst_0 false
-ireturn
+<p>cobaltstrike.jar 解压，使用jad打开common/License.class</p>
+<pre><code>D:\cobaltstrike123\common&gt;jad License.class
+Parsing License.class... Generating License.jad
+
+# 修改文件
+
+D:\cobaltstrike123\common&gt;javac.exe&quot; -classpath ../ License.java
+# 重新生成的License.class 替换掉 jar包中class
 </code></pre>
 
-<p>替换掉jar中的 common/License.class</p>
 <p><img alt="" src="../images/20170731124422.png" /></p>
 <h2 id="_4">运行</h2>
-<p>cobalt strike3.7 在运行的时候要使用jdk1.8u121，如果最新版本java 运行 cobalt strike 会报错 <em>The Parallel GC can not be combined with -XX:ParallelGCThreads=0</em> ，新版本java ，cobalt strike暂不支持。</p>
+<p>cobalt strike3.7 在运行的时候要使用jdk1.8u121，如果最新版本java 运行 cobalt strike 会报错 <em>The Parallel GC can not be combined with -XX:ParallelGCThreads=0</em> ，新版本java ，cobalt strike3.7暂不支持。
+cobalt strike3.8 修复上述错误
+cobalt strike3.8 3.7 缺少xor.bin xor64.bin文件
+<img alt="" src="../images/20170814110150.jpg" /></p>
+<h1 id="_5"></h1>
               
             </div>
           </div>
