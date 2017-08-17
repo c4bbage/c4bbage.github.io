@@ -239,6 +239,13 @@
           
             <li>
     <li class="toctree-l1 ">
+        <a class="" href="../Heart%20chicken%20soup/">心灵鸡汤</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
         <a class="" href="../about/">About</a>
         
     </li>
@@ -292,7 +299,7 @@
 <p><em>近期公司windows（阿里云）有被日掉，怀疑是永恒之蓝作祟，随之收集资料学习。</em></p>
 <p>在过去的几个月里，有各种各样的攻击者以及使用FuzzBunch框架攻击系统的script kiddies。</p>
 <p>在最近的一次事件中，我正在分析一个内存转储，我花了一些时间来确定感染载体是EternalBlue。一旦我发现ring0 shellcode（与DoublePulsar相关），我能更容易的分析出来。 为了以后能快速的分析，我开发了一个<a href="https://github.com/BorjaMerino/DoublePulsar-Volatility/blob/master/doublepulsar.py">虚拟插件</a>，以便于找到这种入侵的痕迹。</p>
-<p>该插件不是基于Yara规则。它只是从srv.sys驱动程序中转储SrvTransaction2DispatchTable 函数数组，并检查它们指向de 二进制地址空间（请查看好的<a href="https://zerosum0x0.blogspot.com.es/2017/04/doublepulsar-initial-smb-backdoor-ring.html">Zerosum0x0分析</a>）。要注意的是，虽然插件转储整个表，但实际上只需要验证SrvTransactionNotImplemented符号指向的正确位置。</p>
+<p>该插件不是基于Yara规则。它只是从srv.sys驱动程序中转储SrvTransaction2DispatchTable 函数指针数组，并检查它们指向的二进制地址空间（请查看好的<a href="https://zerosum0x0.blogspot.com.es/2017/04/doublepulsar-initial-smb-backdoor-ring.html">Zerosum0x0分析</a>）。要注意的是，虽然插件转储整个表，但实际上只需要验证SrvTransactionNotImplemented符号指向的正确位置。</p>
 <p>这个插件通过从调试目录获取到的.pdb 路径，并从http://msdl.microsoft.com/download/symbols（或您提供的服务器与SYMBOLS选项）下载它，来解析 SrvTransaction2DispatchTable。一旦获得符号偏移量，它只会转储指针数组。如果SrvTransactionNotImplemented（条目14）指向"unknown"位置，那么您可能正在处理DoublePulsar事件。这样的话，<strong>volshell</strong>和<strong>dis()</strong>会清除任何疑问。</p>
 <p>让我们看一个例子。以下图像是已被EternalBlue + DoublePulsar攻击的Windows 7 SP1 x64主机：</p>
 <p><img alt="" src="../images/vol-doublepulsar.png" />
