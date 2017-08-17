@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>心灵鸡汤 - c4bbage blog</title>
+  <title>windows后门自启动笔记 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "心灵鸡汤";
-    var mkdocs_page_input_path = "Heart chicken soup.md";
-    var mkdocs_page_url = "/Heart chicken soup/";
+    var mkdocs_page_name = "windows后门自启动笔记";
+    var mkdocs_page_input_path = "windows_persistence_note.md";
+    var mkdocs_page_url = "/windows_persistence_note/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -225,8 +225,17 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../windows_persistence_note/">windows后门自启动笔记</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">windows后门自启动笔记</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#windows">windows后门自启动笔记</a></li>
+                
+                    <li><a class="toctree-l4" href="#word-load-arbitrary-dlls">Word load arbitrary DLLs</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -235,15 +244,8 @@
 <li>
           
             <li>
-    <li class="toctree-l1 current">
-        <a class="current" href="./">心灵鸡汤</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#_1">心灵鸡汤</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../Heart%20chicken%20soup/">心灵鸡汤</a>
         
     </li>
 <li>
@@ -276,8 +278,12 @@
     <li><a href="..">Docs</a> &raquo;</li>
     
       
+        
+          <li>技巧笔记 &raquo;</li>
+        
+      
     
-    <li>心灵鸡汤</li>
+    <li>windows后门自启动笔记</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -287,18 +293,19 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="_1">心灵鸡汤</h1>
+                <h1 id="windows">windows后门自启动笔记</h1>
 <ul>
 <li>作者:c4bbage</li>
 <li>时间:2017.8.17</li>
-<li>链接:http://dobest1.com/Heart chicken soup/</li>
+<li>链接:http://dobest1.com/windows_persistence_note/</li>
 </ul>
-<p><em>有的是自己心中所念有的是感觉确实如此</em></p>
-<ul>
-<li>永远不要给自己定明天、后天、下个月，应定日期 2017年8月18日、2017年8月18日。让自己尝尽失败的滋味。- 我</li>
-<li>越厉害的人越拼，因为他周围都是这样的人，深知实现精神自由的前提是财务自由和迁徙自由；越不上进的人越懒，因为当一个井底之蛙，大家你看看我，我看看你，都差不多，就觉得日子过的蛮好的。所以这个世界的真相，有时候蛮残酷却也蛮励志的：无论中外，原来那么多比你有钱的人，一代一代的，都还比你努力啊。</li>
-</ul>
-<p><img alt="" src="../images/20170817094032.png" /></p>
+<h2 id="word-load-arbitrary-dlls"><a href="https://twitter.com/william_knows/status/897616872673292288">Word load arbitrary DLLs</a></h2>
+<p>AdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\Software\Microsoft\Office\<v>\Common
+This has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.</p>
+<pre><code class="cmd">reg add HKCU\Software\Microsoft\Office5.0\Common /v AdditionalActionsDLL /t reg_sz /d &quot;c:\\office.dll&quot;
+</code></pre>
+
+<p><img alt="" src="../images/DHT5u44XgAAKCs0.jpg" /></p>
               
             </div>
           </div>
@@ -306,10 +313,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../about/" class="btn btn-neutral float-right" title="About">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Heart%20chicken%20soup/" class="btn btn-neutral float-right" title="心灵鸡汤">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../windows_persistence_note/" class="btn btn-neutral" title="windows后门自启动笔记"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../burpsuite-fuzz-chr/" class="btn btn-neutral" title="利用burpsuite来进行Fuzz"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -335,10 +342,10 @@
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../windows_persistence_note/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../burpsuite-fuzz-chr/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../about/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Heart%20chicken%20soup/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

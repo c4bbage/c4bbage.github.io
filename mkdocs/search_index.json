@@ -491,6 +491,21 @@
             "title": "\u540e\u7eed"
         }, 
         {
+            "location": "/windows_persistence_note/", 
+            "text": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/windows_persistence_note/\n\n\n\n\nWord load arbitrary DLLs\n\n\nAdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\\n\\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.\n\n\nreg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d \nc:\\\\office.dll", 
+            "title": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0"
+        }, 
+        {
+            "location": "/windows_persistence_note/#windows", 
+            "text": "\u4f5c\u8005:c4bbage  \u65f6\u95f4:2017.8.17  \u94fe\u63a5:http://dobest1.com/windows_persistence_note/", 
+            "title": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0"
+        }, 
+        {
+            "location": "/windows_persistence_note/#word-load-arbitrary-dlls", 
+            "text": "AdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\ \\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.  reg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d  c:\\\\office.dll", 
+            "title": "Word load arbitrary DLLs"
+        }, 
+        {
             "location": "/Heart chicken soup/", 
             "text": "\u5fc3\u7075\u9e21\u6c64\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/Heart chicken soup/\n\n\n\n\n\u6709\u7684\u662f\u81ea\u5df1\u5fc3\u4e2d\u6240\u5ff5\u6709\u7684\u662f\u611f\u89c9\u786e\u5b9e\u5982\u6b64\n\n\n\n\n\u6c38\u8fdc\u4e0d\u8981\u7ed9\u81ea\u5df1\u5b9a\u660e\u5929\u3001\u540e\u5929\u3001\u4e0b\u4e2a\u6708\uff0c\u5e94\u5b9a\u65e5\u671f 2017\u5e748\u670818\u65e5\u30012017\u5e748\u670818\u65e5\u3002\u8ba9\u81ea\u5df1\u5c1d\u5c3d\u5931\u8d25\u7684\u6ecb\u5473\u3002- \u6211\n\n\n\u8d8a\u5389\u5bb3\u7684\u4eba\u8d8a\u62fc\uff0c\u56e0\u4e3a\u4ed6\u5468\u56f4\u90fd\u662f\u8fd9\u6837\u7684\u4eba\uff0c\u6df1\u77e5\u5b9e\u73b0\u7cbe\u795e\u81ea\u7531\u7684\u524d\u63d0\u662f\u8d22\u52a1\u81ea\u7531\u548c\u8fc1\u5f99\u81ea\u7531\uff1b\u8d8a\u4e0d\u4e0a\u8fdb\u7684\u4eba\u8d8a\u61d2\uff0c\u56e0\u4e3a\u5f53\u4e00\u4e2a\u4e95\u5e95\u4e4b\u86d9\uff0c\u5927\u5bb6\u4f60\u770b\u770b\u6211\uff0c\u6211\u770b\u770b\u4f60\uff0c\u90fd\u5dee\u4e0d\u591a\uff0c\u5c31\u89c9\u5f97\u65e5\u5b50\u8fc7\u7684\u86ee\u597d\u7684\u3002\u6240\u4ee5\u8fd9\u4e2a\u4e16\u754c\u7684\u771f\u76f8\uff0c\u6709\u65f6\u5019\u86ee\u6b8b\u9177\u5374\u4e5f\u86ee\u52b1\u5fd7\u7684\uff1a\u65e0\u8bba\u4e2d\u5916\uff0c\u539f\u6765\u90a3\u4e48\u591a\u6bd4\u4f60\u6709\u94b1\u7684\u4eba\uff0c\u4e00\u4ee3\u4e00\u4ee3\u7684\uff0c\u90fd\u8fd8\u6bd4\u4f60\u52aa\u529b\u554a\u3002", 
             "title": "\u5fc3\u7075\u9e21\u6c64"
