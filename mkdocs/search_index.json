@@ -492,12 +492,12 @@
         }, 
         {
             "location": "/windows_persistence_note/", 
-            "text": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/windows_persistence_note/\n\n\u672c\u6587\u81ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8\n\n\n\n\nWord load arbitrary DLLs\n\n\nAdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\\n\\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.\n\n\nreg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d \nc:\\\\office.dll", 
+            "text": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/windows_persistence_note/\n\n\n\n\n\u672c\u6587\u53ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8\n\n\nWord load arbitrary DLLs\n\n\nAdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\\n\\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.\n\n\nreg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d \nc:\\\\office.dll", 
             "title": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0"
         }, 
         {
             "location": "/windows_persistence_note/#windows", 
-            "text": "\u4f5c\u8005:c4bbage  \u65f6\u95f4:2017.8.17  \u94fe\u63a5:http://dobest1.com/windows_persistence_note/ \u672c\u6587\u81ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8", 
+            "text": "\u4f5c\u8005:c4bbage  \u65f6\u95f4:2017.8.17  \u94fe\u63a5:http://dobest1.com/windows_persistence_note/   \u672c\u6587\u53ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8", 
             "title": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0"
         }, 
         {
