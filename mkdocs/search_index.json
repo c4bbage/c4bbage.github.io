@@ -367,12 +367,12 @@
         }, 
         {
             "location": "/pentest_tools/", 
-            "text": "\u5728\u6e17\u900f\u4e2d\u9700\u8981\u7528\u7684\u5de5\u5177\u6536\u96c6\n\n\nMailSniper\n\n\n\n\nMailSniper is a penetration testing tool for searching through email in a Microsoft Exchange environment for specific terms (passwords, insider intel, network architecture information, etc.). It can be used as a non-administrative user to search their own email, or by an administrator to search the mailboxes of every user in a domain.\n\nSeth\n\nSeth\u662f\u4e00\u4e2a\u7528Python\u7f16\u5199\u7684\u5de5\u5177\uff0cBash\u662fMitM RDP\u8fde\u63a5\u3002\u5b83\u5c1d\u8bd5\u964d\u7ea7\u8fde\u63a5\u5e76\u63d0\u53d6\u660e\u786e\u7684\u6587\u672c\u51ed\u636e\u3002\n\nInvoke-Phant0m\n\nInvoke-Phant0m \u662f\u4e00\u4e2a\u7ec8\u7ed3\u65e5\u5fd7\u8bb0\u5f55\u7ebf\u7a0b\u811a\u672c\uff0c\u4e0d\u5f71\u54cd\u7cfb\u7edf\u65e5\u5fd7\u670d\u52a1\u3002", 
+            "text": "\u5728\u6e17\u900f\u4e2d\u9700\u8981\u7528\u7684\u5de5\u5177\u6536\u96c6\n\n\nMailSniper\n\n\n\n\nMailSniper is a penetration testing tool for searching through email in a Microsoft Exchange environment for specific terms (passwords, insider intel, network architecture information, etc.). It can be used as a non-administrative user to search their own email, or by an administrator to search the mailboxes of every user in a domain.\n\nSeth\n\nSeth\u662f\u4e00\u4e2a\u7528Python\u7f16\u5199\u7684\u5de5\u5177\uff0cBash\u662fMitM RDP\u8fde\u63a5\u3002\u5b83\u5c1d\u8bd5\u964d\u7ea7\u8fde\u63a5\u5e76\u63d0\u53d6\u660e\u786e\u7684\u6587\u672c\u51ed\u636e\u3002\n\nInvoke-Phant0m\n\nInvoke-Phant0m \u662f\u4e00\u4e2a\u7ec8\u7ed3\u65e5\u5fd7\u8bb0\u5f55\u7ebf\u7a0b\u811a\u672c\uff0c\u4e0d\u5f71\u54cd\u7cfb\u7edf\u65e5\u5fd7\u670d\u52a1\u3002\n\nObfuscated String/Shellcode Generator\n\npass\n\nMalicious Macro Generator\n\n\u4ee3\u7801https://github.com/Mr-Un1k0d3r/MaliciousMacroGenerator", 
             "title": "\u5728\u6e17\u900f\u4e2d\u9700\u8981\u7528\u7684\u5de5\u5177\u6536\u96c6"
         }, 
         {
             "location": "/pentest_tools/#_1", 
-            "text": "MailSniper   MailSniper is a penetration testing tool for searching through email in a Microsoft Exchange environment for specific terms (passwords, insider intel, network architecture information, etc.). It can be used as a non-administrative user to search their own email, or by an administrator to search the mailboxes of every user in a domain. Seth \nSeth\u662f\u4e00\u4e2a\u7528Python\u7f16\u5199\u7684\u5de5\u5177\uff0cBash\u662fMitM RDP\u8fde\u63a5\u3002\u5b83\u5c1d\u8bd5\u964d\u7ea7\u8fde\u63a5\u5e76\u63d0\u53d6\u660e\u786e\u7684\u6587\u672c\u51ed\u636e\u3002 Invoke-Phant0m \nInvoke-Phant0m \u662f\u4e00\u4e2a\u7ec8\u7ed3\u65e5\u5fd7\u8bb0\u5f55\u7ebf\u7a0b\u811a\u672c\uff0c\u4e0d\u5f71\u54cd\u7cfb\u7edf\u65e5\u5fd7\u670d\u52a1\u3002", 
+            "text": "MailSniper   MailSniper is a penetration testing tool for searching through email in a Microsoft Exchange environment for specific terms (passwords, insider intel, network architecture information, etc.). It can be used as a non-administrative user to search their own email, or by an administrator to search the mailboxes of every user in a domain. Seth \nSeth\u662f\u4e00\u4e2a\u7528Python\u7f16\u5199\u7684\u5de5\u5177\uff0cBash\u662fMitM RDP\u8fde\u63a5\u3002\u5b83\u5c1d\u8bd5\u964d\u7ea7\u8fde\u63a5\u5e76\u63d0\u53d6\u660e\u786e\u7684\u6587\u672c\u51ed\u636e\u3002 Invoke-Phant0m \nInvoke-Phant0m \u662f\u4e00\u4e2a\u7ec8\u7ed3\u65e5\u5fd7\u8bb0\u5f55\u7ebf\u7a0b\u811a\u672c\uff0c\u4e0d\u5f71\u54cd\u7cfb\u7edf\u65e5\u5fd7\u670d\u52a1\u3002 Obfuscated String/Shellcode Generator \npass Malicious Macro Generator \n\u4ee3\u7801https://github.com/Mr-Un1k0d3r/MaliciousMacroGenerator", 
             "title": "\u5728\u6e17\u900f\u4e2d\u9700\u8981\u7528\u7684\u5de5\u5177\u6536\u96c6"
         }, 
         {
@@ -492,7 +492,7 @@
         }, 
         {
             "location": "/windows_persistence_note/", 
-            "text": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/windows_persistence_note/\n\n\n\n\n\u672c\u6587\u53ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8\n\n\nWord load arbitrary DLLs\n\n\nAdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\\n\\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.\n\n\nreg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d \nc:\\\\office.dll", 
+            "text": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0\n\n\n\n\n\u4f5c\u8005:c4bbage\n\n\n\u65f6\u95f4:2017.8.17\n\n\n\u94fe\u63a5:http://dobest1.com/windows_persistence_note/\n\n\n\n\n\u672c\u6587\u53ea\u662f\u8bb0\u5f55\u81ea\u542f\u65b9\u5f0f\u65b9\u6cd5\uff0c\u4e0d\u6d89\u53ca\u540e\u95e8\n\n\nWord load arbitrary DLLs\n\n\nAdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\\n\\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.\n\n\nreg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d \nc:\\\\office.dll\n\n\n\n\n\n\n\n[dll hijack on in explorer.exe]\n\n\n\u751f\u6210linkinfo.dll \u653e\u5230 c:\\windows\\system32\\linkinfo.dll", 
             "title": "windows\u540e\u95e8\u81ea\u542f\u52a8\u7b14\u8bb0"
         }, 
         {
@@ -504,6 +504,11 @@
             "location": "/windows_persistence_note/#word-load-arbitrary-dlls", 
             "text": "AdditionalActionsDLL persistence? New method to have Word load arbitrary DLLs. Put property at: HKCU\\Software\\Microsoft\\Office\\ \\Common\nThis has only been tested on 7/8.1 w/ Office 2013. Not sure of its application to other software versions.  reg add HKCU\\Software\\Microsoft\\Office5.0\\Common /v AdditionalActionsDLL /t reg_sz /d  c:\\\\office.dll", 
             "title": "Word load arbitrary DLLs"
+        }, 
+        {
+            "location": "/windows_persistence_note/#dll-hijack-on-in-explorerexe", 
+            "text": "\u751f\u6210linkinfo.dll \u653e\u5230 c:\\windows\\system32\\linkinfo.dll", 
+            "title": "[dll hijack on in explorer.exe]"
         }, 
         {
             "location": "/Heart chicken soup/", 
