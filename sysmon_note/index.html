@@ -153,6 +153,8 @@
                 
                     <li><a class="toctree-l4" href="#_1">使用</a></li>
                 
+                    <li><a class="toctree-l4" href="#todo-list">TODO List</a></li>
+                
                     <li><a class="toctree-l4" href="#_2">参考</a></li>
                 
             
@@ -329,11 +331,11 @@
 <li>在进程创建事件中，包括进程 GUID，GUID可以便于进行上下文关联，不用担心进程ID的变更</li>
 <li>在加载驱动或DLL时，会记录其签名和hash</li>
 <li>记录打开磁盘和卷的原始访问</li>
-<li>可选地记录网络连接，包括每个连接的源进程，IP地址，端口号，主机名和端口名称。</li>
+<li>可选地记录网络连接，包括每个连接的源进程、IP地址、端口号、主机名和端口名称。</li>
 <li>检测文件创建时间的变化，以了解文件何时真正的被创建。文件创建时间戳的修改是恶意软件通常用于覆盖其行径的技术。</li>
 <li>如果在注册表中更改，则自动重新加载配置。</li>
-<li>规则过滤支持动态包含或排除某些事件。</li>
-<li>从早于进程启动时生成事件，以捕获甚至复杂的内核模式恶意软件所产生的活动。 </li>
+<li>过滤规则支持动态包含或排除某些事件。</li>
+<li>在进程启动前生成事件，以捕获甚至复杂的内核模式恶意软件所产生的活动。 </li>
 </ul>
 <h2 id="sysmon-id">Sysmon 事件ID</h2>
 <table>
@@ -530,6 +532,11 @@
     sysmon.exe -i --<br />
 更改配置以使用Lsass中的所有散列，无网络监控和DLL监控<br />
     sysmon –c –h * –l lsass.exe  </p>
+<h2 id="todo-list">TODO List</h2>
+<ul>
+<li>守护进程</li>
+<li>前端展示(kibana 不能满足调用过程展示)</li>
+</ul>
 <h2 id="_2">参考</h2>
 <ul>
 <li><a href="https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon">Sysmon v6.10</a></li>
