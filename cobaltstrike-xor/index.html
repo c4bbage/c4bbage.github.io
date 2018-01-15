@@ -446,11 +446,13 @@ throws IOException
 </code></pre>
 
 <h2 id="_3">想法</h2>
-<p>整个流程只是简单的读取文件编码文件，流程简析如下:
-- CommonUtils.pickOption("resources/xor.bin");
-- CommonUtils.readOptions()
-- CommonUtils.readResource() <code>X64 省略了前面操作</code>
-- CommonUtils.resource()</p>
+<p>整个流程只是简单的读取文件编码文件，流程简析如下:</p>
+<ul>
+<li>CommonUtils.pickOption("resources/xor.bin");</li>
+<li>CommonUtils.readOptions()</li>
+<li>CommonUtils.readResource() <code>X64 省略了前面操作</code></li>
+<li>CommonUtils.resource()</li>
+</ul>
 <p>我对上面的代码做了摘取，进行了调试 readResource()的结果和pickOption的结果一样。
 xor.bin x86 的数据结构是</p>
 <pre><code class="c">struct xorbin{
