@@ -1,0 +1,59 @@
+---
+import { Icon } from 'astro-icon/components';
+import { SITE, type Locale } from '@/consts';
+import { t } from '@/i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const tt = t(locale);
+
+const year = new Date().getUTCFullYear();
+const span = year > SITE.startYear ? `${SITE.startYear}–${year}` : `${SITE.startYear}`;
+---
+
+<footer class="site-footer">
+  <div class="row">
+    <div class="left muted small">
+      <span>© {span} c4bbage</span>
+      <span class="divider-dot">·</span>
+      <span>{tt('footer.poweredBy')}</span>
+    </div>
+    <div class="right">
+      <a href={SITE.github} class="ico" aria-label="GitHub" target="_blank" rel="me noopener">
+        <Icon name="simple-icons:github" />
+      </a>
+      <a href={locale === 'zh' ? '/rss.xml' : '/en/rss.xml'} class="ico" aria-label="RSS">
+        <Icon name="lucide:rss" />
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 1.5rem 1.25rem 2rem;
+  }
+  .row {
+    max-width: var(--container-wide);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .ico {
+    display: inline-flex;
+    width: 1.9rem;
+    height: 1.9rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--fg-muted);
+  }
+  .ico:hover { color: var(--accent); background: var(--bg-elevated); }
+  .ico :global(svg) { width: 1rem; height: 1rem; }
+</style>

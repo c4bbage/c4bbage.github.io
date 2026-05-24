@@ -1,0 +1,137 @@
+---
+import { Icon } from 'astro-icon/components';
+import { SITE, NAV, type Locale } from '@/consts';
+import { t, localizedPath, altLocale } from '@/i18n/utils';
+import LangSwitcher from './LangSwitcher.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const tt = t(locale);
+
+const navKeyToLabel: Record<string, string> = {
+  home: tt('nav.home'),
+  posts: tt('nav.posts'),
+  works: tt('nav.works'),
+  about: tt('nav.about'),
+};
+
+const currentPath = Astro.url.pathname.replace(/^\/en/, '') || '/';
+---
+
+<header class="site-header">
+  <div class="bar">
+    <a href={localizedPath(locale, '/')} class="brand" aria-label={SITE.title}>
+      <span class="brand-mark">~/</span>
+      <span class="brand-name">c4bbage</span>
+      <span class="brand-slash">/</span>
+      <span class="brand-section">blog</span>
+    </a>
+
+    <nav class="nav" aria-label="primary">
+      {
+        NAV.map((item) => {
+          const href = localizedPath(locale, item.href);
+          const active =
+            item.href === '/'
+              ? currentPath === '/'
+              : currentPath.startsWith(item.href);
+          return (
+            <a href={href} class:list={['nav-link', { active }]}>
+              {navKeyToLabel[item.key]}
+            </a>
+          );
+        })
+      }
+    </nav>
+
+    <div class="tools">
+      <a
+        href={locale === 'zh' ? '/rss.xml' : '/en/rss.xml'}
+        class="tool"
+        aria-label={tt('nav.rss')}
+        title={tt('nav.rss')}
+      >
+        <Icon name="lucide:rss" />
+      </a>
+      <LangSwitcher locale={locale} otherLocale={altLocale(locale)} />
+      <ThemeToggle label={tt('theme.toggle')} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .bar {
+    max-width: var(--container-wide);
+    margin: 0 auto;
+    padding: 0.7rem 1.25rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .brand {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15ch;
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .brand-mark { color: var(--accent); }
+  .brand-name { font-weight: 700; }
+  .brand-slash { color: var(--fg-faint); padding: 0 0.15ch; }
+  .brand-section { color: var(--fg-muted); }
+
+  .nav {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    padding: 0.35rem 0.7rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .nav-link:hover { color: var(--fg); background: var(--bg-elevated); }
+  .nav-link.active { color: var(--accent); background: var(--accent-soft); }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .tool {
+    display: inline-flex;
+    width: 2.1rem;
+    height: 2.1rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--fg-muted);
+    text-decoration: none;
+  }
+  .tool:hover { color: var(--accent); background: var(--bg-elevated); }
+  .tool :global(svg) { width: 1.05rem; height: 1.05rem; }
+
+  @media (max-width: 720px) {
+    .bar { grid-template-columns: 1fr auto; row-gap: 0.4rem; padding: 0.55rem 1rem; }
+    .nav { grid-column: 1 / -1; order: 3; justify-content: flex-start; }
+    .brand-section { display: none; }
+  }
+</style>

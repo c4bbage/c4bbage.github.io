@@ -1,0 +1,9 @@
+chore: ignore AGENTS.md / CLAUDE.md / .agents/
+
+含敏感词典（脱敏 regex 里的内网 IP / 主机名 / conda 环境名），
+不应该 push 到 public GitHub。真正的副本在 cursor skill 内:
+  ~/.cursor/skills/blog-publish/AGENTS.md
+
+历史里所有 AGENTS.md 痕迹已用 git filter-repo 擦除。
+
+Co-authored-by: Cursor <cursoragent@cursor.com>

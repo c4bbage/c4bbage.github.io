@@ -1,0 +1,30 @@
+---
+import type { Locale } from '@/consts';
+import BaseHead from '@/components/BaseHead.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale: Locale;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  updatedTime?: Date;
+}
+const props = Astro.props;
+---
+<!doctype html>
+<html lang={props.locale === 'zh' ? 'zh-CN' : 'en'}>
+  <head>
+    <BaseHead {...props} />
+  </head>
+  <body>
+    <Header locale={props.locale} />
+    <main>
+      <slot />
+    </main>
+    <Footer locale={props.locale} />
+  </body>
+</html>

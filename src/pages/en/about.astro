@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/consts';
+
+const locale = 'en' as const;
+---
+
+<BaseLayout title="About" description={`About ${SITE.author}`} locale={locale}>
+  <article class="prose">
+    <header class="post-header">
+      <p class="kicker mono accent">$ cat ~/about.md</p>
+      <h1>About</h1>
+      <p class="muted lede">
+        I go by c4bbage. A small place for technical notes.
+      </p>
+    </header>
+
+    <h2>About this blog</h2>
+    <p>
+      v2, rebuilt on <a href="https://astro.build/" rel="noopener">Astro 5</a>.
+      The old version (2017–2020 MkDocs notes) is preserved at the
+      <code>legacy-2017</code> tag — no longer updated and hidden from the nav.
+    </p>
+    <p>Topics tend to be around:</p>
+    <ul>
+      <li>Tech / tools</li>
+      <li>Engineering notes</li>
+      <li>Occasional thoughts</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <ul>
+      <li>GitHub: <a href={SITE.github} rel="me" target="_blank" rel="noopener">@c4bbage</a></li>
+      <li>RSS: <a href="/en/rss.xml">/en/rss.xml</a></li>
+    </ul>
+
+    <hr />
+    <p class="small muted">
+      <a href="/en/posts/">All posts</a> · <a href="/en/rss.xml">RSS</a>
+    </p>
+  </article>
+</BaseLayout>

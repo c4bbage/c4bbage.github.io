@@ -1,0 +1,45 @@
+---
+import type { Locale } from '@/consts';
+import { formatDate, localizedPath, t } from '@/i18n/utils';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  slug: string;
+  tags?: string[];
+  locale: Locale;
+  readingMinutes?: number;
+}
+const { title, description, date, slug, tags = [], locale, readingMinutes } = Astro.props;
+const tt = t(locale);
+const href = localizedPath(locale, `/posts/${slug}/`);
+---
+
+<a href={href} class="card post-card">
+  <h3 class="title">{title}</h3>
+  {description && <p class="desc muted">{description}</p>}
+  <div class="meta small muted">
+    <time datetime={date.toISOString()}>{formatDate(date, locale)}</time>
+    {readingMinutes && (
+      <>
+        <span class="divider-dot">·</span>
+        <span>{readingMinutes} {tt('post.readingTime')}</span>
+      </>
+    )}
+    {tags.length > 0 && (
+      <>
+        <span class="divider-dot">·</span>
+        <span>{tags.slice(0, 3).map((t) => `#${t}`).join(' ')}</span>
+      </>
+    )}
+  </div>
+</a>
+
+<style>
+  .post-card { display: block; text-decoration: none; }
+  .title { font-size: 1.15rem; margin-bottom: 0.4rem; color: var(--fg); }
+  .post-card:hover .title { color: var(--accent); }
+  .desc { margin: 0.2rem 0 0.6rem; font-size: 0.95rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 0; align-items: center; }
+</style>

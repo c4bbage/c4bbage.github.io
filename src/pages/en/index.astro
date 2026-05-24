@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { SITE } from '@/consts';
+import { t, localizedPath, estimateReadingMinutes } from '@/i18n/utils';
+import { getPostsForLocale, slugFor } from '@/lib/posts';
+
+const locale = 'en' as const;
+const tt = t(locale);
+const posts = (await getPostsForLocale(locale)).slice(0, 6);
+---
+
+<BaseLayout title={SITE.title} description={SITE.description.en} locale={locale}>
+  <section class="hero">
+    <p class="kicker mono accent">$ whoami</p>
+    <h1 class="title">c4bbage</h1>
+    <p class="tagline">{tt('site.tagline')}</p>
+    <p class="bio muted">
+      A small place for technical notes. The old version (2017–2020) is preserved at
+      <a href="https://github.com/c4bbage/c4bbage.github.io/tree/legacy-2017" rel="me">legacy-2017</a>.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href={localizedPath(locale, '/posts/')}>{tt('nav.posts')} →</a>
+      <a class="btn" href={localizedPath(locale, '/about/')}>{tt('nav.about')}</a>
+      <a class="btn" href={SITE.github} target="_blank" rel="me noopener">GitHub ↗</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <header class="section-head">
+      <h2>{tt('home.latest')}</h2>
+      <a href={localizedPath(locale, '/posts/')} class="small muted">{tt('home.viewAll')}</a>
+    </header>
+    {posts.length === 0 ? (
+      <p class="muted">{tt('posts.empty')}</p>
+    ) : (
+      <div class="grid">
+        {posts.map((p) => (
+          <PostCard
+            title={p.data.title}
+            description={p.data.description}
+            date={p.data.date}
+            slug={slugFor(p)}
+            tags={p.data.tags}
+            locale={locale}
+            readingMinutes={estimateReadingMinutes(p.body ?? '')}
+          />
+        ))}
+      </div>
+    )}
+  </section>
+
+</BaseLayout>
+
+<style>
+  .hero { padding: 1rem 0 3rem; max-width: var(--container); }
+  .kicker { font-size: 0.85rem; margin: 0 0 0.6rem; }
+  .title { font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: 1.05; letter-spacing: -0.02em; margin: 0; }
+  .tagline { font-size: 1.15rem; color: var(--fg-muted); margin: 0.6rem 0 1rem; }
+  .bio { font-size: 1rem; line-height: 1.75; max-width: 60ch; }
+  .cta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+  .btn { display: inline-flex; align-items: center; gap: 0.4ch; padding: 0.55rem 1rem; border-radius: 8px; border: 1px solid var(--border); color: var(--fg); font-size: 0.92rem; text-decoration: none; transition: all 0.15s ease; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); font-weight: 600; }
+  .btn.primary:hover { background: transparent; color: var(--accent); }
+  .section { margin: 3.5rem 0 1rem; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-soft); padding-bottom: 0.5rem; }
+  .section-head h2 { font-size: 1.25rem; margin: 0; }
+  .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1ch; }
+</style>

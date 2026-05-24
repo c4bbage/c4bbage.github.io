@@ -1,0 +1,7 @@
+# pack-refs with: peeled fully-peeled sorted 
+aaf5821cd24f41b650fe539d2e101c341f317e00 refs/heads/gh-pages
+fcf7b0e9caf270cb76a4f78c022d254362719803 refs/heads/main
+386356d95411660efb9bb266baf61185cd7d1211 refs/heads/master
+fcf7b0e9caf270cb76a4f78c022d254362719803 refs/tags/backup-before-filter-repo-1779615313
+564fc27c401e0ec055599413c131bc2688f0e3fd refs/tags/legacy-2017
+^386356d95411660efb9bb266baf61185cd7d1211

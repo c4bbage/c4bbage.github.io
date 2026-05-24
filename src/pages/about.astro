@@ -1,0 +1,41 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/consts';
+
+const locale = 'zh' as const;
+---
+
+<BaseLayout title="关于" description={`关于 ${SITE.author}`} locale={locale}>
+  <article class="prose">
+    <header class="post-header">
+      <p class="kicker mono accent">$ cat ~/about.md</p>
+      <h1>关于</h1>
+      <p class="muted lede">
+        网名 c4bbage。一个随手记点东西的地方。
+      </p>
+    </header>
+
+    <h2>关于这个博客</h2>
+    <p>
+      这是 v2，用 <a href="https://astro.build/" rel="noopener">Astro 5</a> 重建。
+      旧版（2017–2020 的 MkDocs 笔记）封存在 <code>legacy-2017</code> tag —— 不再更新，也不在导航里出现。
+    </p>
+    <p>主题大致围绕：</p>
+    <ul>
+      <li>技术 / 工具</li>
+      <li>工程笔记</li>
+      <li>偶尔的杂感</li>
+    </ul>
+
+    <h2>联系</h2>
+    <ul>
+      <li>GitHub: <a href={SITE.github} rel="me" target="_blank" rel="noopener">@c4bbage</a></li>
+      <li>RSS: <a href="/rss.xml">/rss.xml</a></li>
+    </ul>
+
+    <hr />
+    <p class="small muted">
+      <a href="/posts/">所有文章</a> · <a href="/rss.xml">RSS</a>
+    </p>
+  </article>
+</BaseLayout>

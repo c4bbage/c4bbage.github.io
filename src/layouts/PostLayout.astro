@@ -1,0 +1,73 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { Locale } from '@/consts';
+import { formatDate, t } from '@/i18n/utils';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  updated?: Date;
+  locale: Locale;
+  tags?: string[];
+  readingMinutes?: number;
+  cover?: string;
+  coverAlt?: string;
+}
+const { title, description, date, updated, locale, tags = [], readingMinutes, cover, coverAlt } = Astro.props;
+const tt = t(locale);
+---
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  type="article"
+  publishedTime={date}
+  updatedTime={updated}
+  image={cover}
+>
+  <article class="prose">
+    <header class="post-header">
+      <h1>{title}</h1>
+      {description && <p class="muted lede">{description}</p>}
+      <div class="meta small muted">
+        <time datetime={date.toISOString()}>{formatDate(date, locale)}</time>
+        {readingMinutes && (
+          <>
+            <span class="divider-dot">·</span>
+            <span>{readingMinutes} {tt('post.readingTime')}</span>
+          </>
+        )}
+        {updated && (
+          <>
+            <span class="divider-dot">·</span>
+            <span>{tt('post.updatedOn')} {formatDate(updated, locale)}</span>
+          </>
+        )}
+      </div>
+      {cover && (
+        <img src={cover} alt={coverAlt ?? ''} class="cover" loading="eager" />
+      )}
+    </header>
+
+    <slot />
+
+    {tags.length > 0 && (
+      <footer class="post-footer">
+        <div class="tags">
+          {tags.map((tag) => <span class="tag">#{tag}</span>)}
+        </div>
+      </footer>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .post-header { margin-bottom: 2rem; }
+  .post-header h1 { margin-top: 0; }
+  .lede { font-size: 1.05rem; margin: 0.5rem 0 0.8rem; }
+  .meta { display: flex; flex-wrap: wrap; align-items: center; }
+  .cover { margin-top: 1.5rem; width: 100%; }
+  .post-footer { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--border-soft); }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+</style>

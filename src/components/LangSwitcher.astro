@@ -1,0 +1,40 @@
+---
+import type { Locale } from '@/consts';
+interface Props { locale: Locale; otherLocale: Locale; }
+const { locale, otherLocale } = Astro.props;
+
+/**
+ * Build the equivalent path in the other locale. For now we just swap the
+ * `/en` prefix; localized slugs would need a manifest, future work.
+ */
+const path = Astro.url.pathname;
+let altHref: string;
+if (otherLocale === 'en') {
+  altHref = path === '/' ? '/en/' : `/en${path}`;
+} else {
+  altHref = path.replace(/^\/en/, '') || '/';
+}
+---
+<a href={altHref} class="lang" aria-label="Switch language" title={otherLocale.toUpperCase()}>
+  <span class={locale === 'zh' ? 'on' : 'off'}>中</span>
+  <span class="sep">/</span>
+  <span class={locale === 'en' ? 'on' : 'off'}>EN</span>
+</a>
+
+<style>
+  .lang {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.55rem;
+    border-radius: 8px;
+    color: var(--fg-muted);
+    text-decoration: none;
+    border: 1px solid var(--border-soft);
+  }
+  .lang:hover { color: var(--fg); border-color: var(--border); }
+  .on { color: var(--accent); font-weight: 600; }
+  .off { color: var(--fg-faint); }
+  .sep { padding: 0 0.3ch; color: var(--fg-faint); }
+</style>

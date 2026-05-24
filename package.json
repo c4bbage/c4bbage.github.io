@@ -1,0 +1,33 @@
+{
+  "name": "c4bbage-blog",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "c4bbage's blog — AI infra, model exploration, security & systems thinking",
+  "scripts": {
+    "dev": "astro dev --host",
+    "start": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview --host",
+    "astro": "astro",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.2.6",
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.2.1",
+    "astro": "^5.7.0",
+    "astro-icon": "^1.1.5",
+    "rehype-external-links": "^3.0.0",
+    "remark-reading-time": "^2.0.1",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.30",
+    "@iconify-json/simple-icons": "^1.2.21"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

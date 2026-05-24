@@ -1,0 +1,32 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+import { render } from 'astro:content';
+import { getPostsForLocale, slugFor } from '@/lib/posts';
+import { estimateReadingMinutes } from '@/i18n/utils';
+
+export async function getStaticPaths() {
+  const posts = await getPostsForLocale('en');
+  return posts.map((post) => ({
+    params: { slug: slugFor(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const readingMinutes = estimateReadingMinutes(post.body ?? '');
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  locale="en"
+  tags={post.data.tags}
+  readingMinutes={readingMinutes}
+  cover={post.data.cover?.src}
+  coverAlt={post.data.coverAlt}
+>
+  <Content />
+</PostLayout>

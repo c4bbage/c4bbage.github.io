@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { t, estimateReadingMinutes } from '@/i18n/utils';
+import { getPostsForLocale, slugFor } from '@/lib/posts';
+
+const locale = 'zh' as const;
+const tt = t(locale);
+const posts = await getPostsForLocale(locale);
+
+const byYear = new Map<number, typeof posts>();
+for (const p of posts) {
+  const y = p.data.date.getUTCFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(p);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+---
+
+<BaseLayout title={tt('posts.title')} locale={locale}>
+  <h1 class="page-title">{tt('posts.title')}</h1>
+  {posts.length === 0 ? (
+    <p class="muted">{tt('posts.empty')}</p>
+  ) : (
+    years.map((y) => (
+      <section class="year-block">
+        <h2 class="year mono">{y}</h2>
+        <div class="grid">
+          {byYear.get(y)!.map((p) => (
+            <PostCard
+              title={p.data.title}
+              description={p.data.description}
+              date={p.data.date}
+              slug={slugFor(p)}
+              tags={p.data.tags}
+              locale={locale}
+              readingMinutes={estimateReadingMinutes(p.body ?? '')}
+            />
+          ))}
+        </div>
+      </section>
+    ))
+  )}
+</BaseLayout>
+
+<style>
+  .page-title { font-size: 1.8rem; margin: 0 0 2rem; }
+  .year-block { margin: 2rem 0; }
+  .year { font-size: 1rem; color: var(--fg-faint); margin: 0 0 0.8rem; letter-spacing: 0.08em; }
+  .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+</style>

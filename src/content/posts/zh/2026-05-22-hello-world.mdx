@@ -1,0 +1,53 @@
+---
+title: 重启 · 把这里改造成新版博客
+description: 旧的 MkDocs 站封存，新版用 Astro 5 重建。简单记一笔为什么、怎么做。
+date: 2026-05-22
+lang: zh
+tags: [meta, blog, astro]
+categories: [tools]
+featured: true
+---
+
+import Callout from '@/components/Callout.astro';
+
+> 这是博客 v2 的第一篇。旧的 MkDocs 版（2017–2020 的笔记）被封存在 `legacy-2017` tag。
+
+## 为什么重启
+
+旧博客有几个问题：
+
+1. **结构不对。** MkDocs 本质是文档站，没有时间线、没有标签、没有 RSS。一篇文章发出去就被埋在目录树某个角落。
+2. **源码丢了。** 旧仓库 `master` 分支里直接是 `mkdocs gh-deploy` 的产物（编译后的 HTML）。换了几次电脑之后，原始 markdown 已经找不全了。
+3. **想换个写法。** 偶尔记点东西，不想被旧主题的口径框住。
+
+<Callout kind="info" title="旧内容怎么办">
+全部封存，没删。访问 [legacy-2017 tag](https://github.com/c4bbage/c4bbage.github.io/tree/legacy-2017) 还能看到当年的整站快照。但首页和导航里不会再出现。
+</Callout>
+
+## 技术栈
+
+| 组件 | 选择 | 为什么 |
+|---|---|---|
+| 生成器 | Astro 5 | MDX 原生、Content Collections 类型化、i18n 内置 |
+| 部署 | GitHub Pages + Actions | 不动 DNS，零迁移成本 |
+| 多媒体 | `<VideoPlayer/>` `<AudioPlayer/>` `<ImageGallery/>` `<Callout/>` | MDX 里直接嵌组件 |
+| 语言 | 中 / 英双语 | 同一个 topic 两个文件 |
+
+## 一个 demo
+
+```ts
+const posts = defineCollection({
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    lang: z.enum(['zh', 'en']),
+    tags: z.array(z.string()).default([]),
+    cover: image().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+```
+
+代码块用 Shiki 高亮，跟随主题（右上角太阳/月亮切换）。
+
+— c4bbage · 2026 / 05 / 22

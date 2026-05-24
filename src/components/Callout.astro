@@ -1,0 +1,39 @@
+---
+type Kind = 'info' | 'warn' | 'danger' | 'ok' | 'note';
+interface Props { kind?: Kind; title?: string; }
+const { kind = 'info', title } = Astro.props;
+const icon: Record<Kind, string> = {
+  info: 'ℹ',
+  warn: '⚠',
+  danger: '✕',
+  ok: '✓',
+  note: '✎',
+};
+---
+<aside class={`callout callout-${kind}`} role="note">
+  <div class="head">
+    <span class="ic">{icon[kind]}</span>
+    {title && <strong>{title}</strong>}
+  </div>
+  <div class="body"><slot /></div>
+</aside>
+
+<style>
+  .callout {
+    border: 1px solid var(--border-soft);
+    border-left-width: 3px;
+    border-radius: var(--radius);
+    padding: 0.7rem 1rem;
+    margin: 1.25em 0;
+    background: var(--bg-elevated);
+  }
+  .callout-info   { border-left-color: var(--accent); }
+  .callout-warn   { border-left-color: var(--warn); }
+  .callout-danger { border-left-color: var(--danger); }
+  .callout-ok     { border-left-color: var(--ok); }
+  .callout-note   { border-left-color: var(--fg-faint); }
+  .head { display: flex; gap: 0.5em; align-items: center; margin-bottom: 0.3em; }
+  .ic { font-family: var(--font-mono); }
+  .body :global(p:first-child) { margin-top: 0; }
+  .body :global(p:last-child)  { margin-bottom: 0; }
+</style>

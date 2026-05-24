@@ -1,0 +1,8 @@
+---
+interface Props { src: string; caption?: string; }
+const { src, caption } = Astro.props;
+---
+<figure class="audio-embed">
+  <audio src={src} controls preload="metadata"></audio>
+  {caption && <figcaption class="small muted" style="margin-top: 0.4rem;">{caption}</figcaption>}
+</figure>

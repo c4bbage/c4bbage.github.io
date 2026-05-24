@@ -1,0 +1,53 @@
+---
+title: Reboot · Turning this into a real blog again
+description: Old MkDocs site sealed. New version on Astro 5. A short note on why and how.
+date: 2026-05-22
+lang: en
+tags: [meta, blog, astro]
+categories: [tools]
+featured: true
+---
+
+import Callout from '@/components/Callout.astro';
+
+> First post of blog v2. The old MkDocs site (notes from 2017–2020) is sealed in the `legacy-2017` tag.
+
+## Why reboot
+
+The old blog had a few problems:
+
+1. **Wrong structure.** MkDocs is a documentation tool — no timeline, no tags, no RSS. A new post would just sink into some corner of the nav tree.
+2. **Source got lost.** The old repo's `master` branch contained the built HTML from `mkdocs gh-deploy`. After a few laptops, the original markdown was scattered.
+3. **Wanted a fresh template.** A simple place to jot things down, not boxed in by the old theme's voice.
+
+<Callout kind="info" title="Where did the old content go">
+Sealed, not deleted. Browse the [legacy-2017 tag](https://github.com/c4bbage/c4bbage.github.io/tree/legacy-2017) for a full snapshot of the old site. It just won't surface on the homepage or in the nav anymore.
+</Callout>
+
+## Stack
+
+| Layer | Pick | Why |
+|---|---|---|
+| Generator | Astro 5 | MDX out of the box, typed Content Collections, built-in i18n |
+| Hosting | GitHub Pages + Actions | No DNS changes, zero migration cost |
+| Media | `<VideoPlayer/>` `<AudioPlayer/>` `<ImageGallery/>` `<Callout/>` | MDX components beat plain markdown |
+| Languages | Chinese / English | Two files per topic |
+
+## A taste
+
+```ts
+const posts = defineCollection({
+  schema: ({ image }) => z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    lang: z.enum(['zh', 'en']),
+    tags: z.array(z.string()).default([]),
+    cover: image().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+```
+
+Code blocks use Shiki and follow the theme toggle in the top-right.
+
+— c4bbage · 2026 / 05 / 22
