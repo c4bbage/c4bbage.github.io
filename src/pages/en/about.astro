@@ -1,32 +1,176 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Callout from '@/components/Callout.astro';
 import { SITE } from '@/consts';
 
 const locale = 'en' as const;
 ---
 
-<BaseLayout title="About" description={`About ${SITE.author}`} locale={locale}>
+<BaseLayout title="About" description={`About ${SITE.author} — two decades from offensive security to AI`} locale={locale}>
   <article class="prose">
     <header class="post-header">
       <p class="kicker mono accent">$ cat ~/about.md</p>
-      <h1>About</h1>
+      <h1>From Offensive Security to AI — My Two Decades</h1>
       <p class="muted lede">
-        I go by c4bbage. A small place for technical notes.
+        A narrative self-introduction. First decade in network security, second decade fully in AI engineering.
       </p>
     </header>
 
-    <h2>About this blog</h2>
     <p>
-      v2, rebuilt on <a href="https://astro.build/" rel="noopener">Astro 5</a>.
-      The old version (2017–2020 MkDocs notes) is preserved at the
-      <code>legacy-2017</code> tag — no longer updated and hidden from the nav.
+      I go by c4bbage. My career started in <strong>2012</strong> and now, ~14 years in, I can roughly split it into two arcs —
+      the first decade was entirely in network security, the second has been a clean pivot into AI engineering.
+      The GitHub handle was registered in late 2013 and I've kept it ever since.
     </p>
-    <p>Topics tend to be around:</p>
+    <p>
+      This is a <strong>narrative</strong> intro, written chronologically — not as a project list.
+    </p>
+
+    <h2>First decade (2012–2022): Network security</h2>
+    <p>
+      I started on the offensive side.
+      The first few years were <strong>penetration testing, red-teaming, vulnerability reproduction, vulnerability research, and reverse engineering / cracking</strong> —
+      writing PoCs, running red-vs-blue exercises, translating tooling docs, and reproducing every public (and semi-public) attack path I could get my hands on.
+      That period also happened to be the busiest stretch of China's offensive security community —
+      a wave of 0days, a wave of APTs, a wave of honeypots and adversary engagement.
+      Most of the small tools and translations still surfacing on my GitHub date back to then.
+    </p>
+    <p>Mid-way through, I migrated toward <strong>enterprise defense</strong> — same domain, opposite side:</p>
     <ul>
-      <li>Tech / tools</li>
-      <li>Engineering notes</li>
-      <li>Occasional thoughts</li>
+      <li>Internal asset mapping, CMDB / bastion-host tooling at production scale</li>
+      <li>Security monitoring across <strong>2000+ production hosts</strong> (EDR, compliance, inspections, vulnerability response loops)</li>
+      <li><strong>Zero-trust</strong> rollout (identity, device posture, network segmentation, least privilege)</li>
+      <li><strong>Situational awareness</strong>: log lake, event correlation, alert noise reduction, attack-path reconstruction</li>
+      <li>Productized incident response — from log collection and triage all the way to runbooks, SOPs, and on-call rotations</li>
+      <li>The unglamorous "blue side" grind in red-vs-blue exercises</li>
     </ul>
+    <p>
+      The final years were closer to <strong>security-product engineering</strong> —
+      the shift from "running an incident analysis" to "building a system that lets other people repeatedly run incident analyses."
+      That's where I first internalized the principle that
+      <strong>"a one-off script" and "a capability someone else can reuse" are two completely different engineering goals.</strong>
+      This principle keeps showing up in my AI work today.
+    </p>
+    <blockquote>
+      All the bits and pieces I wrote / translated during that era are sealed at the
+      <a href="https://github.com/c4bbage/c4bbage.github.io/tree/legacy-2017" rel="noopener"><code>legacy-2017</code></a> tag.
+      Not deleted, just no longer updated and no longer in the nav.
+    </blockquote>
+
+    <h2>The pivot: how I switched to AI</h2>
+    <p>
+      LLMs broke through and I caught the wave.
+      The starting point was <strong>not a top-down assignment — it was personal enthusiasm first.</strong>
+      The moment ChatGPT shipped, I went straight to Plus; later I jumped on a Poe annual plan and worked through every model I could subscribe to.
+      For a stretch there, basically every fragmentary task I could pin down with AI — scripts, lookups, reports, doc restructuring, small tools — got prompt-ified.
+      The productivity gain on my actual job was visible and real — the earliest payoff from the "AI whale" route.
+    </p>
+    <p>
+      Eventually my <strong>boss (the CTO)</strong> noticed the enthusiasm and the concrete results, and formally folded AI into my scope —
+      he brought in a <strong>PhD from Zhejiang University</strong> to do post-training with me,
+      and I started building systems on my own side: a RAG knowledge base, IT agents, internal Q&A, a bunch of small tools.
+      <strong>That was the actual starting line of my "switched to AI" arc.</strong>
+    </p>
+    <p>
+      Only afterwards did it sink in —
+      the design space opened up by <strong>models + compute</strong> is much larger than the back-and-forth of defensive security alone.
+      So I moved the main line over.
+    </p>
+    <p>
+      The ten years in security weren't wasted, though —
+      the offensive habit of "<strong>assume the system is already wrong</strong>"
+      turns out to give me an edge over pure AI-background folks
+      when I'm working on agent runtime safety or AIGC service security.
+    </p>
+
+    <h2>Second decade (2022–now): AI engineering</h2>
+    <p>Sliced horizontally, my work these years stacks roughly like this, bottom up:</p>
+
+    <h3>1. Bottom layer — compute</h3>
+    <p>
+      A small training/inference hybrid cluster —
+      <strong>a handful of nodes, dozens of enterprise-grade training cards, across two compute tiers</strong> (one primary, one backup / batch).
+      Day-to-day comes down to keeping the cards from "<strong>lying idle, stepping on each other, or burning money</strong>."
+    </p>
+    <p>
+      Concretely: scheduling and isolation · idle-rate governance · slotting in off-hours work (nightly compiles, scans, async agents) · per-task cost accounting · ROI feedback into the business side.
+    </p>
+
+    <h3>2. Middle — AIGC generation capabilities</h3>
+    <p>
+      Text → image, image → image, text → video, image → video, super-resolution, matting, portrait restoration — this layer turns models into internal APIs, then surfaces them out to the business.
+    </p>
+    <p>
+      I've spent time on the training side too:
+      <strong>full-parameter fine-tuning (up to 14B scale) / LoRA / distillation / quantization</strong> — all of them — and most recently a NTP + flash-attention speedup baseline.
+      But I'm more drawn to <strong>model composition</strong> than to chasing single-model SOTA —
+      cheap base model holds the floor, premium high-fidelity model gets injected only on the critical path.
+      The cost/quality curve as an engineering problem is far more interesting than "which model is 0.5 points higher."
+    </p>
+    <Callout kind="info" title="A bias">
+      There are more new models than anyone can possibly read about. I'd rather run my own tests than read AI-written model reviews.
+    </Callout>
+
+    <h3>3. Business side</h3>
+    <p>The middle layer plugs upward into a few concrete products:</p>
+    <ul>
+      <li><strong>Short-drama platform</strong> — composing image gen, video gen, super-resolution into a pipeline for short-form drama production</li>
+      <li><strong>Art & ops tooling</strong> — the daily image / retouch / video tooling used by internal teams</li>
+      <li><strong>Internal learning & docs platform</strong> — so the way these tools are used is consumable and auditable</li>
+    </ul>
+
+    <h3>4. Top layer — the AIGC capability platform</h3>
+    <p>
+      The integrated platform tying everything above together, internally.
+      <strong>~60 daily active users</strong> — which sounds small, but each one of them is actually burning compute, hitting models, and generating cost.
+      From an operations, cost-governance, reliability, and security-audit standpoint, that scale is not a free ride.
+    </p>
+
+    <h3>5. Agent systems (the main thread of the past year)</h3>
+    <p>
+      Most of my recent attention sits here —
+      refactoring repeated organizational work into <strong>agentic workflows</strong>, rather than yet another one-off script.
+    </p>
+    <p>Three lines by who they serve:</p>
+    <ul>
+      <li><strong>IT agent</strong> — for IT / infrastructure: deployment, inspection, monitoring, change management</li>
+      <li><strong>Security agent</strong> — for the security side: inspection, daily reports, incident analysis, IR</li>
+      <li><strong>Short-drama agent</strong> — for the business side: script drafts, storyboards, asset generation, batch image/video output</li>
+    </ul>
+    <p>
+      Underneath, every reusable capability is shaped as a <strong>Unix-style small command</strong> —
+      one job per command, structured documents on disk as the bus, an automatic <code>check</code> step closing every loop.
+      This is the same idea as the "build capabilities, not one-off scripts" lesson from the security-product era, just one decade later.
+    </p>
+
+    <h2>I don't try to save money on tools</h2>
+    <p>
+      Continuing the "AI whale" thread from earlier —
+      over a few years the tooling spend has only gotten heavier, and only gotten more worth it.
+      Engineering aesthetic in one line: <strong>models change every year; burning money to test them yourself beats reading anyone's "top AI tools" list a thousand times over.</strong>
+    </p>
+    <p>Current subscriptions look roughly like:</p>
+    <ul>
+      <li><strong>Cursor</strong> — around <strong>$3000 / month</strong>, this is the main battlefield</li>
+      <li><strong>Claude</strong> — long-term subscription, Claude Code is daily-driver</li>
+      <li><strong>ChatGPT</strong> — subscription, kept active</li>
+      <li><strong>Poe</strong> — annual plan, mostly for cross-model prompt benchmarks</li>
+      <li><strong>OpenCode</strong> and other agentic editors — rotated in for trial</li>
+    </ul>
+    <p>
+      I genuinely treat these tools as "<strong>an extra colleague who can write, search, and execute</strong>" —
+      not as autocomplete. I'll write up the workflows separately later.
+    </p>
+
+    <h2>What this blog will cover</h2>
+    <p>Blog v2 is mostly a place for me to leave <strong>thinking trails</strong>, on a loose cadence —</p>
+    <ul>
+      <li>AI engineering notes (compute / models / agents)</li>
+      <li>Tooling I'm building and tools I'm trying</li>
+      <li>Paper reading and new-model takes</li>
+      <li>Occasional pieces from the old offensive-security beat — but no longer the main line</li>
+    </ul>
+
+    <hr />
 
     <h2>Contact</h2>
     <ul>
@@ -36,7 +180,7 @@ const locale = 'en' as const;
 
     <hr />
     <p class="small muted">
-      <a href="/en/posts/">All posts</a> · <a href="/en/rss.xml">RSS</a>
+      <a href="/en/posts/">All posts</a> · <a href="/en/rss.xml">RSS</a> · 2026 / 05 / 23
     </p>
   </article>
 </BaseLayout>

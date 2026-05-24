@@ -1,31 +1,172 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import Callout from '@/components/Callout.astro';
 import { SITE } from '@/consts';
 
 const locale = 'zh' as const;
 ---
 
-<BaseLayout title="关于" description={`关于 ${SITE.author}`} locale={locale}>
+<BaseLayout title="关于" description={`关于 ${SITE.author} —— 从网络攻防到 AI 的两个十年`} locale={locale}>
   <article class="prose">
     <header class="post-header">
       <p class="kicker mono accent">$ cat ~/about.md</p>
-      <h1>关于</h1>
+      <h1>从网络攻防到 AI —— 我的两个十年</h1>
       <p class="muted lede">
-        网名 c4bbage。一个随手记点东西的地方。
+        一份叙事式的自我介绍 —— 第一个十年泡在网络安全里，第二个十年完整切到了 AI 工程。
       </p>
     </header>
 
-    <h2>关于这个博客</h2>
     <p>
-      这是 v2，用 <a href="https://astro.build/" rel="noopener">Astro 5</a> 重建。
-      旧版（2017–2020 的 MkDocs 笔记）封存在 <code>legacy-2017</code> tag —— 不再更新，也不在导航里出现。
+      网名 c4bbage。职业生涯从 <strong>2012 年</strong>开始算起，到今年差不多走完两个十年 ——
+      第一个十年完整泡在网络安全里，第二个十年完整切到了 AI 工程。
+      GitHub 账号是 2013 年底注册的，沿用至今。
     </p>
-    <p>主题大致围绕：</p>
+    <p>
+      这是一份<strong>叙事式</strong>的自我介绍，按时间线写，不按项目清单写。
+    </p>
+
+    <h2>第一个十年（2012–2022）：网络安全</h2>
+    <p>
+      入行就是攻方。
+      最早几年是 <strong>渗透测试 / 红队 / 漏洞复现 / 漏洞研究 / 破解与逆向工程</strong> ——
+      写 PoC、跑红蓝对抗、翻译工具链文档、复现各种公开/半公开的攻击路径。
+      那也是国内攻防社区最热闹的一段，一波 0day、一波 APT、一波蜜罐与对抗。
+      GitHub 上现在还能翻到的小工具和翻译，大都来自那个阶段。
+    </p>
+    <p>中段开始往<strong>企业防御</strong>那一侧切，从外打到内：</p>
     <ul>
-      <li>技术 / 工具</li>
-      <li>工程笔记</li>
-      <li>偶尔的杂感</li>
+      <li>内网资产梳理、CMDB / 堡垒机类工具的工程化</li>
+      <li><strong>2000+ 台生产主机</strong>的安全监控（含 EDR、合规、巡检、漏洞回响闭环）</li>
+      <li><strong>零信任</strong>架构落地（身份、设备、网络分段、最小权限）</li>
+      <li><strong>态势感知</strong>：日志中台 / 事件关联 / 告警治理 / 攻击路径还原</li>
+      <li>应急响应流程化 —— 从拉日志、回溯、写报告，到沉淀手册、值班 SOP</li>
+      <li>红蓝里"蓝方"那种<strong>不性感、要长期啃</strong>的活</li>
     </ul>
+    <p>
+      最后几年偏向<strong>安全产品的工程化</strong> ——
+      从"做一次入侵分析"变成"做一个能让别人重复做入侵分析的系统"。
+      这是我第一次切身体会到 <strong>"一次性脚本"和"可被别人用的能力"是两个完全不同的工程目标</strong>。
+      这条原则后面在做 AI 工程时反复出现。
+    </p>
+    <blockquote>
+      那十年里写过、翻译过的零碎东西，整站封存在
+      <a href="https://github.com/c4bbage/c4bbage.github.io/tree/legacy-2017" rel="noopener"><code>legacy-2017</code></a> tag。
+      不删，但不再更新，更不放到新博客的导航里。
+    </blockquote>
+
+    <h2>转折：怎么切到 AI</h2>
+    <p>
+      赶上了 LLM 这波。
+      起点其实<strong>不是被分配的任务，而是个人这边先嗨起来了</strong> ——
+      ChatGPT 一出，自己第一时间充了 Plus；后来 Poe 年费上车，市面上能订的模型挨个摸了一圈。
+      那段时间几乎所有能用 AI 摁住的零碎活（写脚本、查资料、出报告、文档结构化重写、做小工具）都被我 prompt 化了，
+      本职工作上的提效是真实可见的 —— 这是 AI 人民币玩家路线最早的回报。
+    </p>
+    <p>
+      <strong>老板（CTO）</strong> 注意到了这股热情和实际效果，顺势把 AI 正式加进了我的工作范围 ——
+      拉来一位<strong>浙大博士</strong>一起做后训练项目，
+      同时我自己开始搭一堆系统：RAG 知识库、IT agent、内部问答、各种小工具。
+      <strong>这才是我"真正切到 AI"的起点</strong>。
+    </p>
+    <p>
+      之后才慢慢意识到 ——
+      <strong>模型 + 算力</strong>打开的设计空间，比单纯做防御侧的攻防博弈大得多，
+      于是把主线整个迁了过去。
+    </p>
+    <p>
+      安全那十年的训练并没有浪费 ——
+      攻防侧"先假设系统是错的"那种直觉，
+      在做 agent / 做 AIGC 服务的运行时安全的时候，
+      反而比纯做 AI 出身的人占便宜不少。
+    </p>
+
+    <h2>第二个十年（2022– 至今）：AI 工程</h2>
+    <p>这几年的工作<strong>横切</strong>起来大致是这样一个层级，从底往上：</p>
+
+    <h3>1. 底层 · 算力</h3>
+    <p>
+      手上一个训练 / 推理混跑的小集群 ——
+      <strong>几节点的规模、数十张企业级训练卡、跨两个算力梯度</strong>（一档主力、一档备用与跑批）。
+      日常基本就是把这堆卡 "<strong>别躺平、别相互踩、别浪费钱</strong>" 这三件事做好。
+    </p>
+    <p>
+      具体：调度与隔离 · 空闲率治理 · 闲时任务接入（夜间编译 / 扫描 / 异步 agent）· 任务级成本核算 · ROI 反向治理业务侧。
+    </p>
+
+    <h3>2. 中间 · AIGC 生成能力</h3>
+    <p>
+      文 → 图、图 → 图、文 → 视频、图 → 视频、超分、抠图、人像修复 —— 这一层是把模型变成对内可用的 API、对外接到业务侧。
+    </p>
+    <p>
+      训练侧也做了一段时间：
+      <strong>全参微调（最大到 14B 规模）/ LoRA / 蒸馏 / 量化</strong> 都跑过，最近在测 NTP + flash-attention 的加速 baseline。
+      不过比起追单模型 SOTA，我更喜欢<strong>模型组合</strong> —— 用便宜的基模托底、贵的高质感模型只在关键路径上插入。
+      成本/质量曲线上的工程问题，比"哪个模型分数高 0.5"有趣得多。
+    </p>
+    <Callout kind="info" title="一个偏见">
+      新模型多到根本看不过来。我倾向于动手测，而不是读 AI 写的测评。
+    </Callout>
+
+    <h3>3. 业务侧</h3>
+    <p>中间这层能力，往上接到几条具体业务：</p>
+    <ul>
+      <li><strong>短剧平台</strong> —— 把生图、生视频、超分等能力组装成面向短剧创作的流水线</li>
+      <li><strong>美术与运营工具</strong> —— 团队日常的生图、修图、视频化工具</li>
+      <li><strong>内部学习与文档平台</strong> —— 让工具的使用方式可被消费、可被审计</li>
+    </ul>
+
+    <h3>4. 上层 · AIGC 能力平台</h3>
+    <p>
+      把上面这些拼起来对内提供服务的整体平台。
+      <strong>日活 60 人左右</strong> —— 听起来不多，但每个人都是真正在用算力、用模型、产生成本的人。
+      所以从平台运营、成本治理、稳定性、安全审计的角度看，这个量级一点都不轻松。
+    </p>
+
+    <h3>5. Agent 体系（最近一年的主线）</h3>
+    <p>
+      最近精力的大头都在这里 ——
+      把组织里的重复劳动改造成 <strong>agentic 工作流</strong>，而不是再写更多一次性脚本。
+    </p>
+    <p>按服务对象分三条线：</p>
+    <ul>
+      <li><strong>IT agent</strong> —— 服务 IT / 基础设施，覆盖部署、巡检、监控、变更</li>
+      <li><strong>安全 agent</strong> —— 服务安全侧，覆盖巡检、日报、入侵分析、应急响应</li>
+      <li><strong>短剧 agent</strong> —— 服务业务侧，覆盖剧本草稿、分镜、素材生成、批量出图与视频</li>
+    </ul>
+    <p>
+      底层我把可复用的能力都做成 <strong>Unix 风格的小命令组合</strong> ——
+      每个命令一件事，命令之间用结构化文档落盘传递，每步有自动 check 闭环。
+      这个口径跟十年前在安全产品那段时间领悟到的"做能力，不做一次性脚本"，是同一件事的两个十年版本。
+    </p>
+
+    <h2>工具上不太省钱</h2>
+    <p>
+      接着前面"AI 人民币玩家"那条线，几年下来工具开销越来越重也越来越值。
+      工程审美一句话：<strong>模型每年都在变，自己烧钱试，比看别人写的"最强 AI 工具排名"靠谱一万倍。</strong>
+    </p>
+    <p>现在日常订阅大致是：</p>
+    <ul>
+      <li><strong>Cursor</strong> —— 月开销在 <strong>3000 美元</strong>上下，是主战场</li>
+      <li><strong>Claude</strong> —— 长期订阅，Claude Code 几乎每天用</li>
+      <li><strong>ChatGPT</strong> —— 订阅一直在</li>
+      <li><strong>Poe</strong> —— 年度会员，主要用来横评不同 prompt 在不同模型上的差异</li>
+      <li><strong>OpenCode</strong> 等 agentic 编辑器轮流试</li>
+    </ul>
+    <p>
+      我真的把这些工具当 "<strong>多了一个能写、能查、能跑的同事</strong>" 在用，
+      不是辅助补全。使用心得后面会单独写。
+    </p>
+
+    <h2>这里会写什么</h2>
+    <p>博客 v2 主要是给自己留个"<strong>思考留痕</strong>"的地方，节奏弹性 ——</p>
+    <ul>
+      <li>AI 工程笔记（算力 / 模型 / agent）</li>
+      <li>工具建设与试用心得</li>
+      <li>paper 阅读与新模型杂感</li>
+      <li>旧的攻防方向偶尔也会冒出来一两篇，但不会再是主线</li>
+    </ul>
+
+    <hr />
 
     <h2>联系</h2>
     <ul>
@@ -35,7 +176,7 @@ const locale = 'zh' as const;
 
     <hr />
     <p class="small muted">
-      <a href="/posts/">所有文章</a> · <a href="/rss.xml">RSS</a>
+      <a href="/posts/">所有文章</a> · <a href="/rss.xml">RSS</a> · 2026 / 05 / 23
     </p>
   </article>
 </BaseLayout>
