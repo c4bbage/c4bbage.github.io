@@ -1,0 +1,403 @@
+---
+title: "GLM-5.1-FP8 部署调优复盘：8 卡 H20 从 31 tok/s 到 122 tok/s"
+description: "一次 GLM-5.1-FP8 在 SGLang 上的部署和调优记录：先给结论，再拆测试方法、参数取舍、性能对照和踩过的坑。"
+date: 2026-05-27
+lang: zh
+tags: [glm, sglang, fp8, h20, inference, performance]
+categories: [ai, infra]
+draft: false
+featured: false
+---
+
+![GLM-5.1-FP8 推理调优封面](/images/posts/glm-5-1-fp8-sglang-h20/cover.jpg)
+
+先说结论。
+
+GLM-5.1-FP8 在 8 卡 H20 上可以跑得很快，但前提是别只停在“服务能启动”。我一开始用 SGLang + Cutlass FP8 + CUDA Graph 跑到大约 **31 token/s**，已经可用，但还远没吃满。
+
+后面把 NSA、MTP、SBO、Torch Symmetric Memory 和连续 decode 打开之后，单请求端到端速度到了 **118-122 token/s**。32 并发下，系统总输出吞吐测到 **1,355 token/s**。
+
+我最长期跑的参数，是这一组：
+
+```bash
+--attention-backend nsa \
+--fp8-gemm-backend cutlass \
+--speculative-algorithm EAGLE \
+--speculative-num-steps 4 \
+--speculative-num-draft-tokens 6 \
+--enable-single-batch-overlap \
+--enable-torch-symm-mem \
+--num-continuous-decode-steps 4 \
+--mem-fraction-static 0.88
+```
+
+如果只看数字，这次调优的主线是：
+
+| 阶段 | 单请求速度 | 32 并发总吞吐 | 相对初始可用版 |
+|---|---:|---:|---:|
+| SGLang + Cutlass FP8 + CUDA Graph | 约 31 tok/s | 约 128 tok/s | 1x |
+| + NSA | 约 52-58 tok/s | 未单独压测 | 1.8x |
+| + MTP 保守参数 + SBO | 约 71-81 tok/s | 未单独压测 | 2.5x |
+| + MTP 激进参数 + 连续 decode | 约 118-122 tok/s | 1,355 tok/s | 3.9x |
+
+
+## 为什么还要继续调
+
+31 tok/s 不是不能用。
+
+问题是，GLM-5.1 不是一个普通 dense decoder。它有 MoE，有 NSA，有 MTP 头，模型结构本身就给了很多加速入口。如果只是把 FP8 权重加载起来，再靠 CUDA Graph 撑住 decode，等于只用到了最基础的一层能力。
+
+这类服务真正影响体验的地方有几个：
+
+| 目标 | 关心什么 |
+|---|---|
+| 单人使用 | 端到端速度、首 token 延迟、长回答稳定性 |
+| 多人并发 | 总输出吞吐、调度开销、KV Cache 压力 |
+| 长上下文 | Prefill 吞吐、cache 复用、TTFT |
+| 长期运行 | 显存余量、首次请求 JIT、参数稳定性 |
+
+所以调优不能只盯一个 token/s。单请求快，不代表并发能扛；并发吞吐高，也可能把首 token 延迟拉爆。我的目标不是跑一个好看的 benchmark，而是找一套能长期服务的参数。
+
+## 测试是怎么测的
+
+我主要看四类数据。
+
+第一类是单请求端到端速度。固定输出长度，分别测 200、500、800 token。短回答更容易被 TTFT 影响，长回答更能体现 decode 稳态速度。
+
+第二类是并发吞吐。按 cc=1、4、8、16、32 逐步压，记录系统总输出 token/s。这个指标回答的是：服务被多人同时使用时，总产能大概在哪。
+
+第三类是服务端日志。客户端看到的是端到端速度，服务端能看到更细的东西，比如纯 decode 吞吐、CUDA Graph 命中、MTP accept length、prefill 吞吐、Radix Cache 命中。
+
+第四类是资源状态。显存、KV Cache、CUDA Graph 占用和温度功耗都要看。一个参数如果快 5%，但把显存打到没有余量，我不会把它当成好参数。
+
+最后稳定配置下，单请求数据是：
+
+| 输出长度 | 端到端速度 | 备注 |
+|---|---:|---|
+| 200 token | 98-102 tok/s | 短文本里 TTFT 占比更明显 |
+| 500 token | 118-122 tok/s | 最接近日常长回答体感 |
+| 800 token | 88-93 tok/s | 回答更长，推理链更重 |
+| 纯 decode | 120-150 tok/s | 服务端日志口径 |
+
+并发数据是：
+
+| 并发数 | 系统总输出吞吐 |
+|---:|---:|
+| 1 | 118-122 tok/s |
+| 4 | 203 tok/s |
+| 8 | 469 tok/s |
+| 16 | 792 tok/s |
+| 32 | 1,355 tok/s |
+
+这里还有一个参考对照：公开评测里，GLM-5.1 NVFP4 在 8x RTX PRO 6000 上 cc=1 是 71.2 tok/s，cc=32 是 412 tok/s。这个对照不能直接说明“谁更强”，因为量化格式、框架和测试口径不完全一样，但能帮助判断这套 H20 配置是否跑偏。
+
+## 第一步：先找到能稳定启动的底座
+
+最开始我试了 vLLM。
+
+失败点在 FP8 + flashinfer kernel。启动时会报类似：
+
+```text
+RuntimeError: Assertion failed: !cubin.empty() || isPathValid(path_)
+```
+
+我试过 `--enforce-eager`，也试过关 flashinfer、换 attention backend，都没绕过去。
+
+这一步的结论很简单：不是 vLLM 不好，而是在这套组合里，先别把它当主线。部署大模型时，第一优先级不是“框架名气”，而是这个模型、这个量化、这个 GPU、这个 kernel 组合能不能稳。
+
+换到 SGLang 后，默认 FP8 backend 会走 DeepGEMM。DeepGEMM 理论上很适合 FP8，但这里 warmup 期间 JIT 编译不稳定，进度到一半子进程退出。
+
+于是我先切到 Triton FP8：
+
+```bash
+python -m sglang.launch_server \
+  --model-path /models/GLM-5.1-FP8 \
+  --tp 8 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --disable-cuda-graph \
+  --fp8-gemm-backend triton \
+  --skip-server-warmup
+```
+
+这个配置能启动，单请求大约 **2.3 tok/s**。慢得很明显，但它有价值：证明权重、依赖、分布式初始化、OpenAI API 这一整条链路是通的。
+
+真正的第一版可用配置，是 Cutlass FP8 加 CUDA Graph：
+
+```bash
+python -m sglang.launch_server \
+  --model-path /models/GLM-5.1-FP8 \
+  --tp 8 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --fp8-gemm-backend cutlass \
+  --skip-server-warmup
+```
+
+这一步单请求到了 **31 tok/s**，8 并发总吞吐约 **128 tok/s**。到这里，服务已经可以用了。
+
+## 第二步：打开 NSA
+
+GLM-5.1 的一个关键点是 NSA，也就是 Native Sparse Attention。
+
+普通 attention 会随上下文长度扩大而变重。NSA 的思路是利用模型原生的稀疏注意力结构，不再完整计算所有 attention。对长上下文模型来说，这不是锦上添花，而是核心能力。
+
+打开方式很直接：
+
+```bash
+--attention-backend nsa
+```
+
+加上 NSA 后，单请求从约 31 tok/s 提到 **52-58 tok/s**。这一步说明前面的瓶颈不只是 FP8 GEMM，attention backend 也在吃性能。
+
+NSA 还有一个副作用：后面很多参数都要看它是否兼容。比如 KV Cache FP8 看上去能省显存，但在这个组合里就没那么顺。
+
+## 第三步：MTP，不是越激进越好
+
+MTP 是 Multi-Token Prediction。简单说，就是模型每一步不只猜下一个 token，而是先用 draft 机制猜一串 token，再由主模型验证。
+
+如果 draft 猜得准，一次 decode step 可以接受多个 token，速度自然上去。如果猜得不准，反而浪费计算。
+
+我先用保守参数：
+
+```bash
+--speculative-algorithm EAGLE
+--speculative-num-steps 3
+--speculative-num-draft-tokens 4
+--num-continuous-decode-steps 2
+```
+
+这一版从 58 tok/s 左右推到 **71-81 tok/s**。提升是明确的，但还没到上限。
+
+后面改成更激进的一组：
+
+```bash
+--speculative-num-steps 4
+--speculative-num-draft-tokens 6
+--num-continuous-decode-steps 4
+```
+
+速度到了 **118-122 tok/s**。
+
+这里最值得注意的是，draft tokens 从 4 加到 6 后，accept rate 反而下降了，从大约 81% 变成 66%。但这不代表变差，因为绝对接受 token 数更高，而且验证轮次减少了。
+
+最后看到的 MTP 数据大概是：
+
+| 指标 | 结果 | 怎么理解 |
+|---|---:|---|
+| 平均 accept length | 3.1-3.5 / 5.0 | 每轮大约接受 3 个多 token |
+| 平均 accept rate | 约 66% | 命中率下降，但吞吐更好 |
+| 自然语言文本 | 68-70% | 高频模式更容易猜中 |
+| 代码、数字、低频 token | 52-58% | 分布更尖，猜中更难 |
+
+所以 MTP 不能只看 accept rate。更重要的是：每轮主模型验证之后，实际多吐了多少 token。
+
+## 第四步：SBO 和连续 decode
+
+SBO 是 Single Batch Overlap。它做的事情可以粗略理解成：让计算和通信更好地重叠起来，减少 TP=8 下的等待。
+
+对应参数是：
+
+```bash
+--enable-single-batch-overlap
+```
+
+Torch Symmetric Memory 也是为了 TP 通信：
+
+```bash
+--enable-torch-symm-mem
+```
+
+但我这次感受最明显的，是连续 decode：
+
+```bash
+--num-continuous-decode-steps 4
+```
+
+如果每 decode 一步就回 scheduler，一来一回的开销会很重。连续 decode 的意思是连续跑几步后再回调度器。这样会牺牲一点调度细粒度，但单请求和中低并发会明显受益。
+
+从 2 调到 4，是这轮调优里最大的提升点之一。再继续往上调，我没有把它当默认值，因为它可能影响 TTFT 和请求公平性。
+
+## 最终启动命令
+
+最后稳定使用的是这类启动方式：
+
+```bash
+tmux new-session -d -s glm-5-1-fp8 '\
+source /path/to/conda.sh && \
+conda activate <sglang-env> && \
+export LD_PRELOAD=/path/to/libstdc++.so.6 && \
+SGLANG_ENABLE_SPEC_V2=1 python -m sglang.launch_server \
+  --model-path /models/GLM-5.1-FP8 \
+  --tp 8 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 8000 \
+  --attention-backend nsa \
+  --reasoning-parser glm45 \
+  --tool-call-parser glm47 \
+  --skip-server-warmup \
+  --mem-fraction-static 0.88 \
+  --speculative-algorithm EAGLE \
+  --speculative-num-steps 4 \
+  --speculative-eagle-topk 1 \
+  --speculative-num-draft-tokens 6 \
+  --enable-single-batch-overlap \
+  --enable-torch-symm-mem \
+  --num-continuous-decode-steps 4 \
+  2>&1 | tee /tmp/sglang.log'
+```
+
+冷启动耗时大概如下：
+
+| 阶段 | 耗时 | 说明 |
+|---|---:|---|
+| 分布式初始化 | 约 10 秒 | 8 卡通信初始化 |
+| 模型加载 | 约 100 秒 | 142 个权重分片 |
+| 主模型 CUDA Graph 捕获 | 约 55 秒 | 多个 batch size |
+| Draft 模型 CUDA Graph 捕获 | 约 8 秒 | MTP 相关 |
+| 服务启动 | 约 1 秒 | Uvicorn 就绪 |
+| 完全冷启动 | 约 3.5 分钟 | 含首次预热 |
+
+显存占用也在可接受范围内：
+
+| 类别 | 单卡占用 |
+|---|---:|
+| 模型权重 | 约 89GB |
+| KV Cache | 约 31GB |
+| MTP Draft CUDA Graph | 约 0.7GB |
+| 主模型 CUDA Graph | 约 5GB |
+| 可用余量 | 约 11GB |
+
+这说明 `mem-fraction-static 0.88` 比较激进，但还没有把机器压死。
+
+## 访问和验证
+
+服务起来以后，可以直接用 OpenAI 兼容接口测：
+
+```bash
+curl http://<api-host>:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "/models/GLM-5.1-FP8",
+    "messages": [
+      {
+        "role": "user",
+        "content": "用三句话解释一下 speculative decoding"
+      }
+    ],
+    "max_tokens": 200
+  }'
+```
+
+模型列表：
+
+```bash
+curl http://<api-host>:8000/v1/models
+```
+
+GLM-5.1 是推理模型，默认输出经常会很“展开”。如果业务里需要短答案，prompt 里最好直接约束回答格式，比如“只输出结论，不要展开推理过程”。
+
+## 试过但没采用的方案
+
+### vLLM FP8
+
+没采用。
+
+原因不是框架层面谁好谁坏，而是这次组合里 FP8 + flashinfer kernel 没跑稳。部署时不要和框架赌气，先承认具体组合的现实。
+
+### SGLang + DeepGEMM JIT
+
+没采用。
+
+DeepGEMM 理论性能很好，但 warmup 阶段 JIT 崩溃。后续可以考虑 AOT 编译，用来消除首次 JIT 延迟，但我没有把它作为主服务启动链路。
+
+### Triton FP8
+
+采用过，只用于验证链路。
+
+优点是能启动，缺点是慢。单请求 2.3 tok/s 左右，适合排除环境问题，不适合长期提供服务。
+
+### KV Cache FP8
+
+没采用。
+
+我试过：
+
+```bash
+--kv-cache-dtype fp8_e5m2
+--kv-cache-dtype fp8_e4m3
+```
+
+`fp8_e5m2` 和 NSA 支持范围冲突。`fp8_e4m3` 会把路径带到不稳定的 FP8 GEMM 编译上。最后还是 bfloat16 KV Cache 更稳。
+
+### Two Batch Overlap
+
+没作为默认。
+
+这次场景下 SBO 更合适。TBO 更偏并发吞吐，可能牺牲单请求体感。我的目标不是单纯把总吞吐冲高，而是保持日常交互足够快。
+
+### SageAttention 替代 NSA
+
+没采用。
+
+GLM-5.1 的 NSA 是模型原生结构，换成通用 attention 优化不一定占便宜。模型自己带的稀疏注意力，优先吃它。
+
+### 更激进的投机参数
+
+暂时没采用。
+
+比如 `speculative-num-steps > 5` 或 `speculative-num-draft-tokens 8`。这类参数不是越大越好，draft 多了以后，猜错的 token 也更多，验证成本会反过来吃掉收益。
+
+### torch.compile
+
+没采用。
+
+理论上可能还有收益，但 MoE 模型上风险比较高。如果只是为了多榨 10% 性能，却换来输出异常或排障成本，我不觉得划算。
+
+## 几个容易踩的坑
+
+CUDA Graph 可能会找不到 `libcuda.so`：
+
+```text
+-lcuda: No such file or directory
+```
+
+如果系统里只有 `libcuda.so.1`，可以补一个链接：
+
+```bash
+ln -sf /usr/lib/x86_64-linux-gnu/libcuda.so.1 \
+  /usr/lib/x86_64-linux-gnu/libcuda.so
+```
+
+首次请求会慢一些。即使加了 `--skip-server-warmup`，第一次请求仍可能触发部分 JIT 或缓存初始化。线上服务最好启动后主动打一条 warmup 请求。
+
+长时间运行后，性能可能有小幅波动。我的处理方式比较朴素：保留健康检查和日志观察，必要时周期性重启。
+
+显存不要压到完全没有余量。`mem-fraction-static 0.88` 这组能跑，是因为还有十几 GB 余量。如果业务上下文更长、并发更高，需要重新测。
+
+## 还能继续试什么
+
+我觉得还有几条可以继续验证，但优先级不一样：
+
+| 方向 | 预期收益 | 风险 | 我的判断 |
+|---|---:|---|---|
+| DeepGEMM AOT 编译 | 消除首次 JIT 延迟 | 低 | 值得做 |
+| MoE kernel tuning | 3-5% | 低 | 有空可以做 |
+| DP Attention | 高并发 15-20% | 中 | 适合持续高并发服务 |
+| Prefill Context Parallel | 长 prompt TTFT 下降 | 中 | 要单独测 NSA 兼容 |
+| 更大的 draft tokens | 5-10% 或负收益 | 中 | 不能盲开 |
+| torch.compile | 理论 10-20% | 高 | 暂时不碰 |
+
+如果这是一个面向多人调用的公共服务，我会优先测 DP Attention。如果这是给少数人高频交互用，我会优先保持现在这组参数，因为单请求体感更重要。
+
+## 总结
+
+这次部署给我的最大感受是：大模型推理调优不能只问“哪个框架最快”，要具体到模型结构、量化格式、GPU、kernel、attention backend 和调度方式。
+
+GLM-5.1-FP8 在 8 卡 H20 上，能跑起来的配置很多，能跑快又稳定的配置没那么多。vLLM FP8 没跑通，DeepGEMM JIT 不稳，Triton 能启动但太慢，Cutlass + CUDA Graph 才是第一块稳定地基。
+
+真正把速度拉起来的，是后面的结构性优化：NSA 吃模型原生稀疏注意力，MTP 用投机解码减少 decode step，SBO 和 Torch Symmetric Memory 降低通信等待，连续 decode 减少 scheduler 往返。
+
