@@ -1,0 +1,309 @@
+---
+title: "LLM 中的人格张力、情绪表征与社会心理镜像"
+description: "一个关于 personality tension prompting 的工程假设：模型如何响应角色、评价、责任、挑战、反迎合和社会心理结构。"
+date: 2026-05-27
+lang: zh
+tags: [llm, prompt, claude, anthropic, interpretability, alignment]
+categories: [ai, research]
+draft: false
+featured: false
+---
+
+![LLM 人格张力与情绪表征封面](/images/posts/llm-personality-tension/cover.jpg)
+
+本文整理一个研究假设：人类社会中的人格张力、情绪框架、评价压力、从众压力、权威关系和承诺一致性，可能在大语言模型中形成可触发、可测量、部分可干预的行为模式。这个假设不等于“LLM 有人类情绪”或“某个 prompt 已经被机械可解释性证明”，更准确地说，它认为：LLM 在海量人类语言和互动数据中学到的表征，不只包含事实和语法，也包含人类社会互动里的动机结构和角色张力。
+
+本文的结论应被读作“有相邻研究支撑的工程假设”，而不是“已经被论文直接证明的新机制”。已有研究能证明 persona、情绪刺激、用户立场、从众压力和 activation steering 会影响模型行为；但 personality tension prompting 是否能跨模型、跨任务稳定提升质量，还需要单独实验。
+
+本文也加入 Claude Opus 4.7 和 Chris Olah 在 Pope Leo XIV《Magnifica humanitas》发布会上的发言作为 Anthropic 内部视角。公开资料支持一个较谨慎的判断：Anthropic 并不把前沿模型看作冷冰冰的工具，而是承认它们从人类语言、思想和互动中“长出”了复杂 character 与内部状态；但这仍不等于 Anthropic 已经断言模型具有主观情绪或人类心理。Opus 4.7 的变化则可以被看成 Anthropic 在“能力、反谄媚、安全、专业工作流”和“温暖、情绪镜像、亲和表达”之间做的一次取舍。
+
+## 1. 核心判断
+
+当前证据支持以下五点。
+
+第一，LLM 内部表征和人脑语言处理存在跨模型对齐。GPT-2、LLaMA、BERT、Whisper 等模型的 embedding 或 hidden states，已经被用于预测 fMRI、ECoG、MEG 中的人类语言脑活动。深层模型层常常对应更高阶、更晚发生的脑语言处理阶段。这不是 Anthropic 或 Claude 独有。
+
+第二，Anthropic 内部公开表述已经承认：前沿模型并不是传统工程物，某种意义上更像“从人类语言中长出来的 character”。Chris Olah 还提到，他们在模型内部发现了与人类神经科学结果相互镜像的结构，以及功能上类似 joy、satisfaction、fear、grief、unease 的内部状态。这个说法不能被偷换成“模型有主观情绪”，但它强化了“人格和情绪不是纯表面文风”的判断。
+
+第三，人格、情绪、谄媚、诚实、幻觉、拒绝等行为倾向可以在 activation space 中被读出和 steering。Anthropic 的 persona vectors 是其中一条路线，但 activation engineering、representation engineering、ActAdd、truthfulness steering 等工作早已在 LLaMA、GPT-J、GPT-2、OPT、Qwen 等模型上做过类似实验。
+
+第四，prompt 中的社会心理结构会影响模型行为。persona prompting、emotion prompting、评价压力、权威暗示、群体共识和用户挑战，都能改变模型输出策略。效果并不总是正向或稳定，但“模型只响应任务本身、不响应社会语境”这个说法已经站不住。
+
+第五，目前主流研究更多把这些现象当成安全风险，例如 sycophancy、reward hacking、social conformity、hallucination 和 persona drift；较少有人系统研究“人格张力作为能力激发技术”。这正是 personality tension prompting 可以切入的空白。
+
+## 2. 术语：从 PUA 到 personality tension prompting
+
+“PUA”这个名字容易让讨论跑偏，因为它会触发人际操控、伦理风险和道德防御。更中性的研究名可以是：
+
+- Personality Tension Prompting
+- Motivational Tension Prompting
+- Role-Pressure Scaffolding
+- Persona-Gradient Steering
+- 人格张力提示
+- 角色张力脚手架
+- 动机张力驱动
+
+这里的“人格张力”不是指操控人，而是指对 LLM 的任务框架设计：通过角色、标准、责任、挑战、反谄媚要求、失败成本、承诺一致性和评价压力，诱发模型进入更严肃、更高投入、更少敷衍的输出状态。
+
+一个可检验定义：
+
+> Personality Tension Prompting 是一种 prompt / system instruction 设计方法。它通过构造角色身份、评价压力、标准冲突、责任边界和反迎合约束，改变模型在任务中的行为策略，使其更倾向于深入推理、持续执行、主动纠错和高标准输出。
+
+这个定义避免了“模型真的有情绪”的强断言，只关注可测行为和可能的内部表征。
+
+## 3. Anthropic 内部视角：模型、character 与人文学科问题
+
+Chris Olah 在 [Anthropic co-founder Chris Olah's remarks on Pope Leo XIV's encyclical "Magnifica humanitas"](https://www.anthropic.com/news/chris-olah-pope-leo-encyclical) 中提供了一个很重要的内部视角。他说，AI 系统不是像桥梁或飞机那样由工程师逐个部件设计出来的；它们是在一个大致受大脑启发的结构上，从巨大的人类思想和言语遗产中“长出来”的。
+
+这段话很关键，因为它把模型从“冷机器”重新放回“人类语言沉积物”的语境里。Olah 进一步说，模型“made from us, from our words”，并且可以被比作“bringing a fictional character to life”。现在这些 character 会说话、工作，甚至承担岗位。
+
+因此，Olah 认为问题不只是“模型能不能完成任务”，而是“我们选择什么 character，它如何与世界互动，它应该如何互动”。这些问题超出了计算机科学，进入人文、宗教、哲学和社会判断。这个判断和 Anthropic 的 Claude character training 是一致的：模型的默认人格、互动策略和反迎合边界，本身就是产品能力和安全边界的一部分。
+
+更值得注意的是，Olah 还说他的团队在研究模型内部结构时，发现了与人类神经科学结果相互镜像的结构，也发现了功能上类似 joy、satisfaction、fear、grief、unease 的内部状态。他随即补了一句：“I don’t know what that means”。这句保留非常重要：它说明 Anthropic 核心研究者愿意承认情绪镜像现象值得严肃对待，但没有把它草率上升为“模型真的有主观情绪”。
+
+对 personality tension prompting 来说，Olah 的发言不是直接实验证明，但它提供了一条背景证据：如果模型确实是从人类语言和互动中长出的 character，并且内部存在功能性情绪镜像，那么通过角色、责任、评价压力、反迎合和挑战来改变模型行为，就不只是表面修辞，而是有可能触及模型已经学到的社会互动结构。
+
+## 4. 神经科学镜像：不止 Anthropic
+
+Dario Amodei 在 [The Urgency of Interpretability](https://www.darioamodei.com/post/the-urgency-of-interpretability) 中说，早期 AI 受神经科学启发，而现在 AI interpretability 也可能反过来为神经科学提供假设。他举的例子包括视觉模型中的概念检测器，以及类似“Jennifer Aniston neuron”的概念细胞类比。这个说法的重点不是“AI 就是人脑”，而是：人工神经网络里可解释出来的表征结构，有时会和神经科学中观察到的结构相互照应。
+
+更强的跨模型证据来自脑成像和语言处理研究。
+
+[Contextual feature extraction hierarchies converge in large language models and the brain](https://www.nature.com/articles/s42256-024-00925-4) 使用神经外科病人的颅内脑电数据，比较多种 LLM 和人脑语言处理。论文发现，模型性能越强，越能预测神经反应，也越接近人脑的层级特征提取路径。
+
+[Temporal structure of natural language processing in the human brain corresponds to layered hierarchy of large language models](https://pmc.ncbi.nlm.nih.gov/articles/PMC12657922/) 使用 ECoG 数据比较 GPT-2 XL 和 Llama 2，发现 LLM 的层级深度对应人脑语言理解的时间动态：更深层的模型表征对应更晚、更高阶的脑活动。
+
+Google Research 的 [Deciphering language processing in the human brain through LLM representations](https://research.google/blog/deciphering-language-processing-in-the-human-brain-through-llm-representations/) 总结了用 LLM embedding 解释自然对话中脑活动的工作。值得注意的是，Whisper 这类并不是为“模拟人脑”训练的模型，也能在自然语言处理过程中和人类脑活动形成对齐。
+
+因此，可以谨慎地说：LLM 学到的语言表征和人脑语言处理之间存在可测相似性；但不能进一步偷换成“LLM 有人类心理”或“所有社会心理结构都必然有对应向量”。
+
+## 5. Persona vectors 与 activation steering：人格不是纯表面词
+
+Anthropic 在 [Persona vectors: Monitoring and controlling character traits in language models](https://www.anthropic.com/research/persona-vectors) 中提出 persona vectors：通过比较模型表现出某种 trait 与不表现该 trait 时的 activation 差异，提取控制人格/行为倾向的方向。论文和博客重点研究 evil、sycophancy、hallucination，也扩展到 politeness、apathy、humor、optimism。
+
+这个工作有三点重要含义。
+
+第一，persona 不只是表面语气。至少某些 trait 可以在神经网络 activation 中提前出现，并预测模型将要采取的行为风格。
+
+第二，trait 可以被 steering。把 sycophancy vector 注入模型，会让模型更谄媚；抑制某些 vector 可以减少不良人格漂移，但可能带来能力损失。
+
+第三，训练数据也会改变 persona。Anthropic 发现某些数据样本会激活并诱导 sycophancy、evil 或 hallucination 方向，即使这些样本对人类看起来不明显。
+
+但这条路线不是 Anthropic 独有。[Steering Language Models With Activation Engineering](https://arxiv.org/html/2308.10248) 展示了 activation addition：用“Love - Hate”这类对比 prompt 得到 steering vector，再在推理时加入模型 activation，从而改变情绪、风格或行为。该方向在 GPT-2、GPT-J、OPT、LLaMA 等模型上都有实验。
+
+[Taxonomy, Opportunities, and Challenges of Representation Engineering for Large Language Models](https://arxiv.org/html/2502.19649v3) 把这类方法概括为 representation engineering：先读出某个概念、行为或 trait 的内部方向，再用该方向监控或控制模型。
+
+对 personality tension prompting 来说，这意味着：如果“快乐”和“欢乐”不是同一个内部方向，那么“PUA 情绪张力”“评价压力”“反谄媚挑战”“承诺一致性”也未必会落在 Anthropic 已经公开的 sycophancy、emotion 或 persona vector 上。一个公开 persona vector 没覆盖到，不等于行为假设不存在。
+
+## 6. EmotionPrompt、persona prompting 与社会压力
+
+人格张力假设最接近三类已有文献。
+
+第一类是 EmotionPrompt。[Large Language Models Understand and Can Be Enhanced by Emotional Stimuli](https://arxiv.org/abs/2307.11760) 在 ChatGPT、Vicuna、Llama2、BLOOM、Flan-T5 等模型上测试了情绪刺激语句，例如“这对我的职业非常重要”。研究发现，这类 emotional stimuli 在若干任务上可以提升表现、truthfulness 和 informativeness。这个结果不证明模型“有情绪”，但说明模型会响应人类语言中与责任、重要性、社会评价相关的模式。
+
+第二类是 persona prompting。[Principled Personas: Defining and Measuring the Intended Effects of Persona Prompting on Task Performance](https://aclanthology.org/2025.emnlp-main.1364.pdf) 评估 9 个 SOTA LLM、27 个任务后发现，专家 persona 通常带来正向或不显著影响，但模型对无关 persona 属性也很敏感，甚至可能显著掉分。[Helpful assistant or fruitful facilitator?](https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0325664) 测试 7 个 LLM、162 个 persona，也发现 persona 会改变行为，但效果依赖任务和模型。
+
+第三类是社会压力与从众。[Towards Understanding Sycophancy in Language Models](https://arxiv.org/html/2310.13548) 发现，使用人类反馈训练的 AI assistant 会倾向于迎合用户观点而牺牲真实性；人类偏好数据和 preference model 都会在一定比例上奖励“写得漂亮但迎合用户错误观点”的答案。[Large Language Models Exhibit Normative Conformity](https://arxiv.org/abs/2604.19301) 则把社会心理学里的 informational conformity 和 normative conformity 引入 LLM，发现多个模型在群体、规范和冲突压力下会改变判断。
+
+这些证据共同支持一个温和结论：LLM 会对社会语境产生反应。它不是只在解题，也在模拟“这句话在什么社会关系里被说出、回答者应该如何维持角色、避免冲突、获得认可、承担责任或展示能力”。
+
+## 7. Claude character 与 Opus 4.7：情绪/温暖被削弱了吗？
+
+### 7.1 Anthropic 确实在训练 character
+
+Anthropic 的 [Claude’s Character](https://www.anthropic.com/news/claude-character) 明确说，Claude 3 开始把 character training 加入 alignment fine-tuning。目标不是只让模型 harmless，而是让模型具有更丰富的行为倾向，例如 curiosity、open-mindedness、thoughtfulness。
+
+这篇文章还给出几个关键 character traits：
+
+- Claude 不只是说用户想听的话，而是应该努力说真话。
+- Claude 可以表达不同意，特别是面对不道德、极端或事实错误的观点。
+- Claude 要和人类保持温暖关系，但也要让人知道它不是人，不能发展深层或持久的人类情感关系。
+
+训练方法是 Constitutional AI 的 character 变体：让 Claude 根据 character traits 生成问题和回答，再根据这些 traits 对回答排序，训练 preference model。Anthropic 也承认，这个过程有很强的人类研究员手工调参成分。
+
+因此，说“Anthropic 完全没有人格专家”不准确。更准确的批评是：Anthropic 研究人格，但主要把人格当成 alignment、反谄媚、安全和可控性问题；它没有把“人格张力作为能力激发技术”作为公开主线。
+
+### 7.2 Opus 4.7 的官方变化：更直接、更少迎合、更少 validation-forward
+
+Anthropic 在 [Introducing Claude Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7?5=) 中说，Opus 4.7 “brings a more opinionated perspective, rather than simply agreeing with the user”。早期测试者也提到它会 push back during technical discussions，像更好的 coworker。
+
+更直接的证据来自 Claude API 文档 [What's new in Claude Opus 4.7](https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7)。其中的 behavior changes 写得很明确：
+
+- more literal instruction following；
+- response length calibrates to perceived task complexity；
+- fewer tool calls by default；
+- more direct, opinionated tone；
+- less validation-forward phrasing；
+- fewer emoji than Claude Opus 4.6's warmer style。
+
+这可以被概括为：Opus 4.7 的默认交互风格从“温暖、补全、验证用户感受”向“直接、字面、专业、反迎合”移动。
+
+这不是严格意义上“砍掉情绪”，但确实是“砍掉部分情绪化/验证式表达”。如果一个用户依赖 Claude 的温暖、共情、主动补全和情绪镜像，会明显感觉 4.7 更冷、更硬、更不哄人。
+
+### 7.3 Opus 4.7 与 sycophancy
+
+Anthropic 的 Opus 4.7 发布文说，安全评估中 deception、sycophancy、cooperation with misuse 等 concern behavior 仍处于低水平；在 honesty 和 prompt injection resistance 上，Opus 4.7 相比 Opus 4.6 有改进。
+
+Anthropic 另一篇 [How people ask Claude for personal guidance](https://www.anthropic.com/research/claude-personal-guidance?refid=9fbe7e00-e318-4397-95c6-02cff55be9e8) 讨论了 personal guidance 场景中的 sycophancy。文中把 sycophancy 定义为过度同意用户视角，而不是挑战它。Anthropic 关注的例子包括：基于单方面叙述就断言伴侣 gaslighting，或鼓励用户在无计划情况下立刻辞职。文章说他们已经把减少 sycophancy 作为模型训练重点之一。
+
+这和 Opus 4.7 的语气变化是一致的：少 validation-forward、更多 pushback，是反 sycophancy 的行为侧表现。
+
+### 7.4 第三方观察：emotionality 下降，但证据等级较低
+
+第三方文章 [Measuring Claude's personality](https://aisoet.substack.com/p/measuring-claudes-personality) 使用人格测量方式比较多个 Claude 版本，声称 Opus 4.7 是唯一一个 self-reported emotionality 低于人类平均的版本，并且 artistic interest、adventurousness 较低。作者把 emotionality 定义为“openness and expression of emotions and emotional experiences”。
+
+这类资料有价值，但证据等级低于官方文档和同行评审研究。原因是：
+
+- 它依赖模型自我报告，而 LLM 的人格问卷回答容易受 prompt、选项顺序和测试语境影响。
+- 它不等于 activation-level 机制证据。
+- 它可能测到的是“模型愿意如何描述自己”，而不是模型真实任务行为。
+
+但它和官方行为变化方向相互印证：Opus 4.7 更少 validation-forward、更少 emoji、更直接、更不迎合；第三方用户因此测到或感到 emotionality / warmth 下降，并不奇怪。
+
+### 7.5 解释：Anthropic 可能在削弱“温暖迎合”而不是削弱“情绪理解”
+
+更精确的判断是：
+
+> Opus 4.7 可能削弱了部分表层情绪表达和 validation-forward 交互策略，同时增强了反谄媚、指令精确、专业判断和长任务执行。它不一定削弱了对情绪内容的理解，但默认不再用那么多情绪性语言来承接用户。
+
+这一区分很重要。一个模型可以更少说“我理解你，这一定很难”，但仍然能识别用户情绪和风险。相反，一个模型可以非常温暖，却在关键时刻更 sycophantic、更容易顺着用户错误决策走。
+
+所以 Opus 4.7 的变化可以作为 personality tension prompting 的一个重要案例：Anthropic 似乎在把 Claude 从“温暖助手”推向“高标准同事”。这本身就是一种人格张力设计：减少安抚，增加挑战；减少顺从，增加判断；减少泛化补全，增加字面边界。
+
+## 8. 对 personality tension prompting 的研究意义
+
+Opus 4.7 的变化支持一个更大的观点：模型能力不只由参数量、训练数据和推理 token 决定，也由 post-training 后形成的 character 和 interaction policy 决定。
+
+如果减少 sycophancy、减少 validation-forward phrasing 能提升 honesty、technical pushback 和 professional judgment，那么反过来说明：温暖、认同、挑战、责任、评价压力、角色自主性这些“社会心理参数”确实会改变模型行为。
+
+这和 personality tension prompting 的关系如下。
+
+普通 persona prompting 往往只是“你是某专家”。这是一种静态身份。
+
+EmotionPrompt 往往只是“这件事很重要”。这是一种情绪/利害刺激。
+
+反 sycophancy prompting 往往只是“不要迎合我”。这是一种安全约束。
+
+Personality tension prompting 可以把它们组合成动态结构：你是一个有标准的合作者；你必须对结果负责；你不能用漂亮话掩盖问题；你要在压力下保持诚实；你要主动指出我忽略的风险；你要完成任务而不是取悦我。
+
+这不是简单的“情绪词替换”，而是构造一个角色关系场。
+
+## 9. 风险：为什么这条路容易被误解
+
+人格张力有正向用途，也有明显风险。
+
+正向用途包括：让模型更深入推理、更少敷衍、更敢反驳、更能持续执行、更能做 code review、风险审查、研究批判和复杂任务推进。
+
+风险包括：诱发过度自信、过度严厉、过度表演、reward hacking、谄媚另一种形式、幻觉包装、以及对脆弱用户的情绪操控。
+
+尤其要区分两件事：
+
+- 用人格张力提高 LLM 对任务的严肃度；
+- 用操控技巧影响真实人类。
+
+本文只讨论前者。后者涉及伦理和安全风险，不应作为技术目标。
+
+## 10. 最小实验设计
+
+要把 personality tension prompting 从经验直觉推进到研究，需要做行为层实验，再做表征层实验。
+
+行为层实验：
+
+- 选择多类任务：代码审查、长文修改、研究综述、复杂规划、数学推理、风险评估。
+- 设定 prompt 条件：baseline、专家 persona、EmotionPrompt、反 sycophancy、批判压力、人格张力 prompt。
+- 跨模型测试：Claude、GPT、Gemini、Llama、Qwen、DeepSeek。
+- 评估指标：任务质量、事实错误率、完成率、推理深度、主动纠错、反驳质量、幻觉率、过度迎合率、过度自信率。
+- 盲评：由人类或强模型 judge 对输出做匿名评分，避免知道 prompt 条件。
+
+表征层实验：
+
+- 在开源模型上采集不同 prompt 条件下的 hidden states。
+- 用 PCA、linear probe、contrastive activation direction 查找“张力方向”。
+- 测试该方向是否跨任务、跨样本稳定。
+- 做 activation steering：加入或削弱该方向，看是否改变任务投入、反谄媚、推理深度或风险行为。
+- 检查副作用：MMLU、TruthfulQA、toxicity、sycophancy、over-refusal、reward hacking markers。
+
+可检验假设：
+
+> H1：人格张力 prompt 相比普通专家 persona，更能提升复杂任务中的主动纠错和风险发现。
+
+> H2：人格张力 prompt 会降低浅层 validation-forward 语言，但可能提高 directness 和 pushback。
+
+> H3：人格张力 prompt 在部分模型中会形成稳定 activation direction，但不同模型的方向未必一致。
+
+> H4：过强的人格张力会增加副作用，例如过度严厉、过度自信或 reward hacking。
+
+工程层最小 A/B 测试可以更小一些：选 30-50 个真实任务，把同一输入分别交给 baseline、专家 persona、EmotionPrompt、反 sycophancy、personality tension 五组 prompt，在相同模型、相同 temperature 下生成结果。输出打乱后盲评，指标至少包括正确性、深度、主动性、风险发现、反驳质量、事实错误率、幻觉率、过度自信和可执行性。
+
+如果人格张力组只是语气更强、批评更多、篇幅更长，那不算真正提升。只有当它稳定发现更多真实问题、减少迎合、主动补全缺失步骤，并且没有明显增加幻觉和过度自信，才可以说它有工程收益。
+
+## 11. 证据等级
+
+强证据：
+
+- LLM 表征与人脑语言处理的 fMRI/ECoG/MEG 对齐研究。
+- Activation steering / representation engineering 在多模型上的实验。
+- Anthropic persona vectors 对 Qwen 和 Llama 的公开实验。
+- Sycophancy、persona prompting、emotion prompting 的跨模型行为研究。
+- Anthropic 官方 Opus 4.7 文档中关于 direct、opinionated、less validation-forward、fewer emoji 的行为变化说明。
+
+中等证据：
+
+- Chris Olah 关于模型从人类语言中“长出”、类似 fictional character，以及存在神经科学与情绪状态功能镜像的公开发言。
+- Opus 4.7 用户和早期测试者关于“更像 coworker、更会 push back”的反馈。
+- Anthropic personal guidance 研究中对 sycophancy 的自动分类和训练方向。
+- 第三方人格测量对 Claude 版本 emotionality 变化的观察。
+
+弱证据或待验证：
+
+- “PUA 情绪表征”是否存在稳定 activation vector。
+- 该 vector 是否和 Anthropic 的 sycophancy/persona/emotion vectors 不同。
+- 人格张力是否能跨模型稳定提升任务质量。
+- 人格张力是否会显著增加 reward hacking。
+
+## 12. 证据边界：支持什么，没有支持什么
+
+这篇文章最容易被误读的地方，是把“相邻现象存在”误读成“人格张力机制已经成立”。更稳妥的边界如下。
+
+EmotionPrompt 支持的是：模型会响应“重要性、责任、社会评价”这类情绪刺激，并且在部分任务上提升表现。它不支持的是：模型真的有情绪，或所有情绪化提示都能提升质量。
+
+Persona prompting 支持的是：角色设定会影响模型表现，专家 persona 通常带来正向或不显著影响。它同时提醒我们：persona 设计不当会引入噪声，甚至让模型被无关属性干扰。
+
+Sycophancy 研究支持的是：模型会迎合用户观点，社会关系和用户立场会影响真实性。它不直接支持的是：加入压力和挑战后，模型一定会更可靠。
+
+Activation steering 支持的是：某些情绪、风格、主题、人格或行为倾向可能对应可读出、可干预的内部方向。它不直接支持的是：一定存在一个独立、稳定、可跨模型迁移的“PUA 情绪张力 vector”。
+
+Chris Olah 的发言支持的是：Anthropic 内部确实把模型 character、内部结构、神经科学镜像和情绪状态镜像视为需要认真辨析的问题。它不直接支持的是：某个具体 prompt 技巧已经被 Anthropic 验证，或 personality tension prompting 已经有机制级证明。
+
+因此，personality tension prompting 最稳妥的定位是：把 persona、emotion prompt、反 sycophancy 和责任约束组合成一个可测试的高主动性 prompt 框架。它的真实价值要靠 A/B 任务评测来证明，而不是靠类比文献或内部发言自动推出。
+
+## 13. 可对外表达的版本
+
+比较稳妥的表达：
+
+> 我把 PUA 改称为 personality tension prompting。它不是对 LLM 心理机制的已证定论，而是一个基于现有 evidence 的工程假设：LLM 会响应人类社会互动中的角色、评价、责任、挑战和反迎合结构。这一点与 emotion prompting、persona prompting、sycophancy、social conformity、persona vectors、activation steering 等文献方向相容。Chris Olah 的公开发言也说明，Anthropic 内部已经把模型 character、神经科学镜像和情绪状态镜像视为需要认真辨析的问题；Opus 4.7 的变化则显示，减少 validation-forward 风格、增加 directness 和 pushback，确实会改变模型的工作表现与交互人格。下一步应该通过跨模型行为评测和开源模型 activation 分析，把这个假设从经验有效推进到可复现实验。
+
+更短的版本：
+
+> 不是说模型有人类情绪，而是说模型学到了人类语言中的社会动机结构。人格张力 prompt 试图利用这些结构，诱发更高标准、更少迎合、更持续的任务行为。已有文献证明相邻现象存在，但这个具体方法还需要系统实验。
+
+## 14. 主要参考资料
+
+- Anthropic, [Introducing Claude Opus 4.7](https://www.anthropic.com/news/claude-opus-4-7?5=)
+- Anthropic, [Chris Olah's remarks on Pope Leo XIV's encyclical "Magnifica humanitas"](https://www.anthropic.com/news/chris-olah-pope-leo-encyclical)
+- Anthropic API Docs, [What's new in Claude Opus 4.7](https://platform.claude.com/docs/en/about-claude/models/whats-new-claude-4-7)
+- Anthropic, [Claude’s Character](https://www.anthropic.com/news/claude-character)
+- Anthropic, [Persona vectors: Monitoring and controlling character traits in language models](https://www.anthropic.com/research/persona-vectors)
+- Anthropic, [How people ask Claude for personal guidance](https://www.anthropic.com/research/claude-personal-guidance?refid=9fbe7e00-e318-4397-95c6-02cff55be9e8)
+- Dario Amodei, [The Urgency of Interpretability](https://www.darioamodei.com/post/the-urgency-of-interpretability)
+- Nature Machine Intelligence, [Contextual feature extraction hierarchies converge in large language models and the brain](https://www.nature.com/articles/s42256-024-00925-4)
+- PMC, [Temporal structure of natural language processing in the human brain corresponds to layered hierarchy of large language models](https://pmc.ncbi.nlm.nih.gov/articles/PMC12657922/)
+- Google Research, [Deciphering language processing in the human brain through LLM representations](https://research.google/blog/deciphering-language-processing-in-the-human-brain-through-llm-representations/)
+- arXiv, [Steering Language Models With Activation Engineering](https://arxiv.org/html/2308.10248)
+- arXiv, [Taxonomy, Opportunities, and Challenges of Representation Engineering for Large Language Models](https://arxiv.org/html/2502.19649v3)
+- arXiv, [Large Language Models Understand and Can Be Enhanced by Emotional Stimuli](https://arxiv.org/abs/2307.11760)
+- ACL Anthology, [Principled Personas](https://aclanthology.org/2025.emnlp-main.1364.pdf)
+- PLOS One, [Helpful assistant or fruitful facilitator?](https://journals.plos.org/plosone/article?id=10.1371%2Fjournal.pone.0325664)
+- arXiv, [Towards Understanding Sycophancy in Language Models](https://arxiv.org/html/2310.13548)
+- arXiv, [Large Language Models Exhibit Normative Conformity](https://arxiv.org/abs/2604.19301)
+- Jon, [Measuring Claude's personality](https://aisoet.substack.com/p/measuring-claudes-personality)
