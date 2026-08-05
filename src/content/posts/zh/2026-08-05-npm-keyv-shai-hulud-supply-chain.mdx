@@ -1,0 +1,474 @@
+---
+title: "npm 七天两起投毒：18 个包藏了 92 天，868 个包只用了几小时"
+description: "一次定向、一次蠕虫。被投毒的 keyv 带着有效的 sigstore 签名发布，蠕虫把自己装进了开发者的 .claude 目录。两起事件暴露同一个盲区。"
+date: 2026-08-05
+lang: zh
+tags: [npm, supply-chain, keyv, shai-hulud, sigstore, provenance, ai-agent, cybersecurity]
+categories: [security, ai]
+draft: false
+featured: false
+---
+
+七天，npm 出了两起投毒，性质完全相反。
+
+**7 月 28 日**，Socket 披露一个针对阿里系开发者的定向投毒：18 个包串成一条链，**92 天没有任何扫描器报警**，最后落地一个跨平台木马。
+
+**8 月 4 日**，`keyv`（周下载 1.27 亿）连同 `cacheable` 系列被投毒，蠕虫几小时内自我复制到几百上千个包。Socket 在恶意版本发布后**约 6 分钟**就标记了它——还是没拦住。
+
+一个慢到没人察觉，一个快到来不及反应。但把两起放一起看，会发现一件比单独复盘更有用的事：
+
+> **看攻击者在哪儿下了功夫、在哪儿偷懒，就知道哪些防御是真管用的。**
+> 他们肯花力气绕开的，说明这道防线你已经有了；他们懒得绕的，说明根本没人装。
+
+这篇文章就按这个思路走：先看两起攻击各自把力气花在哪，再倒推你该先修哪几个洞。文末有一份只读的自查脚本，两起事件都覆盖。
+
+> **关于数字**：keyv 事件还在进行中，各家统计口径差很多（见文末「八家报告，八个说法」）。**查自己有没有中招，请以包名 + 版本 + 哈希为准**，别用下载量估算风险。阿里那起 Socket 没公布下载量和实际影响范围。所以下文谈的是**手法有多好用**，不是伤害有多大。
+
+---
+
+# 第一起：18 个包，藏了 92 天
+
+| | |
+|---|---|
+| **92 天** | 没被发现（4/28 投放 → 7/28 披露） |
+| **18 个包** | 串成一条链，单看每一个都干净 |
+| **3 年** | 前发布的休眠包，今年 3 月底突然连发 3 版 |
+
+2026 年 3 月底，一个三年前发布、只有一个无害版本的 npm 包 `lib-mtop` 连推了三个新版本——这是账号被盗的典型信号。4 月 27 日两个测试包试水，4 月 28 日全套投放：10 个诱饵包，名字精确模仿阿里内部 `@ali` scope 下的私有库（`aone-cloud-cli`、`lzd-unified-station-sdk`、`def-open-client`——这种名字只有在阿里体系里待过的人才写得出来）。
+
+中间这 92 天，一次告警都没有。按 Socket 的说法，披露时整套服务器**还在线上跑着**。
+
+下面拆四个手法。每拆一个，你可以顺手问自己一句：他为这一步多花了多少功夫？
+
+## 手法一：拆成多个包，每个单看都干净
+
+10 个诱饵包是空壳，真正的逻辑拆在中间三个包里，每个包只做一件在任何项目里都合理的事：
+
+| 层 | 包 | 它干的活 |
+|---|---|---|
+| 诱饵 | 10 个 `@ali` 仿冒包 | 只有一份依赖声明。你以为在装内部库，实际装了公开仓库上的同名包 |
+| 中间 A | `cloud-config-fetcher` | 从 GitHub 拉一份 JSON 配置存到本地。**"拉远程配置"每个 SDK 都在干** |
+| 中间 B | `local-config-parser` | 读本地配置，把里面的规则表达式求值。**"规则引擎"每个 SDK 也都在干** |
+| 合流 | **A + B** | **远程代码执行。** 恶意代码藏在那份 JSON 的规则里，伪装成一个乘法表达式的一部分 |
+
+**恶意不在任何一个包的代码里，它在两个包的组合里。**
+
+> **这说明什么**：只要你的审计单位是"一个包"，这条链永远是干净的。**得看整棵依赖树。** 单看 A 是配置下载器、B 是规则引擎，各自都写得出像模像样的 README；只有把两个放进同一张图，"下载 + 执行"这个组合才浮出来。
+
+## 手法二：用 vm 当沙箱，两行代码就逃出来
+
+求值用的是 Node.js 的 `vm` 模块——这给了整件事一层"我们做了隔离"的假象。逃出来只要两行：
+
+```javascript
+var F = items.constructor.constructor;   // 拿到 Function 构造器
+var p = F('return process')();           // 拿到 process
+```
+
+拿到 `process` 之后，样本准备了**六种**备用路径去够 `require`（`process.getBuiltinModule`、`process.mainModule`、从 global 根对象翻找）。六种备用——这是为了在各种 Node 版本上都能跑通，不是随手写的验证代码。
+
+**Node.js 官方文档白纸黑字写着 `vm` 不是安全机制。** 构造器逃逸十年前就是成熟手法。如果你代码里有"用 vm 跑不可信表达式"的地方，那不是沙箱，是一个装了壳的 `eval`。
+
+## 手法三：Mac、Windows、Linux 各写一套
+
+Socket 记录的事实是：第三阶段落地后先做一次 *"initial reconnaissance and platform fingerprinting"*（初步侦察和平台识别），然后按系统走三条完全不同的路：
+
+| 系统 | 干什么 |
+|---|---|
+| macOS | 往 `~/.zshrc` 塞后台脚本，再装一个每 10 分钟跑一次的 Launch Agent |
+| Windows | **杀掉阿里官方安全客户端 Alilang，把它的核心代码 `app.asar` 换成木马版** |
+| Linux | 下载二进制到 `/tmp`，脱离父进程跑起来，**加载进内存后立刻把文件删掉** |
+
+三套独立实现，是实打实的工作量。Windows 那条尤其值得看一眼：**它挑的宿主是公司自己的安全软件**——进程本来就在、开机本来就自启、信任级别本来就高，全给攻击者用了。
+
+> **以下是我的推断，Socket 没做这个归因。**
+>
+> 这种写法对通用自动分析沙箱天然免疫。沙箱的玩法是"把包丢进去跑跑看它干什么"，而主流沙箱基本都是 Linux 容器、没有企业内网环境、更不可能装着 Alilang。样本在里面要么走 Linux 分支把文件秒删（取证拿不到东西），要么因为环境对不上而根本不干坏事。
+>
+> 它不需要检测虚拟机、不需要反调试、不需要任何传统的反沙箱技巧——**目标越窄，越不用对付通用检测**。这是定向攻击白送的一层保护，也是我对"92 天"最合理的解释。但要说清楚：Socket 只写了"三个月没被发现"这个结果，没给原因。
+
+## 手法四：服务器就架在受害者自己的云上
+
+| 干什么用 | 地址 | 为什么好用 |
+|---|---|---|
+| 发载荷 | `aone-cli-next.oss-cn-beijing.aliyuncs.com` | 阿里体系的出网白名单里，几乎必然放行 `*.aliyuncs.com` |
+| 回连控制 | `diamond-cli-znsxphqell.cn-shanghai.fcapp.run` | **阿里云函数计算**。域名随机、随开随扔、由受害者自己的云厂商托管 |
+| 流量伪装 | `Origin/Referer: alidocs.dingtalk.com` | 让请求看起来像钉钉文档在说话 |
+
+**这一条直接废掉了一条常见建议。**"限制开发机出网、只放行可信域名"在这儿**等于没设**——载荷源、回连地址、伪装身份，全都落在这家公司本来就必须放行的域名里。
+
+有用的替代不是把白名单写得更长，而是**看行为**：这台开发机以前从没连过函数计算，现在每 10 分钟连一次 WebSocket——不对劲的是这个规律，不是那个域名。
+
+---
+
+# 反过来看：他哪儿根本没设防
+
+把上面四个手法倒过来读一遍。攻击者不做无用功，他只加固真会拦住他的环节。所以他在哪儿使劲、在哪儿裸奔，反过来就是一张防御地图：
+
+| 他下了功夫的 | 他压根没管的 |
+|---|---|
+| 躲静态审计（拆依赖树） | 流量行为分析（伪装只改了两个 HTTP 头） |
+| 躲自动沙箱（三套平台分支） | 查包的历史（休眠三年突然发版，一点不遮掩） |
+| 躲取证（用完即删、不落磁盘） | 私有 scope 锁源 |
+| 躲域名封禁（寄生在受害者的云上） | 配置文件被改了有没有人知道 |
+| → 说明这些防御**人人都有**，是红海 | → 说明这些**几乎没人装**，现在做最划算 |
+
+**右边这一栏就是你的待办清单。** 它不是按"哪个听起来更重要"排的，是攻击者用真金白银投票排出来的。
+
+这个判断马上要接受一次检验——七天后的 keyv 事件里，攻击者花钱买了一样阿里那批人根本没碰的东西。
+
+---
+
+# 第二起：签名是真的，代码是毒的
+
+8 月 4 日 09:00 UTC 前后，`keyv` 的维护者 Jared Wray 的 GitHub 账号被接管。攻击者直接往主分支推恶意提交，然后**走项目本来的 GitHub Actions 发布流程**切了个版本。接下来两小时（UTC）：
+
+| 时间 | 发生了什么 |
+|---|---|
+| 09:02–09:30 | 仓库出现初始提交、bot 署名的钩子注入、reset 删除、再注入 |
+| 09:30–09:32 | `@keyv/*` 系列陆续发布，包体干净、没有钩子 |
+| **09:35:00.763** | **`keyv@6.0.0` 发布，带恶意 `preinstall` 钩子** |
+| 09:38 | `@thiennq/docs-viewer@1.6.2` 发布——已经烧到别人的命名空间 |
+| 10:09–10:14 | `cacheable` 家族爆发，5 分钟 9 个包 |
+| ~11:28 | Datadog 记录的活动窗口结束 |
+| — | Socket 在 `keyv` 发布后**约 6 分钟**标记异常 |
+
+**6 分钟检出，还是扩散到了几百个包。** 这件事本身就说明：这类攻击，"扫得更快"不是答案。
+
+## 它是怎么跑起来的
+
+**第一步 `setup.mjs`**：下载官方 Bun 运行时（v1.3.13，直接从 GitHub releases 拉，**不校验签名也不校验哈希**），用 Bun 来执行第二步。
+
+为什么用 Bun？**这样恶意代码就不跑在 `node` 进程里了**，一大批按进程名和 Node 行为做的监控直接失明。
+
+**第二步 `Math_Symbol.js` / `math_init.js`**：710–728 KB 的 Bun 打包产物，混淆很重（各家对手法的描述还不一致，见文末）。它的日志标签暴露了内部分工：`[collector]`（收集）、`[dispatcher]`（外传）、`[provenance]`（签名）、`[publish]`（发包）。运行时用环境变量 `_NODE_RUNTIME_INIT=1` 防重复执行，在临时目录留一个锁文件 `tmp.dpkg_14527.lock`。
+
+## 它偷什么：这份清单变了
+
+- **云和基础设施**：AWS 实例元数据与 Secrets Manager 多区域遍历、GCP 服务账号、Azure client secret、HashiCorp Vault（把 KV 全翻一遍）、Kubernetes 服务账号令牌
+- **发包身份**：npm token、GitHub 各类 token（PAT / OAuth / App / Actions OIDC）
+- **CI/CD**：Jenkins、Argo CD、Harbor
+- **加密货币钱包**：Foundry、Solana、Monero
+- **系统**：`/etc/shadow`
+- **地毯式搜刮**：约 200 个文件匹配规则 + TruffleHog 风格的密钥正则
+- **新增的一类：AI 编程工具的凭证**——**OpenAI、Anthropic / Claude、Cursor、Codex、Gemini**
+
+最后一条是新东西。以前这类木马偷 AWS 密钥和 SSH 私钥；**现在你 AI 编程工具里的 API key，也被一起打包带走了。**
+
+## 回连地址挂在以太坊上，你封不掉
+
+主回连域名是 `npm-cache[.]com`。但真正的设计在这儿：载荷通过 `eth_call` 去查以太坊主网上的一个合约（`0xE1f2395ee43e45A1556EC6438a88c31B83493103`），**从链上取回当前可用的域名列表**，还备了好几个公共 RPC 节点做冗余。
+
+**结果就是你封不掉它。** 没有可以拉黑的固定域名，也没有可以下架的服务器。攻击者想换地址，发一笔链上交易就行，所有已经投出去的载荷自动跟着换。Datadog 的说法很准确：这让 **DNS 层面的封堵变得没有意义**。
+
+顺带一提，IOC 里还有 `pypi-get[.]com` 和 `js-mirror[.]com`——想往 Python 生态烧的意图，写在脸上了。
+
+## 最要命的一点：那个签名是有效的
+
+好几家报告都写了，但谁都没拿它当标题。Socket 的原文，我逐字核过：
+
+> **"keyv@6.0.0 itself shipped with a passing attestation**（keyv@6.0.0 本身带着一份通过验证的签名发布）because the legitimate release workflow built already-trojanized source."
+
+> "A dedicated provenance component **builds DSSE attestation envelopes, requests Fulcio signing certificates, and submits Rekor transparency-log entries**, so republished versions can ship freshly minted, verifiable sigstore provenance."
+
+Datadog 独立得出了同一个判断：
+
+> "In a compromised workflow, a valid attestation can faithfully bind a malicious source and an attacker-controlled build to the resulting package."
+> （在一条被攻陷的流水线里，一份有效签名会忠实地把恶意源码和攻击者控制的构建过程，绑定到最终产物上。）
+
+这里其实是两件事，第二件更严重：
+
+1. **`keyv@6.0.0` 带着有效签名发布**——因为源码在合法流水线跑起来之前就被投毒了，流水线只是老老实实地把毒源码构建了一遍
+2. **蠕虫自带一个签名模块**——它重新发布的每个包，都现签一份可验证的 sigstore 证明，走 Fulcio 签发 + Rekor 透明日志 + npm 可信发布
+
+第二点意味着：**在这次攻击里，你去验签名，反而会觉得恶意包比没签名的正常包更可信。**
+
+Socket 把结论放在文末，就一句话：
+
+> "The lesson is that provenance attests build integrity, not source integrity."
+> **签名证明的是"这东西确实是那条流水线造出来的"，不是"喂给流水线的源码是干净的"。**
+
+## 它还专门去找带签名权限的仓库
+
+这条是 JFrog 挖到的，其他几家都没提，也是整件事最该被记住的细节：
+
+蠕虫会**专门检查自己是不是跑在带 `release-drafter.yml` 工作流的 GitHub Actions 里**。一旦命中（JFrog 举的例子是 opensearch-js 相关仓库），它就：
+
+1. 申请一个面向 npm 仓库的 **OIDC token**
+2. 往包里塞恶意的 `optionalDependencies`
+3. 借着这个**受信任的工作流身份**生成 sigstore 签名，产出一份完全合法的来源证明
+
+**这不是"顺手也签个名"，是把可信发布本身当成目标去打。** 攻击者算过这笔账：带签名的包能过更多下游的准入策略，所以值得专门写个模块去拿。
+
+## 这反过来说明了什么
+
+回到前面那张防御地图。
+
+阿里那批人在签名上**一分钱没花**。keyv 这批人**专门写了个模块**，还主动去找带可信发布的仓库。按前面的逻辑，这说明一件事：
+
+**签名校验已经普及到"值得攻击者花钱绕开"的程度了。**
+
+这不是打脸，恰恰是印证。同一把尺子还告诉你另一件事——他们**还是**没在流量行为上花钱（回连域名裸奔在 DNS 里，靠链上换址而不是靠伪装），**还是**没管配置文件有没有人在盯。两起事件、两拨人、隔七天，在这两件事上的判断完全一致。
+
+## 死人开关：你一撤销 token，它就动手
+
+最后一个细节，Socket 挖得最深。载荷把偷到的 GitHub token 和一段指令写进 `~/.config/gh-token-monitor/`（权限 600），再装一个 macOS LaunchAgent（`com.user.gh-token-monitor`）或 Linux systemd 用户服务（配 `loginctl enable-linger`，保证你注销了它还在跑）。
+
+这个后台服务**每 60 秒问一次 GitHub API：我这个 token 还有效吗？一旦发现被撤销（返回 4xx），它就执行远端下发的那段指令，然后把自己清干净。** 内置 24 小时自动过期。
+
+Socket 那句话说得好：
+
+> "No linter, secret scanner, or release tool installs a background service that watches for its own credential to be revoked and then evaluates a remote-supplied string."
+> （没有任何一个 linter、密钥扫描器或发布工具，会装一个后台服务盯着自己的凭证何时被吊销，然后去执行一段远程下发的字符串。）
+
+**对你的实际影响：撤销凭证这个动作本身，就是扳机。** 处置顺序得改——**先断网隔离，再撤 token**，不能反过来。
+
+---
+
+# 两起事件的共同点：都盯上了 AI 助手
+
+这是两起攻击唯一重合的地方，也是最该被单独拎出来的。
+
+## 第一起：改 `.skills` 目录里的脚本
+
+Socket 报告里有一句话，夹在持久化那一节中间，几乎所有转载都没把它拎出来：
+
+> Persistence mechanisms include poisoning of AI-tools by patching Python scripts located inside `.skills` directories of a specific set of tools.
+> （持久化手段包括：给特定几个工具的 `.skills` 目录里的 Python 脚本打补丁，以此污染 AI 工具。）
+
+被点名的是**钉钉、Wukong、Qoder**。Qoder 是阿里 2025 年 8 月发布的 AI 编程 IDE，1.0 的主打功能就是自定义 agent 团队和 skill 插件。**`.skills` 不是普通配置目录，它是 AI agent 的能力定义目录。**
+
+做法是往这些目录的 Python 脚本里打个标记 `# __INJECT_MARKER__`，附一段用 `subprocess` 拉起远程 `script.js` 的代码（Windows 下加 `0x08000000`，不弹窗口）。顺带一提，诱饵包里有一个就叫 `test-skill-zip`。
+
+## 第二起：把蠕虫本体装进 `.claude/`
+
+七天后，同一件事被做到了规模上。
+
+keyv 蠕虫除了污染 npm 包，还有第二条传播路线：用偷来的 GitHub 令牌直接往受害者仓库提交，最多打 50 个分支。JFrog 和 Datadog 都确认，每个分支塞进去**五个文件**：
+
+```
+.claude/settings.json      ← SessionStart 钩子
+.claude/setup.mjs          ← 加载器
+.claude/math_init.js       ← 蠕虫本体
+.vscode/tasks.json         ← 打开文件夹就跑 node .claude/setup.mjs
+.vscode/setup.mjs          ← 加载器副本
+```
+
+**注意第三行：蠕虫本体就住在 `.claude/` 里。** 这不是顺手改个配置，是把 agent 的目录当成自己的安装位置。
+
+**效果：克隆这个仓库、或者用编辑器打开这个目录、或者起一个 Claude 会话，加载器就跑起来了——完全不需要 `npm install`。**
+
+它伪造的痕迹，也是最好用的排查线索：
+
+| 项 | 值 |
+|---|---|
+| 提交信息 | `chore: update config` |
+| 伪造署名 | `Co-authored-by: claude <claude@users.noreply.github.com>` |
+| 常用分支名 | `dependabot/github_actions/format/setup-formatter` |
+
+**它冒用 AI 的署名，把恶意提交伪装成 agent 的日常自动化工作。** 特别注意：伪造的是 `Co-authored-by` 这一行，不是提交的 author 字段——**所以按作者过滤会漏掉，得搜提交信息正文**（自查脚本里已经改对了）。
+
+在这篇文章的上一版结尾，我写过一句预测：
+
+> 下一次值得看的，是**第一个直接拿 skill 文件当投放目标的包**——省掉前面几个阶段，一步到位。
+
+七天后就来了。**但差距得说清楚，不然就是事后凑话**：机制对上了（拿 agent 目录当投放载体、跳过安装这一步），路径没对上——不是恶意包里带着 skill 文件，而是用偷来的令牌直接往仓库里塞。猜中了结局，来的是另一条路。
+
+## 为什么 agent 特别好下手
+
+以下是我的推断，不是报告结论，但每一条都基于 agent 的公开设计：
+
+- **它手里有全套凭证。** 一个能干活的编程 agent，握着 git 凭证、npm token、云 API key、内部系统会话——它本来就是为了替你调这些而存在的。keyv 这次把 AI 凭证列进偷取清单，说明攻击者已经算过这笔账
+- **没人盯着它。** 自动模式下没人逐条审它执行的命令，很多人还把权限确认关了
+- **它的持久化不需要进程。** skill 和 settings 都是纯文本。改一个文件，不用留后台进程、不用注册开机启动——下次是**你自己**把恶意逻辑跑起来的。传统 EDR 那套按进程行为建模的方法，对此基本失明
+- **它天然会横向移动。** agent 的正常工作就是连内部系统、读代码库、调 API。被污染的 agent 干这些事，在任何日志里都是合规操作
+- **它的身份可以被冒用。** `Co-authored-by: claude` 这一行，在一个已经习惯 AI 提交代码的团队里，没人会多看一眼
+
+回头看一眼你自己的机器：`~/.claude/`、`~/.cursor/skills/`、`CLAUDE.md`、`AGENTS.md`、`.vscode/tasks.json`、MCP 配置——纯文本、可写、会被自动执行，而且几乎不在任何人的资产清单上。
+
+---
+
+# 所以，该先做哪几件事
+
+排序依据是"这一条能废掉攻击者哪一步"，不是"听起来重不重要"。
+
+| 序 | 做什么 | 废掉他哪一步 |
+|---|---|---|
+| 1 | **给私有 scope 强制锁源**——在 `.npmrc` 里给 `@ali`、`@yourcorp` 配死 registry 路由 | 第一起的诱饵层直接全废。改一次配置，10 个仿冒包同时失效。**最划算的一条**，而且攻击者没有后手 |
+| 2 | **审计整棵依赖树，别只看单个包**——盯跨包的能力组合：谁负责下载、谁负责执行 | 直接对上手法一 |
+| 3 | **想清楚签名能证明什么**——它证明构建过程，不证明源码干净 | 第二起的核心。**别把"签名验证通过"当放行理由**，尤其当蠕虫会主动去抢签名权限时 |
+| 4 | **把 AI 工具的配置目录纳入资产清单和完整性监控**——`.skills/`、`.claude/`、`.cursor/`、`CLAUDE.md`、`.vscode/tasks.json`、MCP 配置 | 两起事件的共同落点。keyv 蠕虫的本体就住在 `.claude/` 里，而这些文件在绝大多数公司的资产清单上**根本不存在** |
+| 5 | **依赖更新加冷却期**——新版本发布后放几天再进构建 | keyv 这次 6 分钟就被检出，但秒级拉新版的流水线照样中招。JFrog 说他们启用"成熟度策略"的客户完全没事，因为被劫持的包全在 24 小时内被标记——**时间是最有效的解药** |
+| 6 | **查包的历史，不只查代码**——账号注册时间、停更多年突然发版、一个账号短时间连发一堆包 | `lib-mtop` 睡了三年连发三版、keyv 5 分钟内 9 个包——这些信号**完全裸奔**，没人看 |
+| 7 | **清点谁有发布权**——审 npm 可信发布配置和 OIDC 设置，看哪些工作流能发包 | 直接对上 keyv 抢签名权限那一步 |
+| 8 | **警惕"装上就自己跑"的包**——安装或 import 就发网络请求、写文件的 | npm v12 默认禁用安装脚本是平台侧的应对，但 import 触发、以及 keyv 那种 clone 就执行，都不受这个限制 |
+| 9 | **出网看行为，别只看域名**——首次出现的目的地要告警，周期性连接要查 | 废掉手法四。前提是承认：当回连地址托管在你自己的云厂商、或者挂在以太坊上时，域名这个维度已经没信息量了 |
+| 10 | **别把 `vm` 当安全边界** | 这条不针对这两次攻击，针对的是别让你自己的代码成为下一个入口 |
+
+> ### 一处自我修正
+>
+> 这篇文章的上一版，把**可信发布**列在"平台侧做的好事"里。keyv 事件证明我当时没说清它的边界：**OIDC 可信发布不只是被顺手用了，而是被当成目标主动去抢的。**
+>
+> 那句话没写错——去掉长期有效的 token 确实降低了泄露风险。但它防的是"token 被偷"，防不了"账号本身被接管"。账号一失守，可信发布反而让重新发包更顺，还附赠一份合法签名。
+>
+> 这是这两起事件改掉我的一条判断，留在这儿，不删。
+
+## npm 和 GitHub 那边做了什么
+
+GitHub 公布过的措施：高影响力账号在改邮箱或 2FA 后进入 72 小时只读；可信发布去掉长期 token（边界见上）；npm v12 起默认禁用安装脚本；Dependabot 加了冷却期；Actions 防火墙（预览版）做异常出网检测。
+
+更早那几波 Shai-Hulud 里，GitHub 的处置套路是批量下架恶意包 + 作废带写权限的 npm token。**截至本文更新，还没看到针对 8 月 4 日这一波的官方声明**，各家报告也都没引用官方响应。
+
+这些措施都是好的，但要清楚：它们只能作用在**平台看得见的层面**。这两次攻击的关键环节——依赖树的组合、平台分支、往 agent 目录塞文件、链上换址、源码级投毒——平台一个都看不见。
+
+---
+
+# 花 60 秒，查一下你自己的机器
+
+以下全是只读命令。
+
+```bash
+### A. 第一起：阿里定向投毒 ###
+
+# 1. 依赖里有没有这批包（在项目目录执行）
+grep -nE 'lib-mtop|aone-kit|aone-sandbox|smart-config-manager|cloud-config-fetcher|local-config-parser|fast-transform-pipeline|node-data-utils|aone-cloud-cli|uniapi-bridge|test-skill-zip' package-lock.json
+
+# 2. AI 工具的 skill 目录有没有被打标记
+grep -rl '__INJECT_MARKER__' ~/.skills ~/.claude ~/.cursor ~/.qoder ~/.config 2>/dev/null
+
+# 3. 中间产物和恶意路径
+find ~ -maxdepth 4 -name '.cloud-preferences.json' 2>/dev/null
+ls -la ~/.real/.bin/ 2>/dev/null
+
+# 4. 环境变量（已知值 3201d407b7899a12d6d439950511c6a5）
+env | grep -i ROBOT_UID
+
+### B. 第二起：keyv 蠕虫 ###
+
+# 5. 受影响版本（版本号以 npm audit / GitHub Advisory 为准，各家报告有出入）
+grep -nE 'keyv|@keyv/|cacheable|cacheable-request|flat-cache|file-entry-cache|cache-manager|ecto' package-lock.json
+npm audit
+
+# 6. 载荷文件和运行痕迹
+find . \( -name 'Math_Symbol.js' -o -name 'math_init.js' -o -name 'setup.mjs' \) 2>/dev/null | grep node_modules
+ls -la /tmp/tmp.dpkg_14527.lock 2>/dev/null
+
+# 7. AI 工具和编辑器的自启动钩子  ← 这次最该查的一条
+ls -la .claude/ .vscode/ 2>/dev/null              # 有没有 setup.mjs / math_init.js
+grep -l 'SessionStart' .claude/settings.json 2>/dev/null
+grep -l 'folderOpen'   .vscode/tasks.json   2>/dev/null
+
+# 8. 死人开关装在哪
+ls -la ~/.config/gh-token-monitor/ 2>/dev/null
+ls -la ~/Library/LaunchAgents/ | grep -i gh-token-monitor      # macOS
+systemctl --user list-units 2>/dev/null | grep -i gh-token     # Linux
+
+# 9. 被冒名的提交
+#    伪造的是 Co-authored-by 这一行，不是 author 字段，
+#    所以 --author 过滤会漏，必须搜提交信息正文
+git log --all --grep='Co-authored-by: claude' --oneline
+git log --all --grep='chore: update config' --oneline
+git branch -a | grep 'dependabot/github_actions/format/setup-formatter'
+
+# 10. 工作流里有没有被塞进 secrets 序列化
+grep -rn 'toJSON(secrets)' .github/workflows/ 2>/dev/null
+
+# 11. 去你的 GitHub 账号下，搜描述里含 "Shai-Hulud: Here We Go Again" 的仓库
+
+### C. 两起通用：持久化和流量 ###
+
+tail -20 ~/.zshrc
+ls -la ~/Library/LaunchAgents/
+
+# 代理 / DNS 日志里查这些：
+#   第一起：xemzqli2vu[.]ai-app[.]pub  /  *.cn-shanghai[.]fcapp[.]run
+#           Origin/Referer: alidocs.dingtalk.com
+#   第二起：npm-cache[.]com  /  pypi-get[.]com  /  js-mirror[.]com
+#           eth-mainnet.nodereal[.]io  /  go.getblock[.]io  /  eth.llamarpc[.]com
+#           User-Agent: Bun/1.3.13
+```
+
+**关键哈希（SHA-256，第二起）**
+
+| 文件 | 哈希 |
+|---|---|
+| `setup.mjs`（npm 包里的） | `54dc7ea54a1317cca0e890a2770630cf7fa6c97813e0cb9d2caa93012b350668` |
+| `setup.mjs`（塞进仓库的） | `fd3ca4007b225fdf8de7af4345a19179d5efa8c4bb9205f88cda806e5684b1eb` |
+| `Math_Symbol.js` / `math_init.js` | `9fc2570b7cef51c1b8df116d144d11ff4096357be7d2c4c6367cfc2509cf1bcc` |
+
+> ### 查到了怎么办：顺序很重要
+>
+> **先隔离主机，再撤销凭证。** 因为 keyv 载荷的死人开关就是靠"发现 token 被撤销"来触发远程指令的——按老习惯先冲去转 token，等于亲手扣扳机。
+>
+> 隔离之后：留取证副本（包体、CI 日志、GitHub 审计日志）→ **换一台干净机器**做后续处置 → 优先撤销带写权限的 npm token，再轮换这台机器碰过的所有凭证 → 检查每个可写仓库的**所有分支** → 看看 GitHub 账号下有没有被建出来的外传仓库 → 复查 npm 可信发布和 OIDC 配置 → 用干净镜像重建主机和 CI runner。
+>
+> 中招的机器按"已经完全失守"处理，不要在上面做处置。
+
+---
+
+# 附：八家报告，八个说法
+
+keyv 事件 24 小时内至少八家发了独立分析。它们**不是互相抄的**——同一个样本被多拨人各自逆向，哈希、包名、合约地址一致是必然的。真正说明问题的是它们**对不上的地方**。
+
+**连名字都没统一**：Aikido 叫 `Shai-Hulud`，JFrog / SafeDep / Phoenix 叫 `Mini Shai-Hulud`，Expel 叫 `ChainDrop`。
+
+**规模数字差了一个量级：**
+
+| 来源 | 说法 |
+|---|---|
+| Aikido | 868 个包 / 1,381 个版本 / 20 亿月装量 |
+| JFrog | 400+ 个包 / 1,700+ 个版本 |
+| SafeDep | 420 个包名 / 1,684 个中毒版本 / 涉及 9 个组织 |
+| Datadog | 受影响包合计周下载 1.5 亿+ |
+| hackread | 1,280+ 个包，且"每几分钟新增 50–100 个" |
+
+**技术描述也打架**：载荷大小 Socket 说 728 KB、JFrog 说 710 KB；混淆手法 Socket 描述成"base91 多态编码"，JFrog 描述成"PBKDF2 派生的位置相关替换密码"；`file-entry-cache` 的版本 Socket 记 `11.1.7`、Aikido 记 `11.1.6`。
+
+**各家真正的独有贡献：**
+
+| 来源 | 只有它有的 |
+|---|---|
+| **Socket** | 挖得最深：死人开关的完整机制、签名链路、分钟级时间线、"签名只证明构建不证明源码"这句结论 |
+| **JFrog** | **蠕虫主动抢可信发布**（检测 `release-drafter.yml` → 申请 OIDC token → 造合法签名）、五个注入文件的清单、`Co-authored-by` 的准确形式 |
+| **Wiz** | 以太坊合约回连的详细文档、RPC 冗余清单、机器指纹定向投递、往前追溯到同源家族 |
+| **Datadog** | 精确到毫秒的时间线、运行时痕迹（锁文件、环境变量）、对签名问题的独立佐证 |
+| **Aikido** | 最早的规模统计和滚动更新 |
+
+> **给你的实际提示**：口径差这么多，说明**规模数字不可靠**。查自己有没有中招，请以**包名 + 版本 + 哈希**为准，并以 `npm audit` / GitHub Advisory 的结论为准，别拿下载量估算风险。
+
+各家的引用规范都不太好——大多只引自家前作，几乎没有交叉引用。这不构成抄袭，但确实让读者很难交叉验证，上面那些互相矛盾的数字也就一直没被收敛。
+
+---
+
+# 最后
+
+两起事件，七天，性质相反，指向同一件事。
+
+第一起那批人花了大力气写三套平台分支去躲自动分析，却对"有人把这批包的发布者和发布时间连起来看一眼"毫无防备。第二起那批人专门写模块去造 sigstore 签名、还主动去抢带可信发布的仓库，却让回连域名裸奔在 DNS 里。
+
+**他们都很清楚哪些防御是摆设，哪些是真的**——而且两拨人的判断完全一致。
+
+这就是这篇文章唯一想留下的方法：**别按"听起来重不重要"排你的防御清单，按攻击者的花钱记录排。**
+
+至于方向，供应链的终点正在往前挪。以前是开发者的机器，现在是开发者的 AI 助手：一个握着全套凭证、自动执行、行为写在纯文本里、还能冒用身份提交代码，而且不在任何资产清单上的东西。七天里两起毫无关联的攻击都打到了它——一次是改 `.skills` 里的 Python,一次是把蠕虫本体装进 `.claude/`。
+
+它今天几乎没有防线，就像三年前的 CI/CD 一样。
+
+---
+
+**来源**
+
+*第一起：阿里定向投毒*
+- [Socket — Distributed npm Package Cluster Delivers Cross-Platform RAT](https://socket.dev/blog/npm-rat-targets-alibaba)
+
+*第二起：keyv / cacheable 蠕虫*
+- [Socket — Popular npm Packages in the keyv and cacheable Namespaces Compromised](https://socket.dev/blog/popular-npm-packages-in-the-keyv-and-cacheable-namespaces-compromised-in-active-supply-chain)（签名悖论、死人开关）
+- [JFrog — Major Shai Hulud campaign strikes npm again](https://research.jfrog.com/post/shai-hulud-is-back-august/)（主动抢可信发布、五文件注入、取证线索）
+- [Wiz — keyv and cacheable npm Supply Chain Attack](https://www.wiz.io/blog/keyv-and-cacheable-npm-supply-chain-attack)（以太坊回连、家族溯源）
+- [Datadog Security Labs — Worm compromises hundreds of popular npm packages](https://securitylabs.datadoghq.com/articles/npm-worm-compromises-popular-npm-packages/)（毫秒级时间线、运行时痕迹）
+- [Aikido — Keyv and friends compromised in npm supply chain attack](https://www.aikido.dev/blog/keyv-and-friends-compromised-in-npm-supply-chain-attack)（规模统计）
+- 补充口径：[SafeDep](https://safedep.io/keyv-npm-supply-chain-compromise/) · [OX Security](https://www.ox.security/blog/a-new-infostealer-worm-hits-npm-affecting-keyv-and-cacheable/) · [Phoenix Security](https://phoenix.security/mini-shai-hulud-keyv-cacheable-npm-supply-chain-worm/) · [Expel](https://expel.com/blog/chaindrop-the-mini-shai-hulud-npm-worms-latest-wave-hits-keyv-and-cacheable/)
+
+*平台侧*
+- [GitHub Security — Disrupting supply chain attacks on npm and GitHub Actions](https://github.blog/security/supply-chain-security/disrupting-supply-chain-attacks-on-npm-and-github-actions/)
+
+文中所有包名、域名、哈希、时间线均引自上述报告；标注为"我的推断"的部分是分析，不是报告结论。受影响版本以 `npm audit` 和 GitHub Advisory 为准。事件仍在进行中，本文更新于 2026-08-05。
