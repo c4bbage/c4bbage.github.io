@@ -1,6 +1,6 @@
 ---
 title: "Qwen3.8-27B 换上 DFlash2 草稿，单流提速 36%：DGX Spark 实测与反转"
-description: "在 DGX Spark（GB10）上给 Qwen3.8-27B-NVFP4 接入 DFlash2 块扩散草稿的实测：单流 20.9→28.4 tok/s（+36%），接受长度翻倍到 4.23。但并发一过 16，DFlash2 反被 MTP 甩开——它绕开了 EAGLE 的线性叠加成本，却撞上了另一面更硬的墙。"
+description: "DFlash2 在 DGX Spark 上低并发大胜、高并发翻车，原因不是草稿更好，是它换掉了 EAGLE 的线性叠加成本曲线——低并发是钱，高并发是另一面墙。"
 date: 2026-08-21
 lang: zh
 tags: [speculative-decoding, dflash2, dflash, sglang, qwen, dgx-spark, gb10]
@@ -11,17 +11,13 @@ featured: false
 
 ![Qwen3.8-27B 接入 DFlash2 草稿实测](/images/posts/2026-08-21-qwen38-nvfp4-dflash2-dgx-spark/cover.jpg)
 
-在 DGX Spark 上把草稿模型从 MTP 换成 DFlash2，单流从 20.9 涨到 28.4 tok/s，接受长度从 2.2 到 4.23。
-
-+36%。
+在 DGX Spark 上把草稿模型从 MTP 换成 DFlash2，单流从 20.9 涨到 28.4 tok/s，接受长度从 2.2 到 4.23，提速三成六。
 
 草稿头是现成的，权重没动，速度凭空多了三成六。但要说清楚这个 36% 从哪来，得先讲这台机器上另一件事——上一次我们给 Qwen3.8 加草稿深度，是变慢的。
 
 ## 上次加深度，变慢了
 
-同一台 GB10（273 GB/s 统一内存，27B 全激活）。把 EAGLE 的 `--speculative-num-draft-tokens` 从 4 加到 8，代码 prompt 从 23.57 掉到 22.30 tok/s。
-
-变慢了。散文也一样，20.9 → 20.75。
+同一台 GB10（273 GB/s 统一内存，27B 全激活）。把 EAGLE 的 `--speculative-num-draft-tokens` 从 4 加到 8，代码 prompt 从 23.57 掉到 22.30 tok/s，散文 20.9 → 20.75。两个内容类型都变慢。
 
 原因：EAGLE 每往前推一步就多一次完整的草稿头前向。草稿深度 8，就是 8 次前向的线性叠加，深度越深收益被摊得越薄，最后变负。
 
