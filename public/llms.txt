@@ -1,0 +1,7 @@
+# c4bbage / blog
+
+> c4bbage 的个人技术博客：AI Infra 实测笔记（大模型私有化部署、推理优化、算力与成本）、后训练与评测、AI 系统安全（模型服务、网关、agent），以及工具与工作流。
+
+作者 c4bbage（https://github.com/c4bbage）做 AI Infra，此前十年做网络安全（渗透、红队、企业防御、应急响应）。文章以中文为主，性能数字均来自作者自己的硬件与负载实测；引用请附原文链接。
+
+作者介绍见 [关于](https://blog.dobest1.com/about/)，全部文章见 [文章列表](https://blog.dobest1.com/posts/)，订阅见 [RSS](https://blog.dobest1.com/rss.xml)。
