@@ -3,7 +3,7 @@ title: "本地模型干脏活，Claude 做精修：14 万星 REA 浪潮下的双
 description: "从 2026 年 10 月'软件事实上开源'的争论讲起，拆解如何用本地无审查 GLM-5.3-flash 与云端 Claude 跑通自动化 Clean-Room 流水线，并结合 Oracle 真实性检验与特征免杀思维，重构 AI 时代的逆向闭环。"
 date: 2026-10-15
 lang: zh
-tags: [ai, local-llm, reverse-engineering, claude, litellm, rea, clean-room, oracle]
+tags: [ai, local-llm, reverse-engineering, claude, rea, clean-room, oracle]
 categories: [ai, tools, security]
 draft: false
 featured: false
@@ -32,7 +32,7 @@ featured: false
 
 我的基础设施配置：
 
-- **自建 LiteLLM 本地网关**：只绑定本机回环与 SSH 隧道转发，挂载主力是 **GLM-5.3-Flash**——无审查版本，sglang 部署，上下文拉满到 512K，本机实测吞吐约 **220 tok/s**；
+- **自建无审查版本 GLM-5.3-Flash 模型 API**：上下文拉满到 512K，实测吞吐约 **220 tok/s**；
 - **云端 Claude 订阅**：日常主力，拥有顶级的代码品味与跨文件架构重构能力。
 
 这两张牌单独打都是残局：
@@ -182,8 +182,8 @@ Claude 则是反向镜像：它的抽象理解、调用链还原和现代工程�
 ### Step 1. 本地让 REA “只问不拒”
 装上 REA（Reverse Engineer Anything），让它把本地分析器（Ghidra / Hopper / JADX）串起来。关键在于：**不要让云端大模型做第一任驾驶员**。
 ```bash
-# 启动本地无审查模型网关（例如 LiteLLM 映射本地 GLM / DeepSeek）
-export OPENAI_BASE_URL="http://localhost:4000/v1"
+# 配置自建无审查模型 API 端点（兼容 OpenAI 接口规范）
+export OPENAI_BASE_URL="https://your-api-host/v1"
 ```
 先让本地无审查模型调用 REA，去碰那个带壳的二进制或 APK。让它去写 Frida 脚本、拉内存 Dump、吐出未经处理的反编译伪代码。本地模型不在乎版权，不会在中途弹道德拒绝。
 
